@@ -18,3 +18,6 @@ all:
           body:
             type:     Markdown
             edit_mode: inline
+
+    internationalized_models:
+      sfSympalPage: [title]

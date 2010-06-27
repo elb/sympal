@@ -162,3 +162,40 @@ all:
 
     # Callback to retrieve the cache driver used for storing various Sympal cache entries
     get_cache_driver_callback: [sfSympalCache, getCacheDriver]
+
+    # Configure and customize the available content slot types
+    content_slot_types:
+      #MySlotType:
+      #  label: Label of My Slot Type
+      #  form: MySlotForm                        default: sfSympalInlineEditContentSlotForm
+      #  form_renderer: some_module/form_partial default: sympal_edit_slot/slot_editor_form
+      #  widget_class: MySlotTypeWidget          default: sfWidgetFormSympalXXXXXXType
+      #  widget_options: []
+      #  validator_class: MySlotTypeValidator    default: sfValidatorFormSympalXXXXXXType
+      #  validator_options: []
+      #  transformers:    []
+      Text:
+        label: Single Line of Text
+        filters: [inline_object]
+      RawHtml:
+        label: Raw HTML
+        filters: [inline_object]
+      Markdown:
+        label: Markdown Editor
+        filters: [inline_object, markdown]
+        stylesheets:  [markdown.css]
+
+      TinyMCE:
+        label: TinyMCE Rich Text Editor
+        widget_options:
+          # allows tinymce to be seen as the current editor for inline object insertion
+          config: 'handle_event_callback : "sympalHandleTinyMCEEvent"'
+        filters: [inline_object]
+
+      # special slot type for "column" slots where the widget/validator
+      # from the content or content type form are used instead of those listed here
+      Column:
+        label:  Field Default
+        widget_class:    false
+        validator_class: false
+        filters:   [inline_object]

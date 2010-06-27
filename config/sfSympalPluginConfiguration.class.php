@@ -13,10 +13,12 @@
  */
 class sfSympalPluginConfiguration extends sfPluginConfiguration
 {
+  /**
+   * @var sfContext
+   * @var sfSympalSiteManager
+   */
   protected
-    $_context;
-
-  protected
+    $_context,
     $_siteManager;
 
   /**
@@ -73,7 +75,7 @@ class sfSympalPluginConfiguration extends sfPluginConfiguration
     // Don't override the variable if it's not set
     if (!isset($parameters['sf_sympal_site']))
     {
-      $parameters['sf_sympal_site'] = $this->getSite();
+      $parameters['sf_sympal_site'] = $this->getSiteManager()->getSite();
     }
 
     return $parameters;
@@ -88,7 +90,7 @@ class sfSympalPluginConfiguration extends sfPluginConfiguration
   {
     if ($this->_siteManager === null)
     {
-      $this->_siteManager = new sfSympalSiteManager($this);
+      $this->_siteManager = new sfSympalSiteManager($this->configuration);
     }
 
     return $this->_siteManager;
@@ -107,7 +109,7 @@ class sfSympalPluginConfiguration extends sfPluginConfiguration
   }
 
   /**
-   * Mark necessary Sympal classes as safe
+   * Mark necessary sympal classes as safe
    * 
    * These classes won't be wrapped with the output escaper
    * 
