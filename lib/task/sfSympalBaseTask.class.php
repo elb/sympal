@@ -7,7 +7,7 @@
  * @package sfSympalPlugin
  * @author Jonathan H. Wage <jonwage@gmail.com>
  */
-abstract class sfSympalBaseTask extends sfTaskExtraBaseTask
+abstract class sfSympalBaseTask extends sfBaseTask
 {
   /**
    * Check if we are in unix or not

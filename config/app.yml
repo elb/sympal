@@ -1,9 +1,8 @@
 all:
 
-  sympal:
-    extended_actions_class:  sfSympalActions
-
   sympal_config:
+
+    extended_actions_class:  sfSympalActions
 
     # Configure internationalization
     i18n: false
@@ -26,7 +25,7 @@ all:
     unpublished_content:
       forward_to: [sympal_default, unpublished_content]
       forward_404: false
-    
+
     internationalized_models:
       sfSympalSite: [page_title, meta_keywords, meta_description]
       sfSympalContent: [i18n_slug, page_title, meta_keywords, meta_description]

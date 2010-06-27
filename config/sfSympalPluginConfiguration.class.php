@@ -97,11 +97,6 @@ class sfSympalPluginConfiguration extends sfPluginConfiguration
    */
   private function _initializeSymfonyConfig()
   {
-    sfConfig::set('sf_cache', sfSympalConfig::get('page_cache', 'enabled', false));
-    sfConfig::set('sf_default_culture', sfSympalConfig::get('default_culture', null, 'en'));
-
-    sfConfig::set('app_sf_guard_plugin_success_signin_url', sfSympalConfig::get('success_signin_url'));
-
     if (sfConfig::get('sf_error_404_module') == 'default')
     {
       sfConfig::set('sf_error_404_module', 'sympal_default');

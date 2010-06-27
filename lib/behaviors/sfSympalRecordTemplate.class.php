@@ -131,7 +131,8 @@ class sfSympalRecordTemplate extends Doctrine_Template
    */
   public function isI18ned()
   {
-    $i18nedModels = sfSympalConfig::get('internationalized_models', null, array());
+    $i18nedModels = sfConfig::get('internationalized_models', null, array());
+
     return sfSympalConfig::get('i18n') && isset($i18nedModels[$this->getModelName()]);
   }
 

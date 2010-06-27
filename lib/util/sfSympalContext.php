@@ -73,7 +73,7 @@ class sfSympalContext
   protected function _registerExtendingClasses()
   {
     // extend the component/action class
-    $class = sfConfig::get('app_sympal_extended_actions_class', 'sfSympalActions');
+    $class = sfConfig::get('app_sympal_config_extended_actions_class', 'sfSympalActions');
     $actions = new $class();
     $actions->setSympalContext($this);
     

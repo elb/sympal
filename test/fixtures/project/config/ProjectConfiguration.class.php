@@ -12,7 +12,13 @@ class ProjectConfiguration extends sfProjectConfiguration
 {
   public function setup()
   {
-    $this->enablePlugins(array('sfDoctrinePlugin'));
+    $this->enablePlugins(array(
+      'sfDoctrinePlugin',
+      'sfDoctrineGuardPlugin',
+      'sfSympalPlugin',
+    ));
+
+    $this->setPluginPath('sfSympalPlugin', dirname(__FILE__).'/../../../../');
   }
 
   public function configureDoctrineConnection(Doctrine_Connection $conn)

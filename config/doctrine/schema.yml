@@ -5,7 +5,6 @@ sfSympalSite:
       fields: [title]
       indexName: site_sluggable
   columns:
-    theme: string(255)
     title:
       type: string(255)
       notnull: true
@@ -21,8 +20,6 @@ sfSympalContent:
     Timestampable:
     sfSympalRecordTemplate:
     sfSympalContentModelTemplate:
-    sfInlineObjectContainerTemplate:
-      relations:    [Assets, Links]
     Sluggable:
       builder:      [sfSympalContent, slugBuilder]
   columns:
@@ -36,13 +33,9 @@ sfSympalContent:
     created_by_id: integer
     date_published: timestamp
     custom_path: string(255)
-    theme: string(255)
     template: string(255)
     module: string(255)
     action: string(255)
-    publicly_editable:
-      type: boolean
-      default: false
     page_title: string(255)
     meta_keywords: string(500)
     meta_description: string(500)
@@ -52,12 +45,12 @@ sfSympalContent:
       fields: [date_published]
   relations:
     LastUpdatedBy:
-      class: <?php echo sfSympalConfig::get('user_model') ?> 
+      class: sfGuardUser 
       local: last_updated_by_id
       foreignAlias: LastUpdatedContent
       onDelete: SET NULL
     CreatedBy:
-      class: <?php echo sfSympalConfig::get('user_model') ?> 
+      class: sfGuardUser 
       local: created_by_id
       foreignAlias: CreatedContent
       onDelete: SET NULL
@@ -71,30 +64,6 @@ sfSympalContent:
       class: sfSympalContentType
       onDelete: CASCADE
       foreignAlias: Content
-    Groups:
-      class: <?php echo sfSympalConfig::get('group_model') ?> 
-      local: content_id
-      foreign: group_id
-      refClass: sfSympalContentGroup
-      foreignAlias: Content
-    EditGroups:
-      class: <?php echo sfSympalConfig::get('group_model') ?> 
-      local: content_id
-      foreign: group_id
-      refClass: sfSympalContentEditGroup
-      foreignAlias: EditContent
-    Slots:
-      class: sfSympalContentSlot
-      refClass: sfSympalContentSlotRef
-      local: content_id
-      foreign: content_slot_id
-      foreignAlias: Content
-    Links:
-      class: sfSympalContent
-      refClass: sfSympalContentLink
-      local: content_id
-      foreign: linked_content_id
-      autoComplete: false
 
 sfSympalContentType:
   actAs:
@@ -113,60 +82,9 @@ sfSympalContentType:
       type: string(255)
       notnull: true
     default_path: string(255)
-    theme: string(255)
     template: string(255)
     module: string(255)
     action: string(255)
   indexes:
     content_type_name:
       fields: [name]
-
-sfSympalContentGroup:
-  actAs: [sfSympalRecordTemplate]
-  options:
-    symfony:
-      form: false
-      filter: false
-  columns:
-    content_id:
-      primary: true
-      type: integer
-    group_id:
-      primary: true
-      type: integer
-  relations:
-    Content:
-      local: content_id
-      class: sfSympalContent
-      foreignAlias: ContentGroups
-      onDelete: CASCADE
-    Group:
-      class: <?php echo sfSympalConfig::get('group_model') ?> 
-      local: group_id
-      foreignAlias: ContentGroups
-      onDelete: CASCADE
-
-sfSympalContentEditGroup:
-  actAs: [sfSympalRecordTemplate]
-  options:
-    symfony:
-      form: false
-      filter: false
-  columns:
-    content_id:
-      primary: true
-      type: integer
-    group_id:
-      primary: true
-      type: integer
-  relations:
-    Content:
-      local: content_id
-      class: sfSympalContent
-      foreignAlias: ContentEditGroups
-      onDelete: CASCADE
-    Group:
-      class: <?php echo sfSympalConfig::get('group_model') ?> 
-      local: group_id
-      foreignAlias: ContentEditGroups
-      onDelete: CASCADE
