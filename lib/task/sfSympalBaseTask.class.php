@@ -30,16 +30,6 @@ abstract class sfSympalBaseTask extends sfTaskExtraBaseTask
   }
 
   /**
-   * Get the current sfSympalContext instance
-   *
-   * @return sfSympalContext $sympalContext
-   */
-  public function getSympalContext()
-  {
-    return sfSympalContext::getInstance();
-  }
-
-  /**
    * Use a database in this task
    *
    * @return void
