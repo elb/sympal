@@ -1,3 +1,1 @@
-[submodule "lib/vendor/service_container"]
-	path = lib/vendor/service_container
-	url = git://github.com/fabpot/dependency-injection.git
+

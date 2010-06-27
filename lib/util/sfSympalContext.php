@@ -38,9 +38,6 @@ class sfSympalContext
   protected
     $_currentMenuItem,
     $_currentContent;
-  
-  protected
-    $_serviceContainer;
 
   /**
    * Class constructor
@@ -62,13 +59,6 @@ class sfSympalContext
    */
   protected function initialize()
   {
-    // load the service container instance and then configure it
-    $this->loadServiceContainer();
-    $this->configureServiceContainer();
-
-    // enable modules based on sympal configuration
-    $this->_enableModules();
-
     // register some listeners
     $this->_registerExtendingClasses();
     $this->_registerListeners();
@@ -83,7 +73,8 @@ class sfSympalContext
   protected function _registerExtendingClasses()
   {
     // extend the component/action class
-    $actions = $this->getServiceContainer()->getService('actions_extended');
+    $class = sfConfig::get('app_sympal_extended_actions_class', 'sfSympalActions');
+    $actions = new $class();
     $actions->setSympalContext($this);
     
     $this->_dispatcher->connect('component.method_not_found', array($actions, 'extend'));
@@ -95,104 +86,6 @@ class sfSympalContext
   protected function _registerListeners()
   {
     $this->_dispatcher->connect('template.filter_parameters', array($this, 'filterTemplateParameters'));
-  }
-
-  /**
-   * Loads Sympal's service container
-   * 
-   * @link http://components.symfony-project.org/dependency-injection/trunk/book/06-Speed
-   */
-  protected function loadServiceContainer()
-  {
-    $autoloaderPath = $this->getSymfonyContext()
-      ->getConfiguration()
-      ->getPluginConfiguration('sfSympalPlugin')
-      ->getRootDir() . '/lib/vendor/service_container/lib/sfServiceContainerAutoloader.php';
-    
-    if (!file_exists($autoloaderPath))
-    {
-      throw new sfException(sprintf(
-        'Cannot find the service container library at %s.
-        
-        If you are including sfSympalPlugin as a git submodule, be sure to run the following commands from inside the plugins/sfSympalPlugin directory:
-        
-         git submodule init
-         git submodule update',
-        $autoloaderPath
-      ));
-    }
-    
-    sfServiceContainerAutoloader::register();
-    
-    $app = $this->getSymfonyContext()->getConfiguration()->getApplication();
-    $name = 'sfSympal'.$app.'ServiceContainer';
-    $path = sfConfig::get('sf_app_cache_dir').'/'.$name.'.php';
-
-    if (!sfConfig::get('sf_debug') && file_exists($path))
-    {
-      require_once $path;
-      $this->_serviceContainer = new $name();
-    }
-    else
-    {
-      // build the service container dynamically
-      $this->_serviceContainer = new sfServiceContainerBuilder();
-      $loader = new sfServiceContainerLoaderFileYaml($this->_serviceContainer);
-      
-      $configPaths = $this->getSymfonyContext()->getConfiguration()->getConfigPaths('config/sympal_services.yml');
-      $loader->load($configPaths);
-      
-      // if not in debug, write the service container to file
-      if (!sfConfig::get('sf_debug'))
-      {
-        $dumper = new sfServiceContainerDumperPhp($this->_serviceContainer);
-
-        file_put_contents($path, $dumper->dump(array(
-          'class'       => $name,
-          'base_class'  => sfSympalConfig::get('service_container', 'base_class', 'sfServiceContainer'),
-        )));
-      }
-    }
-  }
-
-  /**
-   * Configures the service container.
-   * 
-   * This adds services (both symfony and Sympal services) needed in
-   * the service container
-   */
-  protected function configureServiceContainer()
-  {
-    $sc = $this->getServiceContainer();
-    $context = $this->getSymfonyContext();
-    
-    $sc->setService('dispatcher',       $context->getEventDispatcher());
-    $sc->setService('user',             $context->getUser());
-    $sc->setService('response',         $context->getResponse());
-    $sc->setService('logger',           $context->getLogger());
-    $sc->setService('config_cache',     $context->getConfigCache());
-    $sc->setService('controller',       $context->getController());
-    $sc->setService('request',          $context->getRequest());
-    $sc->setService('routing',          $context->getRouting());
-    if (sfConfig::get('sf_i18n'))
-    {
-      $sc->setService('i18n',             $context->getI18n());
-    }
-    
-    $sc->setService('context',          $context);
-    
-    $sc->setService('sympal_configuration', $this->getSympalConfiguration());
-    $sc->setService('sympal_context',       $this);
-  }
-
-  /**
-   * Helper method to retrieve a service
-   * 
-   * @param string $name The name of the service to retrieve
-   */
-  public function getService($name)
-  {
-    return $this->getServiceContainer()->getService($name);
   }
 
   /**
@@ -230,44 +123,6 @@ class sfSympalContext
   public function getContentRenderer(sfSympalContent $content, $format = null)
   {
     return new sfSympalContentRenderer($this, $content, $format);
-  }
-
-  /**
-   * Handle the enabling of modules.
-   * 
-   * Either enables all modules or only modules defined by enabled_modules.
-   * In either case, the modules in disabled_modules are disabled
-   *
-   * @return void
-   */
-  private function _enableModules()
-  {
-    $modules = sfConfig::get('sf_enabled_modules', array());
-    if (sfSympalConfig::get('enable_all_modules'))
-    {
-      $modules = array_merge($modules, $this->getSympalConfiguration()->getModules());
-    }
-    else
-    {
-      $modules = array_merge($modules, sfSympalConfig::get('enabled_modules', null, array()));
-    }
-
-    if ($disabledModules = sfSympalConfig::get('disabled_modules', null, array()))
-    {
-      $modules = array_diff($modules, $disabledModules);
-    }
-
-    sfConfig::set('sf_enabled_modules', $modules);
-  }
-
-  /**
-   * Returns the service container instance
-   * 
-   * @return sfServiceContainer
-   */
-  public function getServiceContainer()
-  {
-    return $this->_serviceContainer;
   }
 
   /**
@@ -354,47 +209,5 @@ class sfSympalContext
     }
 
     return $event->getReturnValue();
-  }
-
-  /**
-   * Deprecated Functions
-   */
-  
-  protected function warnDeprecated($method, $service)
-  {
-    $this->_dispatcher->notify(new sfEvent($this, 'application.log', array(
-      'priority' => sfLogger::WARNING,
-      sprintf('Method sfSympalContent::%s is deprecated. Use sfSympalContext->getService(\'%s\')->%s()', $method, $service, $method),
-    )));
-  }
-  
-  /**
-   * @deprecated
-   */
-  public function getCurrentContent()
-  {
-    $this->warnDeprecated('getCurrentContent', 'site_manager');
-    
-    return $this->getService('site_manager')->getCurrentContent();
-  }
-  /**
-   * @deprecated
-   */
-  public function setCurrentContent(sfSympalContent $content)
-  {
-    $this->warnDeprecated('setCurrentContent', 'site_manager');
-    
-    return $this->getService('site_manager')->setCurrentContent($content);
-  }
-  
-  /**
-   * @deprecated
-   */
-  public function getCurrentMenuItem()
-  {
-    $this->warnDeprecated('getCurrentMenuItem', 'menu_manager');
-    
-    return $this->getService('menu_manager')->getCurrentMenuItem();
-  }
-  
+  }  
 }

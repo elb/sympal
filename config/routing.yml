@@ -12,7 +12,6 @@ homepage:
     type:   object
     method: getContent
 
-
 sympal_change_language_form:
   url:   /change_language
   param: { module: sympal_default, action: change_language }
@@ -26,24 +25,3 @@ sympal_change_language:
 sympal_change_edit_language:
   url:   /change_edit_language/:language
   param: { module: sympal_default, action: change_edit_language }
-
-sympal_sitemap:
-  url:   /sitemap.xml
-  param: { module: sympal_default, action: sitemap, sf_format: xml }
-  requirements:
-    sf_format: [xml]
-
-
-
-# Theme administration
-sympal_themes:
-  url:    /admin/themes
-  param: { module: sympal_themes, action: index }
-
-sympal_themes_make_default:
-  url:    /admin/themes/make_default/:name/:site
-  param: { module: sympal_themes, action: make_default, site: 0 }
-
-sympal_themes_preview:
-  url:    /admin/themes/:preview
-  param: { module: sympal_themes, action: index }

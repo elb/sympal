@@ -1,0 +1,5 @@
+sympal_sitemap:
+  url:   /sitemap.xml
+  param: { module: sympal_default, action: sitemap, sf_format: xml }
+  requirements:
+    sf_format: [xml]

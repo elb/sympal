@@ -1,4 +1,8 @@
 all:
+
+  sympal:
+    extended_actions_class:  sfSympalActions
+
   sympal_config:
 
     # Configure internationalization
@@ -99,10 +103,6 @@ all:
         sympal_get_content:
           enabled: true
           lifetime: 86400
-
-    enable_all_modules: true     # Whether or not to enable all modules found in your project
-    disabled_modules:   []       # Array of modules to disable (these will be disabled even if enable_all_modules is true)
-    enabled_modules:    []       # If enable_all_modules is false, these modules will be enabled
 
     # Callback to retrieve the cache driver used for storing various Sympal cache entries
     get_cache_driver_callback: [sfSympalCache, getCacheDriver]
