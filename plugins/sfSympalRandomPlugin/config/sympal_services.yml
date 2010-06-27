@@ -1,0 +1,10 @@
+parameters:
+
+  slot_renderer.class:        sfSympalSlotRenderer                # Helps to render a slot
+
+services:
+
+  slot_renderer:
+    class:                    %slot_renderer.class%
+    shared:                   false
+    arguments:                [@sympal_configuration]

@@ -3,8 +3,6 @@ parameters:
   actions_extended.class:     sfSympalActions             # Acts as an extension of sfComponent
 
   site_manager.class:         sfSympalSiteManager                 # Manages the current site object
-  
-  slot_renderer.class:        sfSympalSlotRenderer                # Helps to render a slot
 
   cache_manager.class:        sfSympalCacheManager        # Responsible for managing cache
   
@@ -21,11 +19,6 @@ services:
   site_manager:
     class:                    %site_manager.class%
     shared:                   true
-    arguments:                [@sympal_configuration]
-  
-  slot_renderer:
-    class:                    %slot_renderer.class%
-    shared:                   false
     arguments:                [@sympal_configuration]
 
   cache_manager:
