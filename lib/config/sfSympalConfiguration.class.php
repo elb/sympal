@@ -95,16 +95,6 @@ class sfSympalConfiguration
   }
 
   /**
-   * Get array of core Sympal plugins
-   *
-   * @return array $corePlugins
-   */
-  public function getCorePlugins()
-  {
-    return sfSympalPluginConfiguration::$corePlugins;
-  }
-
-  /**
    * Listens to the sympal.load event
    */
   public function bootstrapFromContext(sfEvent $event)
@@ -112,44 +102,6 @@ class sfSympalConfiguration
     $this->_sympalContext = $event->getSubject();
     // give this object access to the cache manager
     $this->_cacheManager = $event->getSubject()->getService('cache_manager');
-  }
-
-  /**
-   * Get array of plugins that are downloaded and installed to your project
-   *
-   * @return array $installedPlugins
-   */
-  public function getDownloadedPlugins()
-  {
-    $downloadedPlugins = array_diff($this->getPlugins(), $this->getCorePlugins());
-    unset($downloadedPlugins[array_search('sfSympalPlugin', $downloadedPlugins)]);
-
-    return $downloadedPlugins;
-  }
-
-  /**
-   * Get array of available addon plugins
-   *
-   * @return array $addonPlugins
-   */
-  public function getDownloadablePlugins()
-  {
-    return sfSympalPluginToolkit::getDownloadablePlugins();
-  }
-
-  /**
-   * Get array of all manageable plugins that can be downloaded, installed, uninstalled, etc.
-   *
-   * @return array $allManageablePlugins
-   */
-  public function getAllManageablePlugins()
-  {
-    if ($this->_allManageablePlugins === null)
-    {
-      $this->_allManageablePlugins = array_merge($this->getDownloadablePlugins(), $this->getDownloadedPlugins());
-      $this->_allManageablePlugins = array_unique($this->_allManageablePlugins);
-    }
-    return $this->_allManageablePlugins;
   }
 
   /**

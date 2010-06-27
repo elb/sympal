@@ -9,6 +9,17 @@ class sfSympalRandomPluginConfiguration extends sfPluginConfiguration
 
     // Connect with theme.filter_asset_paths to rewrite asset paths from theme
     $this->dispatcher->connect('theme.filter_asset_paths', array($this, 'filterThemeAssetPaths'));
+
+    $this->dispatcher->connect('sympal.load', array($this, 'configureSympal'));
+  }
+
+  public function configureSympal(sfEvent $event)
+  {
+    // extend the component/action class
+    $actions = new sfSympalRandomActions();
+    $actions->setSympalContext($this);
+
+    $this->_dispatcher->connect('component.method_not_found', array($actions, 'extend'));
   }
 
   /**
