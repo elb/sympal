@@ -57,16 +57,6 @@ all:
       sfSympalContentSlot: [value]
       sfSympalContentList: [title]
       sfSympalPage: [title]
-    
-    sluggable_models:
-      sfSympalContent:
-        builder: [sfSympalContent, slugBuilder]
-      sfSympalSite:
-        fields: [title]
-        indexName: site_sluggable
-      sfSympalContentType:
-        fields: [label]
-        indexName: content_type_sluggable
 
     # The displayed name. You can change this to the project name you build on top of Sympal for example.
     sympal_name: Sympal

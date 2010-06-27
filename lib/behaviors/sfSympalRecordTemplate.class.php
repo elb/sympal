@@ -6,13 +6,11 @@
  * 
  * Generally used internally to accomplish several things at once
  * 
- *   1) Sluggify fields based on the "sluggable_models" config
+ *   1) I18N tables & fields based on the "internationalized_models" config
  * 
- *   2) I18N tables & fields based on the "internationalized_models" config
+ *   2) Filter with sfSympalRecordEventFilter, which allows for extension of getters and setters
  * 
- *   3) Filter with sfSympalRecordEventFilter, which allows for extension of getters and setters
- * 
- *   4) Throw a sympal.table_name.set_table_definition event so that table definition can be modified real-time
+ *   3) Throw a sympal.table_name.set_table_definition event so that table definition can be modified real-time
  *
  * @package sfSympalPlugin
  * @author Jonathan H. Wage <jonwage@gmail.com>
@@ -51,12 +49,6 @@ class sfSympalRecordTemplate extends Doctrine_Template
   {
     // Add global Doctrine record filter which implements Symfony filter events for unknown property calls
     $this->_table->unshiftFilter(new sfSympalRecordEventFilter());
-
-    // Attach sluggable behavior if is sluggable
-    if ($this->isSluggable())
-    {
-      $this->sympalActAs('Doctrine_Template_Sluggable', $this->getSluggableOptions());
-    }
 
     // Attach i18n behavior if is i18ned
     if ($this->isI18ned())
@@ -154,33 +146,6 @@ class sfSympalRecordTemplate extends Doctrine_Template
     {
       $i18nedModels = sfSympalConfig::get('internationalized_models', null, array());
       return $i18nedModels[$this->getModelName()];
-    } else {
-      return array();
-    }
-  }
-
-  /**
-   * Check if this model has the sluggable behavior enabled
-   *
-   * @return boolean $result Whether or not this model is sluggable
-   */
-  public function isSluggable()
-  {
-    $sluggableModels = sfSympalConfig::get('sluggable_models', null, array());
-    return array_key_exists($this->getModelName(), $sluggableModels);
-  }
-
-  /**
-   * Get the array of options for the sluggable behavior
-   *
-   * @return array $options The array of options
-   */
-  public function getSluggableOptions()
-  {
-    if ($this->isSluggable())
-    {
-      $sluggableModels = sfSympalConfig::get('sluggable_models', null, array());
-      return $sluggableModels[$this->getModelName()] ? $sluggableModels[$this->getModelName()]:array();
     } else {
       return array();
     }

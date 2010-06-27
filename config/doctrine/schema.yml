@@ -1,7 +1,11 @@
 # sfSympalCMFPlugin Core Doctrine Schema
 
 sfSympalSite:
-  actAs: [sfSympalRecordTemplate]
+  actAs:
+    sfSympalRecordTemplate:
+    Sluggable:
+      fields: [title]
+      indexName: site_sluggable
   columns:
     theme: string(255)
     title:
@@ -43,6 +47,8 @@ sfSympalContent:
     sfSympalRecordTemplate:
     sfInlineObjectContainerTemplate:
       relations:    [Assets, Links]
+    Sluggable:
+      builder:      [sfSympalContent, slugBuilder]
   columns:
     site_id:
       type: integer
@@ -142,7 +148,11 @@ sfSympalContentLink:
       foreignAlias: sfSympalContentLinks
 
 sfSympalContentType:
-  actAs: [sfSympalRecordTemplate]
+  actAs:
+    sfSympalRecordTemplate:
+    Sluggable:
+      fields:    [label]
+      indexName: content_type_sluggable
   columns:
     # The name of the model to use as the data source (e.g. sfSympalPage).
     # Must act as sfSympalContentTypeTemplate
