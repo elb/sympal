@@ -1,9 +1,0 @@
-all:
-  theme:
-    themes:
-      install:
-        available:   false
-        layout:      install
-        stylesheets:
-         - /sfSympalPlugin/themes/sympal/css/main.css
-         - /sfSympalInstallPlugin/css/install.css
