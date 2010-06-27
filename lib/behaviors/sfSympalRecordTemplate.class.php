@@ -56,12 +56,6 @@ class sfSympalRecordTemplate extends Doctrine_Template
       $this->sympalActAsI18n(array('fields' => $this->getI18nedFields()), 'Doctrine_Template_I18n');
     }
 
-    // Attach content model template if this is the sfSympalContent model
-    if ($this->isContent())
-    {
-      $this->sympalActAs('sfSympalContentModelTemplate');
-    }
-
     // Invoke Symfony event to hook into every models setTableDefinition() process
     sfProjectConfiguration::getActive()->getEventDispatcher()->notify(new sfEvent($this->getInvoker(), 'sympal.'.$this->_eventName.'.set_table_definition', array('object' => $this)));
   }
@@ -121,7 +115,13 @@ class sfSympalRecordTemplate extends Doctrine_Template
    */
   public function setUp()
   {
-    sfProjectConfiguration::getActive()->getEventDispatcher()->notify(new sfEvent($this->getInvoker(), 'sympal.'.$this->_eventName.'.setup', array('object' => $this)));
+    sfProjectConfiguration::getActive()->getEventDispatcher()->notify(
+      new sfEvent(
+        $this->getInvoker(),
+        'sympal.'.$this->_eventName.'.setup',
+        array('object' => $this)
+      )
+    );
   }
 
   /**
@@ -152,16 +152,6 @@ class sfSympalRecordTemplate extends Doctrine_Template
   }
 
   /**
-   * Check whether or not this template is attached to the sfSympalContent model
-   *
-   * @return boolean $result
-   */
-  public function isContent()
-  {
-    return $this->getModelName() == 'sfSympalContent' ? true : false;
-  }
-
-  /**
    * Hack for working around the ToPrfx and FromPrfx prefix used by migrations
    *
    * @return string $modelName
@@ -173,6 +163,7 @@ class sfSympalRecordTemplate extends Doctrine_Template
       $this->_modelName = str_replace('ToPrfx', '', $this->_table->getOption('name'));
       $this->_modelName = str_replace('FromPrfx' ,'', $this->_modelName);
     }
+
     return $this->_modelName;
   }
 }

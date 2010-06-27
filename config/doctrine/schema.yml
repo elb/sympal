@@ -20,6 +20,7 @@ sfSympalContent:
   actAs:
     Timestampable:
     sfSympalRecordTemplate:
+    sfSympalContentModelTemplate:
     sfInlineObjectContainerTemplate:
       relations:    [Assets, Links]
     Sluggable:
