@@ -19,7 +19,8 @@ class sfSympalPluginConfiguration extends sfPluginConfiguration
    */
   protected
     $_context,
-    $_siteManager;
+    $_siteManager,
+    $_cacheManager;
 
   /**
    * sfSympalPlugin version number
@@ -57,7 +58,11 @@ class sfSympalPluginConfiguration extends sfPluginConfiguration
     $actions = new $class();
     $this->dispatcher->connect('component.method_not_found', array($actions, 'extend'));
 
+    // register the template.filter_parameters event
     $this->dispatcher->connect('template.filter_parameters', array($this, 'filterTemplateParameters'));
+
+    // create the cache manager instance
+    $this->_cacheManager = $this->_createCacheManager();
 
     // throw the sympal load event
     $this->dispatcher->notify(new sfEvent($this, 'sympal.load', array()));
@@ -82,6 +87,30 @@ class sfSympalPluginConfiguration extends sfPluginConfiguration
   }
 
   /**
+   * Creates a new instance of sfSympalCacheManager from the config
+   *
+   * @return sfSympalCacheManager
+   */
+  protected function _createCacheManager()
+  {
+    $cacheConfig = sfSympalConfig::get('cache_driver');
+    if ($cacheConfig['enabled'])
+    {
+      $class = $cacheConfig['class'];
+      $options = $cacheConfig['options'];
+      $cacheDriver = new $class($options);
+    }
+    else
+    {
+      $cacheDriver = null;
+    }
+
+    $class = sfConfig::get('app_sympal_config_cache_manager_class', 'sfSympalCacheManager');
+
+    return new $class($this->dispatcher, $cacheDriver);
+  }
+
+  /**
    * Returns the current site manager
    *
    * @return sfSympalSiteManager
@@ -94,6 +123,14 @@ class sfSympalPluginConfiguration extends sfPluginConfiguration
     }
 
     return $this->_siteManager;
+  }
+
+  /**
+   * @return sfSympalCacheManager
+   */
+  public function getCacheManager()
+  {
+    return $this->_cacheManager;
   }
 
   /**

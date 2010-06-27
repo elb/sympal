@@ -1,8 +1,21 @@
 all:
   sympal_config:
 
-    # the class used for the extended actions class
+    # The class used for the extended actions class
     extended_actions_class:  sfSympalActions
+
+    # The class used for managing any general caching
+    cache_manager_class:     sfSympalCacheManager
+
+    # cache driver used for the cache manager
+    cache_driver:
+      enabled:    true
+      class:      sfFileCache
+      options:
+        cache_dir:  <?php echo sfConfig::get('sf_app_cache_dir') ?>/sympal_cache
+
+    # Callback to retrieve the cache driver used for storing various Sympal cache entries
+    get_cache_driver_callback: [sfSympalCacheManager, getCacheDriver]
 
     # Configure internationalization
     i18n: false

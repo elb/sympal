@@ -1,14 +1,9 @@
 <?php
 
 /**
- * Sympal cache managing class. All cache operations write through this class:
+ * Class for managing any miscellaneous cache 
  *
- *  * Doctrine ORM Cache Driver
  *  * Routes
- *  * Layouts
- *  * Modules
- *  * Content Types
- *  * Helpers
  *
  * @package sfSympalPlugin
  * @author Jonathan H. Wage <jonwage@gmail.com>
@@ -32,7 +27,7 @@ class sfSympalCacheManager
    * @see sfSympalPluginConfiguration
    * @param sfSympalConfiguration $sympalConfiguration
    */
-  public function __construct(sfEventDispatcher $dispatcher, sfCache $cacheDriver)
+  public function __construct(sfEventDispatcher $dispatcher, sfCache $cacheDriver = null)
   {
     $this->_dispatcher = $dispatcher;
     $this->_cacheDriver = $cacheDriver;
@@ -41,50 +36,17 @@ class sfSympalCacheManager
   }
 
   /**
-   * Configured default callable in config/app.yml to return the 
-   * sfCache driver to use to store cache entries for the passed sfSympalCache instance
-   *
-   * @param sfSympalCache $cache
-   * @return sfCache $driver A instance of a sfCache driver
-   */
-  public static function getCacheDriver(sfSympalCache $cache)
-  {
-    return new sfFileCache(
-      array('cache_dir' => sfConfig::get('sf_cache_dir').'/'.sfConfig::get('sf_app').'/'.sfConfig::get('sf_environment')
-    ));
-  }
-
-  /**
-   * Get the Doctrine cache driver to use for Doctrine query and result cache
-   *
-   * @return Doctrine_Cache_Driver $driver
-   */
-  public static function getOrmCacheDriver()
-  {
-    if (extension_loaded('apc'))
-    {
-      // set the prefix to something that will be different between projects
-      $prefix = 'doctrine_'.md5(sfConfig::get('sf_root_dir'));
-      
-      return new Doctrine_Cache_Apc(array('prefix' => $prefix));
-    }
-    else
-    {
-      return new Doctrine_Cache_Array();
-    }
-  }
-
-  /**
-   * Clear the cache and force it to be primed again
+   * Clear all the cache
    *
    * @return void
    */
-  public function clear()
+  public function clean()
   {
-    $this->_helperAutoload = null;
-    $this->_modules = null;
-    $this->_layouts = null;
-    $this->_cacheDriver->set('primed', false);
+    if ($this->getCacheDriver())
+    {
+      $this->getCacheDriver()->clean();
+      $this->getCacheDriver()->set('primed', false);
+    }
   }
 
   /**
@@ -98,23 +60,22 @@ class sfSympalCacheManager
    */
   public function primeCache($force = false)
   {
-    if ($this->_cacheDriver->has('primed') && !$force)
+    // if no cache driver, we can't do anything
+    if (!$this->getCacheDriver())
     {
       return;
     }
 
-    $this->clear();
-    
-    /**
-     * @TODO reimplement this in the proper location
-     */
-    //$this->_writeHelperAutoloadCache();
-    //$this->_writeModulesCache();
-    //$this->_writeLayoutsCache();
-    
+    if ($this->getCacheDriver()->get('primed') && !$force)
+    {
+      return;
+    }
+
+    $this->clean();
+
     $this->_dispatcher->notify(new sfEvent($this, 'sympal.cache.prime'));
 
-    $this->_cacheDriver->set('primed', true);
+    $this->getCacheDriver()->set('primed', true);
   }
 
   /**
@@ -124,11 +85,7 @@ class sfSympalCacheManager
    */
   public function resetRouteCache()
   {
-    $cachePath = sfConfig::get('sf_cache_dir').'/'.sfConfig::get('sf_app').'/'.sfConfig::get('sf_environment').'/routes.cache.yml';
-    if (file_exists($cachePath))
-    {
-      unlink($cachePath);
-    }
+    $this->remove('routes.cache');
 
     $context = sfContext::getInstance();
     $configCache = $context->getConfigCache();
@@ -146,7 +103,10 @@ class sfSympalCacheManager
    */
   public function remove($key)
   {
-    return $this->_cacheDriver->remove($key);
+    if ($this->getCacheDriver())
+    {
+      return $this->getCacheDriver()->remove($key);
+    }
   }
 
   /**
@@ -154,7 +114,10 @@ class sfSympalCacheManager
    */
   public function set($key, $data, $lifeTime = null)
   {
-    return $this->_cacheDriver->set($key, serialize($data), $lifeTime);
+    if ($this->getCacheDriver())
+    {
+      return $this->getCacheDriver()->set($key, serialize($data), $lifeTime);
+    }
   }
 
   /**
@@ -162,7 +125,10 @@ class sfSympalCacheManager
    */
   public function has($key)
   {
-    return $this->_cacheDriver->has($key);
+    if ($this->getCacheDriver())
+    {
+      return $this->getCacheDriver()->has($key);
+    }
   }
 
   /**
@@ -170,18 +136,17 @@ class sfSympalCacheManager
    */
   public function get($key)
   {
-    return unserialize($this->_cacheDriver->get($key));
+    if ($this->getCacheDriver())
+    {
+      return $this->getCacheDriver()->get($key);
+    }
   }
 
   /**
-   * Forward any unknown method calls to the sfCache driver instance
-   *
-   * @param string $method
-   * @param array $arguments
-   * @return mixed $return
+   * @return sfCache
    */
-  public function __call($method, $arguments)
+  public function getCacheDriver()
   {
-    return call_user_func_array(array($this->_cacheDriver, $method), $arguments);
+    return $this->_cacheDriver;
   }
 }

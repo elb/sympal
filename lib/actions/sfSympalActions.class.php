@@ -19,7 +19,7 @@ class sfSympalActions extends sfSympalExtendClass
   public function resetSympalRoutesCache()
   {
     // Reset the routes cache incase of the url changing or a custom url was added
-    return $this->getSympalContext()->getService('cache_manager')->resetRouteCache();
+    return $this->getSympalConfiguration()->getCacheManager()->resetRouteCache();
   }
 
   /**
@@ -31,7 +31,7 @@ class sfSympalActions extends sfSympalExtendClass
   public function clearCache(array $options = array())
   {
     chdir(sfConfig::get('sf_root_dir'));
-    $task = new sfCacheClearTask($this->getContext()->getEventDispatcher(), new sfFormatter());
+    $task = new sfCacheClearTask($this->_subject->getContext()->getEventDispatcher(), new sfFormatter());
     $task->run(array(), $options);
 
     $this->resetSympalRoutesCache();
@@ -45,5 +45,18 @@ class sfSympalActions extends sfSympalExtendClass
   public function getSympalContentActionLoader()
   {
     return new sfSympalContentActionLoader($this->getSubject());
+  }
+
+  /**
+   * Shortcut method to get the plugin configuration
+   *
+   * @return sfSympalPluginConfiguration
+   */
+  protected function getSympalConfiguration()
+  {
+    return $this->_subject
+      ->getContext()
+      ->getConfiguration()
+      ->getPluginConfiguration('sfSympalPlugin');
   }
 }
