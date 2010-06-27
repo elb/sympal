@@ -12,7 +12,6 @@ abstract class PluginsfSympalContent extends BasesfSympalContent
     $_routeObject,
     $_mainMenuItem,
     $_editableSlotsExistOnPage = false,
-    $_slotsByName = null,
     $_contentRouteObject = null,
     $_updateSearchIndex = true;
   
@@ -56,28 +55,6 @@ abstract class PluginsfSympalContent extends BasesfSympalContent
     return $this->date_published && strtotime($this->date_published) <= time() ? true : false;
   }
 
-  /**
-   * Retrieves an array of the slots where the key is the slot name.
-   * 
-   * This caches the result as a property
-   * 
-   * @param boolean $force To force a refresh of the slots or not
-   * @return array
-   */
-  public function getSlotsByName($force = false)
-  {
-    if ($this->_slotsByName === null || $force)
-    {
-      $this->_slotsByName = array();
-      foreach ($this->Slots as $slot)
-      {
-        $this->_slotsByName[$slot->name] = $slot;
-      }
-    }
-    
-    return $this->_slotsByName;
-  }
-
   public function setEditableSlotsExistOnPage($bool)
   {
     $this->_editableSlotsExistOnPage = $bool;
@@ -108,7 +85,9 @@ abstract class PluginsfSympalContent extends BasesfSympalContent
     if ($actionName = $this->_get('action'))
     {
       return $actionName;
-    } else {
+    }
+    else
+    {
       return $this->getUnderscoredSlug();
     }
   }
@@ -123,144 +102,11 @@ abstract class PluginsfSympalContent extends BasesfSympalContent
     if ($this->hasCustomAction())
     {
       return $this->getCustomActionName();
-    } else {
+    }
+    else
+    {
       return $this->getType()->getActionToRenderWith();
     }
-  }
-
-  public function hasSlot($name)
-  {
-    $slotsByName = $this->getSlotsByName();
-    
-    return isset($slotsByName[$name]) ? true : false;
-  }
-
-  public function hasSlots()
-  {
-    return count($this->getSlotsByName()) > 0 ? true : false;
-  }
-
-  public function getSlot($name)
-  {
-    if ($this->hasSlot($name))
-    {
-      $slotsByName = $this->getSlotsByName();
-      
-      $slot = $slotsByName[$name];
-      
-      return $slotsByName[$name];
-    }
-    return null;
-  }
-
-  public function removeSlot(sfSympalContentSlot $slot)
-  {
-    return Doctrine_Core::getTable('sfSympalContentSlotRef')
-      ->createQuery()
-      ->delete()
-      ->where('content_slot_id = ?', $slot->id)
-      ->andWhere('content_id = ?', $this->id)
-      ->execute();
-  }
-
-  public function addSlot(sfSympalContentSlot $slot)
-  {
-    $this->removeSlot($slot);
-
-    $contentSlotRef = new sfSympalContentSlotRef();
-    $contentSlotRef->content_slot_id = $slot->id;
-    $contentSlotRef->content_id = $this->id;
-    $contentSlotRef->save();
-
-    // make sure the slots are initialized
-    $this->getSlotsByName();
-    $this->_slotsByName[$slot->name] = $slot;
-
-    return $contentSlotRef;
-  }
-  
-  /**
-   * Retrieves or creates an sfSympalContentSlot object with the given
-   * name for this sfSympalContent object
-   * 
-   * @return sfSympalContentSlot
-   */
-  public function getOrCreateSlot($name, $options = array())
-  {
-    if (!$hasSlot = $this->hasSlot($name))
-    {
-      $isColumn = $this->hasField($name) ? true : false;
-      
-      // if type isn't specified, give it a type of Column or Text
-      if (isset($options['type']))
-      {
-        $type = $options['type'];
-      }
-      else
-      {
-        $type = $isColumn ? 'Column' : 'Text';
-      }
-      
-      if (!$isColumn && $type == 'Column')
-      {
-        throw new sfException('Cannot set a non-column slot to type "Column"');
-      }
-
-      $slot = new sfSympalContentSlot();
-      $slot->setContentRenderedFor($this);
-      $slot->is_column = $isColumn;
-
-      $slot->name = $name;
-      $slot->type = $type;
-      if (isset($options['default_value']))
-      {
-        $slot->value = $options['default_value'];
-      }
-      $slot->save();
-
-      $this->addSlot($slot);
-    } else {
-      $slot = $this->getSlot($name);
-    }
-
-    $slot->setContentRenderedFor($this);
-
-    return $slot;
-  }
-
-  public function hasField($name)
-  {
-    $result = $this->_table->hasField($name);
-    if (!$result)
-    {
-      $className = get_class($this);
-      if (sfSympalConfig::isI18nEnabled($className))
-      {
-        $table = Doctrine_Core::getTable($className.'Translation');
-        if ($table->hasField($name))
-        {
-          $result = true;
-        }
-      }
-    }
-    if (!$result)
-    {
-      $className = $this->getType()->getName();
-      $table = Doctrine_Core::getTable($className);
-      if ($table->hasField($name))
-      {
-        $result = true;
-      }
-      if (sfSympalConfig::isI18nEnabled($className))
-      {
-        $table = Doctrine_Core::getTable($className.'Translation');
-        if ($table->hasField($name))
-        {
-          $result = true;
-        }
-      }
-    }
-    return $result;
   }
 
   public function getUrl($options = array())
@@ -311,7 +157,9 @@ abstract class PluginsfSympalContent extends BasesfSympalContent
     if ($menuItem)
     {
       return str_repeat('-', $menuItem->getLevel()).' '.(string) $this;
-    } else {
+    }
+    else
+    {
       return (string) $this;
     }
   }
@@ -328,6 +176,7 @@ abstract class PluginsfSympalContent extends BasesfSympalContent
     {
       $this->_mainMenuItem = $menuItem;
     }
+
     return $this->_mainMenuItem;
   }
 
@@ -337,7 +186,9 @@ abstract class PluginsfSympalContent extends BasesfSympalContent
     {
       Doctrine_Core::initializeModels(array($this['Type']['name']));
       return $this[$this['Type']['name']];
-    } else {
+    }
+    else
+    {
       return false;
     }
   }
@@ -432,7 +283,9 @@ abstract class PluginsfSympalContent extends BasesfSympalContent
       $slot->setContentRenderedFor($this);
 
       return $slot->render();
-    } else {
+    }
+    else
+    {
       return (string) $this;
     }
   }
@@ -469,6 +322,7 @@ abstract class PluginsfSympalContent extends BasesfSympalContent
       $data['CreatedBy'],
       $data['Site']
     );
+
     return $data;
   }
 
@@ -522,11 +376,9 @@ abstract class PluginsfSympalContent extends BasesfSympalContent
     return $this->getCreatedById() ? $this->getCreatedBy()->getEmailAddress() : null;
   }
 
-  public function getUniqueId()
-  {
-    return $this->getId().'-'.$this->getSlug();
-  }
-
+  /**
+   * @return bool
+   */
   public function hasCustomPath()
   {
     return $this->custom_path ? true : false;
@@ -567,54 +419,28 @@ abstract class PluginsfSympalContent extends BasesfSympalContent
   }
 
   /**
-   * Used by plugin install to attempt to set some "title" value to the
-   * default string. This is like the opposite of __toString()
-   * 
-   * @param string $value The value to set to the "title" field
+   * Used by Sluggable to create the slug for this record
+   *
+   * @static
+   * @param  string $text The text to slug
+   * @param  sfSympalContent $content
+   * @return string
    */
-  public function trySettingTitleProperty($value)
-  {
-    foreach (array('title', 'name', 'subject', 'header') as $name)
-    {
-      try
-      {
-        $this->$name = $value;
-      } catch (Exception $e)
-      {
-      }
-    }
-  }
-
-  public function addLink(sfSympalContent $content)
-  {
-    $link = new sfSympalContentLink();
-    $link->content_id = $this->id;
-    $link->linked_content_id = $content->id;
-    $link->save();
-
-    return $link;
-  }
-
-  public function addAsset(sfSympalAsset $asset)
-  {
-    $contentAsset = new sfSympalContentAsset();
-    $contentAsset->content_id = $this->id;
-    $contentAsset->asset_id = $asset->id;
-    $contentAsset->save();
-
-    return $contentAsset;
-  }
-
-  public static function slugBuilder($text, $content)
+  public static function slugBuilder($text, sfSympalContent $content)
   {
     if ($record = $content->getRecord())
     {
-      try {
+      try
+      {
         return $record->slugBuilder($text);
-      } catch (Doctrine_Record_UnknownPropertyException $e) {
+      }
+      catch (Doctrine_Record_UnknownPropertyException $e)
+      {
         return Doctrine_Inflector::urlize($text);
       }
-    } else {
+    }
+    else
+    {
       return Doctrine_Inflector::urlize($text);
     }
   }
@@ -694,105 +520,6 @@ abstract class PluginsfSympalContent extends BasesfSympalContent
     {
       return $theme;
     }
-  }
-
-  public function getSiteId()
-  {
-    return $this->_get('site_id');
-  }
-
-  public function getContentTypeId()
-  {
-    return $this->_get('content_type_id');
-  }
-
-  public function getLastUpdatedBy()
-  {
-    return $this->_get('LastUpdatedBy');
-  }
-
-  public function getLastUpdatedById()
-  {
-    return $this->_get('last_updated_by_id');
-  }
-
-  public function getCreatedBy()
-  {
-    return $this->_get('CreatedBy');
-  }
-
-  public function getCreatedById()
-  {
-    return $this->_get('created_by_id');
-  }
-
-  public function getDatePublished()
-  {
-    return $this->_get('date_published');
-  }
-
-  public function getCustomPath()
-  {
-    return $this->_get('custom_path');
-  }
-
-  public function getPageTitle()
-  {
-    return $this->_get('page_title');
-  }
-
-  public function getMetaKeywords()
-  {
-    return $this->_get('meta_keywords');
-  }
-
-  public function getMetaDescription()
-  {
-    return $this->_get('meta_description');
-  }
-
-  public function getI18nSlug()
-  {
-    return $this->_get('i18n_slug');
-  }
-
-  public function getSite()
-  {
-    return $this->_get('Site');
-  }
-
-  /**
-   *
-   * @return sfSympalContentType
-   */
-  public function getType()
-  {
-    return $this->_get('Type');
-  }
-
-  public function getGroups()
-  {
-    return $this->_get('Groups');
-  }
-
-  public function getPermissions()
-  {
-    return $this->_get('Permissions');
-  }
-
-  public function getMenuItem()
-  {
-    return $this->_get('MenuItem');
-  }
-
-  public function getSlots()
-  {
-    return $this->_get('Slots');
-  }
-
-  public function getContentGroups()
-  {
-    return $this->_get('ContentGroups');
   }
 
   public function disableSearchIndexUpdateForSave()
@@ -890,8 +617,11 @@ abstract class PluginsfSympalContent extends BasesfSympalContent
     if ($this->date_published)
     {
       sfApplicationConfiguration::loadHelpers('Date');
+
       return format_datetime($this->date_published, sfSympalConfig::get('date_published_format'));
-    } else {
+    }
+    else
+    {
       return 'unpublished';
     }
   }

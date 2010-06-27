@@ -12,26 +12,6 @@ abstract class PluginsfSympalContentType extends BasesfSympalContentType
     return (string) $this->getLabel();
   }
 
-  public function getSingularUpper()
-  {
-    return Doctrine_Core::getTable($this->getName())->getOption('name');
-  }
-
-  public function getSingularLower()
-  {
-    return Doctrine_Inflector::tableize(Doctrine_Core::getTable($this->getName())->getOption('name'));
-  }
-
-  public function getPluralUpper()
-  {
-    return Doctrine_Inflector::classify(Doctrine_Core::getTable($this->getName())->getTableName()) . 's';
-  }
-
-  public function getPluralLower()
-  {
-    return Doctrine_Core::getTable($this->getName())->getTableName() . 's';
-  }
-
   public function getRouteName()
   {
     return '@'.str_replace('-', '_', $this->getSlug());
