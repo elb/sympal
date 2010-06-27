@@ -1,8 +1,0 @@
-all:
-  theme:
-    themes:
-      test:
-        layout:    test
-        available: true
-        disabled:  false
-        stylesheets: [test]
