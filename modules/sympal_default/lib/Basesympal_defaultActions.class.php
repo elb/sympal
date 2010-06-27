@@ -21,15 +21,6 @@ class Basesympal_defaultActions extends sfActions
   }
 
   /**
-   * Renders the sitemap
-   */
-  public function executeSitemap(sfWebRequest $request)
-  {
-    $this->setLayout(false);
-    $this->sitemapGenerator = new sfSympalSitemapGenerator($this->getContext()->getConfiguration()->getApplication());
-  }
-
-  /**
    * Changes the user's culture
    */
   public function executeChange_language(sfWebRequest $request)
@@ -54,35 +45,5 @@ class Basesympal_defaultActions extends sfActions
   {
     $this->getUser()->setEditCulture($request->getParameter('language'));
     return $this->redirect($this->getRequest()->getReferer($this->getUser()->getReferer('@homepage')));
-  }
-
-  /**
-   * Requests are forwarded here when using the ->askConfirmation()
-   * method on the actions class
-   */
-  public function executeAsk_confirmation(sfWebRequest $request)
-  {
-    if ($request->isXmlHttpRequest())
-    {
-      $this->setLayout(false);
-    }
-    else
-    {
-      $this->loadAdminTheme();
-    }
-
-    $this->url = $request->getUri();
-    $this->title = $request->getAttribute('title');
-    $this->message = $request->getAttribute('message');
-    $this->isAjax = $request->getAttribute('is_ajax');
-  }
-
-  /**
-   * User is forwarded to this action when a site record exists but not
-   * content for that site exists yet
-   */
-  public function executeNew_site(sfWebRequest $request)
-  {
-    $this->loadSiteTheme();
   }
 }
