@@ -22,25 +22,6 @@ class sfSympalPluginConfiguration extends sfPluginConfiguration
   const VERSION = '1.0.0-ALPHA5';
 
   /**
-   * Shortcut method to enable all Sympal plugins for the given ProjectConfiguration
-   *
-   * Returns an instance of sfSympalPluginEnabler which allows you to enable
-   * disable and override any plugins with a convenient API.
-   *
-   * @param ProjectConfiguration $configuration
-   * @return sfSympalPluginEnabler $enabler  Instance of sfSympalPluginEnabler
-   */
-  public static function enableSympalPlugins(ProjectConfiguration $configuration)
-  {
-    require_once(dirname(__FILE__).'/../lib/sfSympalPluginEnabler.class.php');
-
-    $enabler = new sfSympalPluginEnabler($configuration);
-    $enabler->enableSympalPlugins();
-
-    return $enabler;
-  }
-
-  /**
    * sfSympalPluginConfiguration initialize() method instantiates the
    * sfSympalConfiguration instance for the current symfony dispatcher
    * and configuration
@@ -348,40 +329,4 @@ class sfSympalPluginConfiguration extends sfPluginConfiguration
       $this->_dispatcher->connect('response.filter_content', array($superCache, 'listenToResponseFilterContent'));
     }
   }
-
-
-  /**
-   * Array of all the core Sympal plugins
-   * 
-   * A core plugin is one that lives in the lib/plugins directory of sfSympalPlugin.
-   * A core plugin will be enabled automatically
-   */
-  public static
-    $corePlugins = array(
-      'sfDoctrineGuardPlugin',
-      'sfFormExtraPlugin',
-      'sfTaskExtraPlugin',
-      'sfFeed2Plugin',
-      'sfWebBrowserPlugin',
-      'sfImageTransformPlugin',
-      'sfInlineObjectPlugin',
-      'sfThemePlugin',
-      'sfContentFilterPlugin',
-
-      'sfSympalMenuPlugin',
-      'sfSympalPluginManagerPlugin',
-      'sfSympalPagesPlugin',
-      'sfSympalContentListPlugin',
-      'sfSympalDataGridPlugin',
-      'sfSympalUserPlugin',
-      'sfSympalInstallPlugin',
-      'sfSympalUpgradePlugin',
-      'sfSympalRenderingPlugin',
-      'sfSympalAdminPlugin',
-      'sfSympalEditorPlugin',
-      'sfSympalAssetsPlugin',
-      'sfSympalSearchPlugin',
-      'sfSympalMinifyPlugin',
-      'sfSympalFormPlugin',
-    );
 }
