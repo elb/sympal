@@ -54,12 +54,15 @@ class sfSympalContentFilter extends Doctrine_Record_Filter
    */
   public function filterGet(Doctrine_Record $content, $name)
   {
-    try {
+    try
+    {
       if ($content->getRecord())
       {
         return $content->getRecord()->get($name);
       }
-    } catch (Exception $e) {}
+    }
+    catch (Exception $e)
+    {}
 
     throw new Doctrine_Record_UnknownPropertyException(sprintf('Unknown record property / related component "%s" on "%s"', $name, get_class($content)));
   }
