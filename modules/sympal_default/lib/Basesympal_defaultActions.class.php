@@ -62,7 +62,7 @@ class Basesympal_defaultActions extends sfActions
    */
   public function executeAsk_confirmation(sfWebRequest $request)
   {
-    if ($this->isAjax())
+    if ($request->isXmlHttpRequest())
     {
       $this->setLayout(false);
     }

@@ -13,7 +13,7 @@ class Basesympal_assetsActions extends sfActions
 {
   public function preExecute()
   {
-    $this->isAjax = $this->isAjax();
+    $this->isAjax = $this->getRequest()->isXmlHttpRequest();
     if ($this->isAjax)
     {
       $this->setLayout(false);

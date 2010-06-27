@@ -40,18 +40,6 @@ class sfSympalActions extends sfSympalExtendClass
   }
 
   /**
-   * Check if this request is an ajax request
-   *
-   * @return boolean
-   */
-  public function isAjax()
-  {
-    $request = $this->getRequest();
-
-    return $request->isXmlHttpRequest() || $request->getParameter('is_ajax');
-  }
-
-  /**
    * Check that the file permissions are ok for the Sympal project from your actions
    *
    * @param array $items Array of files and/or directories to check
@@ -156,7 +144,7 @@ class sfSympalActions extends sfSympalExtendClass
       {
         return true;
       } else {
-        if ($this->isAjax())
+        if ($request->isXmlHttpRequest())
         {
           $url = $request->getParameter('redirect_url');
           $this->redirect($url.(strpos($url, '?') !== false ? '&' : '?').'ajax=1');          
@@ -168,7 +156,7 @@ class sfSympalActions extends sfSympalExtendClass
       $this->getResponse()->setTitle($title);
       $request->setAttribute('title', $title);
       $request->setAttribute('message', $message);
-      $request->setAttribute('is_ajax', $this->isAjax());
+      $request->setAttribute('is_ajax', $request->isXmlHttpRequest());
 
       $this->forward('sympal_default', 'ask_confirmation');
     }
