@@ -135,8 +135,9 @@ class sfSympalFormToolkit
    */
   public static function changeDateWidget($name, sfForm $form)
   {
-    sfSympalToolkit::useJavascript('jquery.ui.js');
-    sfSympalToolkit::useStylesheet('jquery.ui.css');
+    sfApplicationConfiguration::loadHelpers('Sympal');
+    sympal_use_javascript('jquery.ui.js');
+    sympal_use_stylesheet('jquery.ui.css');
 
     $widgetSchema = $form->getWidgetSchema();
     $widgetSchema[$name] = new sfWidgetFormJQueryDate();

@@ -21,30 +21,6 @@ class sfSympalToolkit
   }
 
   /**
-   * Use the given stylesheet
-   *
-   * @param string $stylesheet 
-   * @param string $position 
-   * @return void
-   */
-  public static function useStylesheet($stylesheet, $position = 'last')
-  {
-    return sfContext::getInstance()->getResponse()->addStylesheet(sfSympalConfig::getAssetPath($stylesheet), $position);
-  }
-
-  /**
-   * Use the given javascript
-   *
-   * @param string $javascript 
-   * @param string $position 
-   * @return void
-   */
-  public static function useJavascript($javascript, $position = 'last')
-  {
-    return sfContext::getInstance()->getResponse()->addJavascript(sfSympalConfig::getAssetPath($javascript), $position);
-  }
-
-  /**
    * Render a formatted exception message
    *
    * @param Exception $e 
