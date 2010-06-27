@@ -15,8 +15,4 @@ abstract class Basesympal_authActions extends sfActions
     $class = sfConfig::get('app_sf_guard_plugin_signin_form', 'sfGuardFormSignin'); 
     $this->form = new $class();
   }
-
-  public function executeSecure(sfWebRequest $request)
-  {
-  }
 }

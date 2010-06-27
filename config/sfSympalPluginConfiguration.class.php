@@ -97,12 +97,6 @@ class sfSympalPluginConfiguration extends sfPluginConfiguration
 
     sfConfig::set('app_sf_guard_plugin_success_signin_url', sfSympalConfig::get('success_signin_url'));
 
-    if (sfConfig::get('sf_secure_module') == 'default')
-    {
-      sfConfig::set('sf_secure_module', 'sympal_auth');
-      sfConfig::set('sf_secure_action', 'secure');
-    }
-
     if (sfConfig::get('sf_error_404_module') == 'default')
     {
       sfConfig::set('sf_error_404_module', 'sympal_default');
