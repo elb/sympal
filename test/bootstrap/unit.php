@@ -15,14 +15,8 @@ else
   $context = sfContext::createInstance($configuration);
 }
 
-if (isset($app))
-{
-  $configuration->initializeSympal();
-}
-
 if (isset($database) && $database)
 {
-  $configuration->initializeSympal();
   $database = new sfDatabaseManager($configuration);
 }
 
