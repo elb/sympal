@@ -44,41 +44,6 @@ class sfSympalToolkit
   }
 
   /**
-   * Check all the requirements for installing Sympal
-   *
-   * @return void
-   * @throws sfException if a requirement is not met
-   */
-  public static function checkRequirements()
-  {
-    $user = sfContext::getInstance()->getUser();
-    $app = sfConfig::get('sf_app');
-    if (!$user instanceof sfSympalUser)
-    {
-      throw new sfException('myUser class located in '.sfConfig::get('sf_root_dir').'/apps/'.$app.'/myUser.class.php must extend sfSympalUser');
-    }
-
-    $routingPath = sfConfig::get('sf_root_dir').'/apps/'.$app.'/config/routing.yml';
-    $routes = sfYaml::load(file_get_contents($routingPath));
-    if (isset($routes['homepage']) || isset($routes['default_index']))
-    {
-      throw new sfException('Your application routing file must not have a homepage, default, or default_index route defined.');
-    }
-
-    $databasesPath = sfConfig::get('sf_config_dir').'/databases.yml';
-    if(stristr(file_get_contents($databasesPath), 'propel'))
-    {
-      throw new sfException('Your project databases.yml must be configured to use Doctrine and not Propel.');
-    }
-
-    $apps = glob(sfConfig::get('sf_root_dir').'/apps/*');
-    if (empty($apps))
-    {
-      throw new sfException('You must have at least one application created in order to use Sympal.');
-    }
-  }
-
-  /**
    * Get a symfony resource (partial or component)
    * 
    * This basically looks first for a component defined by the given module
