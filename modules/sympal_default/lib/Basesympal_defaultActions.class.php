@@ -77,16 +77,6 @@ class Basesympal_defaultActions extends sfActions
     $this->isAjax = $request->getAttribute('is_ajax');
   }
 
-  public function executeError404()
-  {
-    $this->loadSiteTheme();
-  }
-
-  public function executeDisabled()
-  {
-    $this->loadSiteTheme();
-  }
-
   /**
    * User is forwarded to this action when a site record exists but not
    * content for that site exists yet

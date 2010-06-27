@@ -22,9 +22,7 @@ class sfSympalPluginConfiguration extends sfPluginConfiguration
   const VERSION = '1.0.0-ALPHA5';
 
   /**
-   * sfSympalPluginConfiguration initialize() method instantiates the
-   * sfSympalConfiguration instance for the current symfony dispatcher
-   * and configuration
+   * Initializes this plugin
    */
   public function initialize()
   {
@@ -35,10 +33,11 @@ class sfSympalPluginConfiguration extends sfPluginConfiguration
      */
     sfAutoloadAgain::getInstance()->unregister();
 
+    // mark classes as safe from the output escaper
+    self::_markClassesAsSafe();
+
     // Actually bootstrap sympal
     $this->dispatcher->connect('context.load_factories', array($this, 'bootstrapContext'));
-
-    self::_markClassesAsSafe();
 
     // Connect to the sympal post-load event
     $this->dispatcher->connect('sympal.load', array($this, 'configureSympal'));
@@ -88,26 +87,6 @@ class sfSympalPluginConfiguration extends sfPluginConfiguration
     // Add listener on template.filter_parameters to add sf_sympal_site var to view
     $site = $this->_sympalContext->getService('site_manager');
     $this->dispatcher->connect('template.filter_parameters', array($site, 'filterTemplateParameters'));
-  }
-
-  /**
-   * Initialize some sfConfig values for Sympal
-   *
-   * @return void
-   */
-  private function _initializeSymfonyConfig()
-  {
-    if (sfConfig::get('sf_error_404_module') == 'default')
-    {
-      sfConfig::set('sf_error_404_module', 'sympal_default');
-      sfConfig::set('sf_error_404_action', 'error404');
-    }
-
-    if (sfConfig::get('sf_module_disabled_module') == 'default')
-    {
-      sfConfig::set('sf_module_disabled_module', 'sympal_default');
-      sfConfig::set('sf_module_disabled_action', 'disabled');
-    }
   }
 
   /**
