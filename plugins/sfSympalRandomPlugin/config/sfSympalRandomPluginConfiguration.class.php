@@ -11,6 +11,8 @@ class sfSympalRandomPluginConfiguration extends sfPluginConfiguration
     $this->dispatcher->connect('theme.filter_asset_paths', array($this, 'filterThemeAssetPaths'));
 
     $this->dispatcher->connect('sympal.load', array($this, 'configureSympal'));
+
+    $this->_sympalConfiguration = new sfSympalConfiguration($this->configuration);
   }
 
   public function configureSympal(sfEvent $event)

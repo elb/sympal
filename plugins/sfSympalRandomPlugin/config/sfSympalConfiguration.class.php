@@ -35,13 +35,6 @@ class sfSympalConfiguration
 
   public function __construct(ProjectConfiguration $projectConfiguration)
   {
-    /*
-     * We disable Symfony autoload again feature because it is too slow in dev mode
-     * If you introduce a new class when using sympal you just must clear your
-     * cache manually
-     */
-    sfAutoloadAgain::getInstance()->unregister();
-
     $this->_projectConfiguration = $projectConfiguration;
     $this->_dispatcher = $projectConfiguration->getEventDispatcher();
 
@@ -142,14 +135,6 @@ class sfSympalConfiguration
     }
 
     return $this->_pluginPaths;
-  }
-
-  /**
-   * Returns whether or not a plugin exists in the project
-   */
-  public function pluginExists($name)
-  {
-    return in_array($name, $this->getPlugins());
   }
 
   /**

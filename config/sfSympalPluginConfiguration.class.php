@@ -28,7 +28,12 @@ class sfSympalPluginConfiguration extends sfPluginConfiguration
    */
   public function initialize()
   {
-    $this->_sympalConfiguration = new sfSympalConfiguration($this->configuration);
+    /*
+     * We disable Symfony autoload again feature because it is too slow in dev mode
+     * If you introduce a new class when using sympal you just must clear your
+     * cache manually
+     */
+    sfAutoloadAgain::getInstance()->unregister();
 
     // Actually bootstrap sympal
     $this->dispatcher->connect('context.load_factories', array($this, 'bootstrapContext'));
