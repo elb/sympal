@@ -11,8 +11,6 @@
  */
 class sfSympalActions extends sfSympalExtendClass
 {
-  protected $_sympalContext;
-
   /**
    * Shortcut to reset the sympal routes cache from your actions
    *
@@ -47,23 +45,5 @@ class sfSympalActions extends sfSympalExtendClass
   public function getSympalContentActionLoader()
   {
     return new sfSympalContentActionLoader($this->getSubject());
-  }
-
-  /**
-   * Get the current sfSympalContext instance from your actions
-   *
-   * @return sfSympalContext $sympalContext
-   */
-  public function getSympalContext()
-  {
-    return $this->_sympalContext;
-  }
-
-  /**
-   * Called when this extend class is created to inject the dependency
-   */
-  public function setSympalContext(sfSympalContext $sympalContext)
-  {
-    $this->_sympalContext = $sympalContext;
   }
 }

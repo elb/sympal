@@ -14,7 +14,7 @@ class sfSympalContentActionLoader
 {
   protected
     $_actions,
-    $_sympalContext,
+    $_applicationConfiguration,
     $_user,
     $_response,
     $_request,
@@ -25,11 +25,11 @@ class sfSympalContentActionLoader
   public function __construct(sfActions $actions)
   {
     $this->_actions = $actions;
-    $this->_sympalContext = $actions->getSympalContext();
+    $this->_applicationConfiguration = $actions->getContext()->getApplicationConfiguration();
     $this->_user = $actions->getUser();
     $this->_response = $actions->getResponse();
     $this->_request = $actions->getRequest();
-    $this->_dispatcher = $this->_sympalContext->getSymfonyContext()->getConfiguration()->getEventDispatcher();
+    $this->_dispatcher = $this->_actions->getContext()->getEventDispatcher();
   }
 
   public function getContent()
@@ -39,7 +39,9 @@ class sfSympalContentActionLoader
       $this->_content = $this->_actions->getRoute()->getObject();
       if ($this->_content)
       {
-        $this->_sympalContext->getService('site_manager')->setSite($this->_content->getSite());
+        $this->_getSympalConfiguration()
+          ->getSiteManager()
+          ->setSite($this->_content->getSite());
         $this->_menuItem = $this->_content->getMenuItem();
       }
     }
@@ -55,16 +57,9 @@ class sfSympalContentActionLoader
 
     $this->_loadMetaData($this->_response);
 
-    // Unless overridden by the theme, set the content
-    if (!$this->_user->getCurrentTheme() || !sfSympalConfig::get('theme', 'allow_changing_theme_by_url'))
-    {
-      if ($theme = $content->getThemeToRenderWith())
-      {
-        $this->_actions->loadTheme($theme);
-      }
-    }
-
-    $this->_sympalContext->getService('site_manager')->setCurrentContent($content);
+    $this->_getSympalConfiguration()
+      ->getSiteManager()
+      ->setCurrentContent($content);
 
     // Handle custom action
     $customActionName = $content->getCustomActionName();
@@ -91,7 +86,8 @@ class sfSympalContentActionLoader
   public function loadContentRenderer()
   {
     $content = $this->loadContent();
-    $renderer = $this->_sympalContext->getContentRenderer($content, $this->_request->getRequestFormat());
+    $renderer = $this->_getSympalConfiguration()
+      ->getContentRenderer($content, $this->_request->getRequestFormat());
 
     if ($renderer->getFormat() != 'html')
     {
@@ -199,6 +195,15 @@ class sfSympalContentActionLoader
         $this->_actions->forward($forwardTo[0], $forwardTo[1]);
       }
     }
+  }
+
+  /**
+   * @return sfSympalPluginConfiguration
+   */
+  protected function _getSympalConfiguration()
+  {
+    return $this->_applicationConfiguration
+      ->getPluginConfiguration('sfSympalPlugin');
   }
 
   private function _handleForward404($record)

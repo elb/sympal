@@ -12,7 +12,7 @@ class sfSympalRandomPluginConfiguration extends sfPluginConfiguration
 
     $this->dispatcher->connect('sympal.load', array($this, 'configureSympal'));
 
-    $this->_sympalConfiguration = new sfSympalConfiguration($this->configuration);
+    $this->_configureDoctrine();
   }
 
   public function configureSympal(sfEvent $event)
@@ -148,6 +148,37 @@ class sfSympalRandomPluginConfiguration extends sfPluginConfiguration
             $contentEditor->addChild(sprintf(__('Edit in %s'), format_language($code)), '@sympal_change_edit_language?language='.$code, 'title='.sprintf(__('Edit %s version'), format_language($code)));
           }
         }
+      }
+    }
+  }
+
+  /**
+   * Configure the Doctrine manager for Sympal
+   *
+   * @return void
+   */
+  protected function _configureDoctrine()
+  {
+    if (!class_exists('Doctrine_Manager'))
+    {
+      return;
+    }
+
+    $doctrineManager = Doctrine_Manager::getInstance();
+
+    // new records with existing data aren't overridden when new data is hydraed
+    $doctrineManager->setAttribute(Doctrine_Core::ATTR_HYDRATE_OVERWRITE, false);
+
+    if (sfSympalConfig::get('orm_cache', 'enabled', true))
+    {
+      $driver = sfSympalCacheManager::getOrmCacheDriver();
+
+      $doctrineManager->setAttribute(Doctrine_Core::ATTR_QUERY_CACHE, $driver);
+
+      if (sfSympalConfig::get('orm_cache', 'result', false))
+      {
+        $doctrineManager->setAttribute(Doctrine_Core::ATTR_RESULT_CACHE, $driver);
+        $doctrineManager->setAttribute(Doctrine_Core::ATTR_RESULT_CACHE_LIFESPAN, sfSympalConfig::get('orm_cache', 'lifetime', 86400));
       }
     }
   }

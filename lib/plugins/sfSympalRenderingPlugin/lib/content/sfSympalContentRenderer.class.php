@@ -3,8 +3,7 @@
 class sfSympalContentRenderer
 {
   protected
-    $_symfonyContext,
-    $_sympalContext,
+    $_context,
     $_configuration,
     $_dispatcher,
     $_menuItem,
@@ -12,10 +11,9 @@ class sfSympalContentRenderer
     $_format,
     $_renderVariables = array();
 
-  public function __construct(sfSympalContext $sympalContext, sfSympalContent $content, $format = null)
+  public function __construct(sfContext $context, sfSympalContent $content, $format = null)
   {
-    $this->_symfonyContext = $sympalContext->getSymfonyContext();
-    $this->_sympalContext = $sympalContext;
+    $this->_context = $context;
     $this->_configuration = $this->_symfonyContext->getConfiguration();
     $this->_dispatcher = $this->_configuration->getEventDispatcher();
     $this->_configuration->loadHelpers(array('Tag', 'Url', 'Partial'));

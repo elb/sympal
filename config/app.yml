@@ -81,30 +81,6 @@ all:
         validator_class: false
         filters:   [inline_object]
 
-    # The base query class to use - sfSympalDoctrineQuery adds easy query caching
-    query_class:      sfSympalDoctrineQuery
-
-    # Enable and disable the orm cache globally or control individual queries
-    orm_cache:
-      enabled: true
-      result: false
-      lifetime: 86400
-      queries:
-        sympal_get_content_types:
-          enabled: true
-          lifetime: 86400
-        sympal_get_user:
-          enabled: true
-          lifetime: 86400
-        sympal_context_get_site:
-          enabled: true
-          lifetime: 86400
-        sympal_get_content:
-          enabled: true
-          lifetime: 86400
-
-    # Callback to retrieve the cache driver used for storing various Sympal cache entries
-    get_cache_driver_callback: [sfSympalCache, getCacheDriver]
 
     # Configure the available formats to render content in
     content_formats:

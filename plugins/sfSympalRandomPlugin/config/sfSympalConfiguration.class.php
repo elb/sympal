@@ -37,64 +37,6 @@ class sfSympalConfiguration
   {
     $this->_projectConfiguration = $projectConfiguration;
     $this->_dispatcher = $projectConfiguration->getEventDispatcher();
-
-    $this->_configureDoctrine();
-
-    // Listen to the sympal.load event to perform some context-dependent tasks
-    $this->_dispatcher->connect('sympal.load', array($this, 'bootstrapFromContext'));
-    
-    $this->_dispatcher->connect('sympal.cache.prime', array($this, 'listenSympalCachePrime'));
-  }
-
-  /**
-   * Configure the Doctrine manager for Sympal
-   *
-   * @return void
-   */
-  private function _configureDoctrine()
-  {
-    if (!class_exists('Doctrine_Manager'))
-    {
-      return;
-    }
-    
-    $doctrineManager = Doctrine_Manager::getInstance();
-    $doctrineManager->setAttribute(Doctrine_Core::ATTR_HYDRATE_OVERWRITE, false);
-    
-    $doctrineManager->setAttribute(Doctrine_Core::ATTR_QUERY_CLASS, sfSympalConfig::get('query_class', null, 'sfSympalDoctrineQuery'));
-
-    if (sfSympalConfig::get('orm_cache', 'enabled', true))
-    {
-      $driver = sfSympalCacheManager::getOrmCacheDriver();
-
-      $doctrineManager->setAttribute(Doctrine_Core::ATTR_QUERY_CACHE, $driver);
-
-      if (sfSympalConfig::get('orm_cache', 'result', false))
-      {
-        $doctrineManager->setAttribute(Doctrine_Core::ATTR_RESULT_CACHE, $driver);
-        $doctrineManager->setAttribute(Doctrine_Core::ATTR_RESULT_CACHE_LIFESPAN, sfSympalConfig::get('orm_cache', 'lifetime', 86400));
-      }
-    }
-  }
-
-  /**
-   * Get the current ProjectConfiguration instance
-   *
-   * @return ProjectConfiguration $projectConfiguration
-   */
-  public function getProjectConfiguration()
-  {
-    return $this->_projectConfiguration;
-  }
-
-  /**
-   * Listens to the sympal.load event
-   */
-  public function bootstrapFromContext(sfEvent $event)
-  {
-    $this->_sympalContext = $event->getSubject();
-    // give this object access to the cache manager
-    $this->_cacheManager = $event->getSubject()->getService('cache_manager');
   }
 
   /**
@@ -201,11 +143,6 @@ class sfSympalConfiguration
     return $this->getCacheManager() ? $this->getCacheManager()->set($name, $value) : false;
   }
 
-  public function getCacheManager()
-  {
-    return $this->_cacheManager;
-  }
-
   /**
    * Returns the event dispatcher
    * 
@@ -214,19 +151,6 @@ class sfSympalConfiguration
   public function getEventDispatcher()
   {
     return $this->_dispatcher;
-  }
-
-  /**
-   * Returns the current sympal context
-   * 
-   * This will not return the context until it has been created - it's not
-   * automatically available.
-   * 
-   * @return sfSympalContext
-   */
-  public function getSympalContext()
-  {
-    return $this->_sympalContext;
   }
 
   /**
@@ -260,44 +184,5 @@ class sfSympalConfiguration
     }
 
     return $modules;
-  }
-
-  /**
-   * Listens to the sympal.cache.prime event.
-   */
-  public function listenSympalCachePrime(sfEvent $event)
-  {
-    $this->_generateModulesArray();
-  }
-
-  /**
-   * Get the active sfSympalConfiguration instance
-   *
-   * @return sfSympalConfiguration $sympalConfiguration
-   */
-  public static function getActive()
-  {
-    return sfProjectConfiguration::getActive()->getPluginConfiguration('sfSympalPlugin')->getSympalConfiguration();
-  }
-
-  /**
-   * Calls methods defined via sfEventDispatcher.
-   *
-   * @param string $method The method name
-   * @param array  $arguments The method arguments
-   *
-   * @return mixed The returned value of the called method
-   *
-   * @throws sfException If called method is undefined
-   */
-  public function __call($method, $arguments)
-  {
-    $event = $this->_dispatcher->notifyUntil(new sfEvent($this, 'sympal.configuration.method_not_found', array('method' => $method, 'arguments' => $arguments)));
-    if (!$event->isProcessed())
-    {
-      throw new sfException(sprintf('Call to undefined method %s::%s.', get_class($this), $method));
-    }
-
-    return $event->getReturnValue();
   }
 }

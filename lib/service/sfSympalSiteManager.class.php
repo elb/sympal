@@ -28,11 +28,11 @@ class sfSympalSiteManager
    * 
    * @param sfSympalConfiguration $configuration The sympal configuration
    */
-  public function __construct(sfSympalConfiguration $configuration)
+  public function __construct(sfApplicationConfiguration $configuration)
   {
     $this->_dispatcher = $configuration->getEventDispatcher();
     $this->_configuration = $configuration;
-    $this->_siteSlug = $configuration->getProjectConfiguration()->getApplication();
+    $this->_siteSlug = $configuration->getApplication();
   }
 
   /**
@@ -100,23 +100,5 @@ class sfSympalSiteManager
     }
 
     $this->_dispatcher->notify(new sfEvent($this->_currentContent, 'sympal.content.set_content'));
-  }
-
-  /**
-   * Listens to the template.filter_parameters event
-   * 
-   * Adds a few variables to the view
-   *   * sf_sympal_site
-   *   * sf_sympal_content
-   */
-  public function filterTemplateParameters(sfEvent $event, $parameters)
-  {
-    // Don't override the variable if it's not set
-    if (!isset($parameters['sf_sympal_site']))
-    {
-      $parameters['sf_sympal_site'] = $this->getSite();
-    }
-
-    return $parameters;
   }
 }

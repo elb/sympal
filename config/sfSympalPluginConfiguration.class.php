@@ -14,7 +14,10 @@
 class sfSympalPluginConfiguration extends sfPluginConfiguration
 {
   protected
-    $_sympalContext;
+    $_context;
+
+  protected
+    $_siteManager;
 
   /**
    * sfSympalPlugin version number
@@ -27,7 +30,7 @@ class sfSympalPluginConfiguration extends sfPluginConfiguration
   public function initialize()
   {
     /*
-     * We disable Symfony autoload again feature because it is too slow in dev mode
+     * We disable symfony autoload again feature because it is too slow in dev mode
      * If you introduce a new class when using sympal you just must clear your
      * cache manually
      */
@@ -38,28 +41,6 @@ class sfSympalPluginConfiguration extends sfPluginConfiguration
 
     // Actually bootstrap sympal
     $this->dispatcher->connect('context.load_factories', array($this, 'bootstrapContext'));
-
-    // Connect to the sympal post-load event
-    $this->dispatcher->connect('sympal.load', array($this, 'configureSympal'));
-    
-    /*
-     * Initialize some symfony config.
-     * 
-     * Must be here (and not as a listener to sympal.load) so that it acts
-     * before the theme manager has a chance to set any themes
-     */
-    $this->_initializeSymfonyConfig();
-  }
-
-
-  /**
-   * Returns the sfSympalConfiguration object
-   * 
-   * @return sfSympalConfiguration
-   */
-  public function getSympalConfiguration()
-  {
-    return $this->_sympalConfiguration;
   }
 
   /**
@@ -67,26 +48,62 @@ class sfSympalPluginConfiguration extends sfPluginConfiguration
    */
   public function bootstrapContext(sfEvent $event)
   {
-    $this->_sympalContext = sfSympalContext::createInstance($event->getSubject(), $this->getSympalConfiguration());
+    $this->_context = $event->getSubject();
+
+    // register the extending actions class
+    $class = sfConfig::get('app_sympal_config_extended_actions_class', 'sfSympalActions');
+    $actions = new $class();
+    $this->dispatcher->connect('component.method_not_found', array($actions, 'extend'));
+
+    $this->dispatcher->connect('template.filter_parameters', array($this, 'filterTemplateParameters'));
+
+    // throw the sympal load event
+    $this->dispatcher->notify(new sfEvent($this, 'sympal.load', array()));
   }
 
   /**
-   * Listens to the sympal.load event
+   * @TODO How does this compare with the variables passed to the view
+   * via sfSympalContentRenderer. This seems more all-encompassing, but
+   * still possibly redundant.
    */
-  public function configureSympal(sfEvent $event)
+  public function filterTemplateParameters(sfEvent $event, $parameters)
   {
-    $this->_sympalContext = $event->getSubject();
-    
-    // @todo this should be broken up, possibly moved, removed
-    $this->configuration->loadHelpers(array(
-      'Sympal',
-      'SympalContentSlot',
-      'SympalPager',
-    ));
+    $parameters['sf_sympal_context'] = $this;
 
-    // Add listener on template.filter_parameters to add sf_sympal_site var to view
-    $site = $this->_sympalContext->getService('site_manager');
-    $this->dispatcher->connect('template.filter_parameters', array($site, 'filterTemplateParameters'));
+    // Don't override the variable if it's not set
+    if (!isset($parameters['sf_sympal_site']))
+    {
+      $parameters['sf_sympal_site'] = $this->getSite();
+    }
+
+    return $parameters;
+  }
+
+  /**
+   * Returns the current site manager
+   *
+   * @return sfSympalSiteManager
+   */
+  public function getSiteManager()
+  {
+    if ($this->_siteManager === null)
+    {
+      $this->_siteManager = new sfSympalSiteManager($this);
+    }
+
+    return $this->_siteManager;
+  }
+
+  /**
+   * Get a sfSympalContentRenderer instance for a given sfSympalContent instance
+   *
+   * @param sfSympalContent $content The sfSympalContent instance
+   * @param string $format Optional format to render
+   * @return sfSympalContentRenderer $renderer
+   */
+  public function getContentRenderer(sfSympalContent $content, $format)
+  {
+    return new sfSympalContentRenderer($this->_context, $content, $format);
   }
 
   /**
@@ -103,8 +120,6 @@ class sfSympalPluginConfiguration extends sfPluginConfiguration
     sfOutputEscaper::markClassesAsSafe(array(
       'sfSympalContent',
       'sfSympalContentTranslation',
-      'sfSympalContentSlot',
-      'sfSympalContentSlotTranslation',
       'sfSympalContentRenderer',
     ));
   }
