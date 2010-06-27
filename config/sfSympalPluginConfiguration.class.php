@@ -308,11 +308,6 @@ class sfSympalPluginConfiguration extends sfPluginConfiguration
       'sfSympalContentSlot',
       'sfSympalContentSlotTranslation',
       'sfSympalContentRenderer',
-      'sfParameterHolder',
-      'sfSympalDataGrid',
-      'sfSympalUpgradeFromWeb',
-      'sfSympalServerCheckHtmlRenderer',
-      'sfSympalSitemapGenerator'
     ));
   }
 
