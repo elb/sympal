@@ -97,33 +97,6 @@ sfSympalContent:
       foreign: linked_content_id
       autoComplete: false
 
-sfSympalContentLink:
-  actAs: [sfSympalRecordTemplate]
-  options:
-    symfony:
-      filter: false
-      form: false
-  columns:
-    content_id:
-      type: integer
-      primary: true
-    linked_content_id:
-      type: integer
-      primary: true
-  relations:
-    Content:
-      class: sfSympalContent
-      local: content_id
-      foreign: id
-      onDelete: CASCADE
-      foreignAlias: sfSympalContentLinks
-    LinkedContent:
-      class: sfSympalContent
-      local: linked_content_id
-      foreign: id
-      onDelete: CASCADE
-      foreignAlias: sfSympalContentLinks
-
 sfSympalContentType:
   actAs:
     sfSympalRecordTemplate:
@@ -148,50 +121,6 @@ sfSympalContentType:
   indexes:
     content_type_name:
       fields: [name]
-
-sfSympalContentSlot:
-  actAs: [sfSympalRecordTemplate]
-  columns:
-    name:
-      type: string(255)
-      notnull: true
-    type:
-      type: string(255)
-      notnull: true
-    value: clob
-    is_column:
-      type: boolean
-      default: false
-  indexes:
-    name:
-      fields: [name]
-    type:
-      fields: [type]
-
-sfSympalContentSlotRef:
-  actAs: [sfSympalRecordTemplate]
-  options:
-    symfony:
-      form: false
-      filter: false
-  columns:
-    content_slot_id:
-      type: integer
-      primary: true
-    content_id:
-      type: integer
-      primary: true
-  relations:
-    Slot:
-      class: sfSympalContentSlot
-      local: content_slot_id
-      foreignAlias: ContentSlotRefs
-      onDelete: CASCADE
-    Content:
-      class: sfSympalContent
-      local: content_id
-      foreignAlias: ContentSlotRefs
-      onDelete: CASCADE
 
 sfSympalContentGroup:
   actAs: [sfSympalRecordTemplate]
