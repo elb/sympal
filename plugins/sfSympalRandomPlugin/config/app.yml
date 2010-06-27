@@ -57,7 +57,6 @@ all:
     # Configure Sympal page caching. Enabling this feature turns on page caching for all pages
     page_cache:
       enabled: false
-      super: false
       with_layout: false
       lifetime: 3600
 

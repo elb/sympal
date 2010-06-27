@@ -89,8 +89,6 @@ class sfSympalPluginConfiguration extends sfPluginConfiguration
       'SympalContentSlot',
       'SympalPager',
     ));
-    
-    $this->_configureSuperCache();
 
     // For BC with context->getSite();
     $this->dispatcher->connect('sympal.context.method_not_found', array($this, 'handleContextMethodNotFound'));
@@ -309,19 +307,5 @@ class sfSympalPluginConfiguration extends sfPluginConfiguration
       'sfSympalContentSlotTranslation',
       'sfSympalContentRenderer',
     ));
-  }
-
-  /**
-   * Configure super cache if enabled
-   *
-   * @return void
-   */
-  private function _configureSuperCache()
-  {
-    if (sfSympalConfig::get('page_cache', 'super') && sfConfig::get('sf_cache'))
-    {
-      $superCache = new sfSympalSuperCache();
-      $this->_dispatcher->connect('response.filter_content', array($superCache, 'listenToResponseFilterContent'));
-    }
   }
 }
