@@ -160,9 +160,6 @@ all:
           enabled: true
           lifetime: 86400
 
-    # Callback to retrieve the cache driver used for storing various Sympal cache entries
-    get_cache_driver_callback: [sfSympalCache, getCacheDriver]
-
     # Configure and customize the available content slot types
     content_slot_types:
       #MySlotType:
