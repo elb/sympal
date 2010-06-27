@@ -10,7 +10,6 @@ abstract class PluginsfSympalContent extends BasesfSympalContent
     $_allEditGroupsPermissions,
     $_route,
     $_routeObject,
-    $_mainMenuItem,
     $_editableSlotsExistOnPage = false,
     $_contentRouteObject = null,
     $_updateSearchIndex = true;
@@ -151,17 +150,12 @@ abstract class PluginsfSympalContent extends BasesfSympalContent
     return $this->getHeaderTitle();
   }
 
+  /**
+   * @todo make this work nicely again with the menu hierarchu
+   */
   public function getIndented()
   {
-    $menuItem = $this->getMenuItem();
-    if ($menuItem)
-    {
-      return str_repeat('-', $menuItem->getLevel()).' '.(string) $this;
-    }
-    else
-    {
-      return (string) $this;
-    }
+    return (string) $this;
   }
 
   public function getTitle()
@@ -169,22 +163,12 @@ abstract class PluginsfSympalContent extends BasesfSympalContent
     return $this->getHeaderTitle();
   }
 
-  public function getRelatedMenuItem()
-  {
-    $menuItem = $this->_get('MenuItem');
-    if ($menuItem && $menuItem->exists())
-    {
-      $this->_mainMenuItem = $menuItem;
-    }
-
-    return $this->_mainMenuItem;
-  }
-
   public function getRecord()
   {
     if ($this['Type']['name'])
     {
       Doctrine_Core::initializeModels(array($this['Type']['name']));
+
       return $this[$this['Type']['name']];
     }
     else
@@ -195,11 +179,6 @@ abstract class PluginsfSympalContent extends BasesfSympalContent
 
   public function publish()
   {
-    if ($this->relatedExists('MenuItem'))
-    {
-      $menu = $this->getMenuItem();
-      $menu->publish();
-    }
     $this->date_published = new Doctrine_Expression('NOW()');
     $this->save();
     $this->refresh();
@@ -207,11 +186,6 @@ abstract class PluginsfSympalContent extends BasesfSympalContent
 
   public function unpublish()
   {
-    if ($this->relatedExists('MenuItem'))
-    {
-      $menu = $this->getMenuItem();
-      $menu->unpublish();
-    }
     $this->date_published = null;
     $this->save();
   }
@@ -314,8 +288,6 @@ abstract class PluginsfSympalContent extends BasesfSympalContent
   {
     $data = $this->toArray(true);
     unset(
-      $data['MenuItem']['__children'],
-      $data['MenuItem']['Groups'],
       $data['Groups'],
       $data['Links'],
       $data['Assets'],
