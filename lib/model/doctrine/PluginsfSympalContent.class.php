@@ -889,7 +889,7 @@ abstract class PluginsfSympalContent extends BasesfSympalContent
   {
     if ($this->date_published)
     {
-      sfSympalToolkit::loadHelpers('Date');
+      sfApplicationConfiguration::loadHelpers('Date');
       return format_datetime($this->date_published, sfSympalConfig::get('date_published_format'));
     } else {
       return 'unpublished';

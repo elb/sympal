@@ -10,20 +10,9 @@ class sfSympalToolkit
 {
 
   /**
-   * Load the given helpers
-   *
-   * @param string $helpers 
-   * @return void
-   */
-  public static function loadHelpers($helpers)
-  {
-    sfApplicationConfiguration::getActive()->loadHelpers($helpers);
-  }
-
-  /**
    * Render a formatted exception message
    *
-   * @param Exception $e 
+   * @param Exception $e
    * @return string $html
    */
   public static function renderException(Exception $e)
