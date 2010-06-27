@@ -14,37 +14,9 @@ all:
     # http://trac.symfony-project.org/browser/branches/1.4/lib/i18n/sfDateFormat.class.php
     date_published_format: D
 
-    # Configure some defaults for inline editing
-    inline_editing:
-      enabled: true
-      default_column_form:   sfSympalInlineEditContentColumnForm
-      default_slot_form:     sfSympalInlineEditContentSlotForm
-      default_form_renderer: sympal_edit_slot/slot_editor_form
-      default_edit_mode:     popup                                  # inline or popup
-      close_editor_on_save:  false                                  # If false, editor remains after saving a slot
-
     # Configure the default rendering module and action
     default_rendering_module: sympal_content_renderer
     default_rendering_action: index
-
-    # Configure the google analytics code to automatically add to your website
-    google_analytics_code: ~
-
-    # Default menu to install plugin content types to
-    default_install_content_type_menu: primary
-
-    # Configure the name of the user, group and permission models Sympal should reference
-    user_model: sfGuardUser
-    group_model: sfGuardGroup
-    permission_model: sfGuardPermission
-
-    # Configure where we should redirect after successfully signing in.
-    # The default is either the referrer or the homepage
-    success_signin_url: ~
-
-    search:
-      searchable_models:
-        - sfSympalContent
 
     # Configure what to do when you access some content that is not published yet
     unpublished_content:
@@ -57,9 +29,6 @@ all:
       sfSympalContentSlot: [value]
       sfSympalContentList: [title]
       sfSympalPage: [title]
-
-    # The displayed name. You can change this to the project name you build on top of Sympal for example.
-    sympal_name: Sympal
 
     # Configure the available content templates for the different content types
     # Every content type must have a template named "default_view"
@@ -106,52 +75,6 @@ all:
         validator_class: false
         filters:   [inline_object]
 
-    # Automatically set the response meta title based on the current content and menu item
-    auto_seo:
-      title: true
-      title_format: %site_title% %separator% %ancestors%
-    
-    # A map of named assets (js or css) and their paths. This allows for
-    # the paths to these assets to be overridden. Instead of spelling out
-    # the specific path to a file, simply name the file and configure its
-    # path here
-    asset_paths:
-      jquery.js:            /sfSympalPlugin/lib/jquery/jquery-1.4.2.min.js
-      
-      jquery.ui.js:         /sfSympalPlugin/lib/jquery/jquery-ui/jquery-ui-1.8.1.custom.min.js
-      jquery.ui.css:        /sfSympalPlugin/lib/jquery/jquery-ui/css/smoothness/jquery-ui-1.8.1.custom.css
-      
-      jquery.fancybox.css:  /sfSympalPlugin/lib/jquery/fancybox/jquery.fancybox.css
-      jquery.fancybox.js:   /sfSympalPlugin/lib/jquery/fancybox/jquery.fancybox.js
-
-      jquery.cookie.js:     /sfSympalPlugin/lib/jquery/cookie/jquery.cookie.js
-
-      jquery.form.js:       /sfSympalPlugin/lib/jquery/form/jquery.form.js
-      jquery.metadata.js:   /sfSympalPlugin/lib/jquery/metadata/jquery.metadata.js
-      
-      jquery.blockUI.js:    /sfSympalPlugin/lib/jquery/blockUI/jquery.blockUI.js
-
-      grid_960_reset.css:   /sfSympalPlugin/lib/grid_960/reset.css
-      grid_960_text.css:    /sfSympalPlugin/lib/grid_960/text.css
-      grid_960.css:         /sfSympalPlugin/lib/grid_960/grid_960.css
-      
-      jquery.Jcrop.js:      /sfSympalPlugin/lib/jquery/Jcrop/js/jquery.Jcrop.js
-      jquery.Jcrop.css:     /sfSympalPlugin/lib/jquery/Jcrop/css/jquery.Jcrop.css
-      
-      jquery.elastic.js:    /sfSympalPlugin/lib/jquery/elastic/jquery.elastic.source.js
-      
-      tiny_mce.js:          /sfSympalPlugin/lib/tiny_mce/tiny_mce.js
-      
-      markdown.css:         /sfSympalRenderingPlugin/css/markdown.css
-
-    # Customize the path to the loaded jQuery instance and any plugins
-    jquery_reloaded:
-      path: ~
-      plugin_paths: ~
-
-    # Enable and disable the elastic textareas
-    elastic_textareas: true
-
     # The base query class to use - sfSympalDoctrineQuery adds easy query caching
     query_class:      sfSympalDoctrineQuery
 
@@ -174,37 +97,12 @@ all:
           enabled: true
           lifetime: 86400
 
-    # Configure Sympal page caching. Enabling this feature turns on page caching for all pages
-    page_cache:
-      enabled: false
-      super: false
-      with_layout: false
-      lifetime: 3600
-
-    # Configure Sympal menu caching. Enabling this feature will cache the
-    # built menu objects avoiding database queries for menus
-    menu_cache:
-      enabled: true
-        
-
-    # Enable and disable the check for upgrades via the web when on the Sympal dashboard
-    check_for_upgrades_on_dashboard: false
-
     enable_all_modules: true     # Whether or not to enable all modules found in your project
     disabled_modules:   []       # Array of modules to disable (these will be disabled even if enable_all_modules is true)
     enabled_modules:    []       # If enable_all_modules is false, these modules will be enabled
 
     # Callback to retrieve the cache driver used for storing various Sympal cache entries
     get_cache_driver_callback: [sfSympalCache, getCacheDriver]
-
-    # Customize the class used for managing menus
-    menu_manager_class: sfSympalMenuSiteManager
-
-    # Customize the menu class used to render site menus
-    menu_class: sfSympalMenuSite
-
-    # Customize the menu class used to render site breadcrumbs
-    breadcrumbs_class: sfSympalMenuBreadcrumbs
 
     # Configure the available formats to render content in
     content_formats:
@@ -219,52 +117,3 @@ all:
       - xml
       - yml
       - json
-
-    # Configure the string used to separate breadcrumb strings
-    breadcrumbs_separator: ' / '
-
-    admin_modules:
-      sympal_cms_admin: ~
-      sympal_content: ~
-      sympal_content_slots: ~
-      sympal_redirects: ~
-      sympal_sites: ~
-      sympal_content_types: ~
-      sympal_themes: ~
-    
-    gravatar_default_image: "/sfSympalPlugin/images/symfony_button.gif"
-
-    # Configure the sources to find Sympal plugins to download and install
-    # This can be a SVN repository or a local directory.
-    plugin_sources: ["http://svn.symfony-project.com/plugins"]
-
-  # Define the themes [see sfThemePlugin]
-  theme:
-    controller_options:
-      default_theme: default
-    themes:
-      default:
-        layout: default
-        stylesheets:
-          - grid_960_reset.css
-          - grid_960_text.css
-          - /sfSympalPlugin/themes/default/css/main.css
-
-      wordpress_default:
-        layout: wordpress
-        stylesheets:
-          - grid_960_reset.css
-          - grid_960_text.css
-          - /sfSympalPlugin/themes/wordpress/css/main.css
-
-      sympal:
-        layout: sympal
-        stylesheets:
-          - grid_960_reset.css
-          - grid_960_text.css
-          - /sfSympalPlugin/themes/sympal/css/main.css
-
-  # Register the "asset" inline object type if sfInlineObjectPlugin is available
-  inline_object:
-    types:
-      link:   sfSympalInlineObjectLink
