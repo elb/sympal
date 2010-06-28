@@ -35,6 +35,7 @@ all:
       forward_404: false
 
     # Configure the available formats to render content in
+    # The content routes will be created to match on any of these formats (sf_format)
     content_formats:
       - html
       - atom
