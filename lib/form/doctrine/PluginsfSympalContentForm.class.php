@@ -26,12 +26,13 @@ abstract class PluginsfSympalContentForm extends BasesfSympalContentForm
       $this['comments_list']  // this should actually not be here - think of something better later
     );
 
+/*  @TODO replace with something not invasive
     $field = sfApplicationConfiguration::getActive()
       ->getPluginConfiguration('sfThemePlugin')
       ->getThemeToolkit()
       ->getThemeWidgetAndValidator();
     $this->widgetSchema['theme'] = $field['widget'];
-    $this->validatorSchema['theme'] = $field['validator'];
+    $this->validatorSchema['theme'] = $field['validator'];*/
 
     // Sets up the template widget
     sfSympalFormToolkit::changeTemplateWidget($this);
@@ -48,7 +49,8 @@ abstract class PluginsfSympalContentForm extends BasesfSympalContentForm
       $this->object->Type;
     }
 
-    $this->configureMenuSection();
+    // @todo replace this with something non-invasive
+    //$this->configureMenuSection();
 
     $this->_embedTypeForm();
   }
@@ -98,6 +100,7 @@ abstract class PluginsfSympalContentForm extends BasesfSympalContentForm
   {
     $content = parent::save($con);
 
+/*  @TODO replace with something non-invasive
     // then menu creation has been requested
     if ($this->getValue('menu_create'))
     {
@@ -118,7 +121,7 @@ abstract class PluginsfSympalContentForm extends BasesfSympalContentForm
       {
         $menuItem->save();
       }
-    }
+    }*/
 
     return $content;
   }

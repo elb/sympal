@@ -13,16 +13,15 @@ abstract class PluginsfSympalContentTypeForm extends BasesfSympalContentTypeForm
   {
     parent::setup();
     
+/*  @TODO replace this with something not invasive
     $field = sfApplicationConfiguration::getActive()
       ->getPluginConfiguration('sfThemePlugin')
       ->getThemeToolkit()
       ->getThemeWidgetAndValidator();
     $this->widgetSchema['theme'] = $field['widget'];
-    $this->validatorSchema['theme'] = $field['validator'];
+    $this->validatorSchema['theme'] = $field['validator'];*/
 
     $this->widgetSchema['name']->setLabel('Model name');
-
-    $models = Doctrine_Core::loadModels(sfConfig::get('sf_lib_dir').'/model/doctrine');
 
     // Sets up the template widget
     sfSympalFormToolkit::changeTemplateWidget($this);
@@ -30,6 +29,7 @@ abstract class PluginsfSympalContentTypeForm extends BasesfSympalContentTypeForm
     // Sets up the module widget
     sfSympalFormToolkit::changeModuleWidget($this);
 
+    $models = array_keys(sfSympalConfig('content_templates'));
     foreach ($models as $model)
     {
       $table = Doctrine_Core::getTable($model);

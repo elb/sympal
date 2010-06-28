@@ -44,13 +44,14 @@ abstract class PluginsfSympalSiteForm extends BasesfSympalSiteForm
         )))
       );
     }
-    
+/*
+    @TODO replace this in a non-invasive way
     $field = sfApplicationConfiguration::getActive()
       ->getPluginConfiguration('sfThemePlugin')
       ->getThemeToolkit()
       ->getThemeWidgetAndValidator();
     $this->widgetSchema['theme'] = $field['widget'];
-    $this->validatorSchema['theme'] = $field['validator'];
+    $this->validatorSchema['theme'] = $field['validator'];*/
   }
 
   /**
