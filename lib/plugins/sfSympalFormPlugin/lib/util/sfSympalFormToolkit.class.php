@@ -185,20 +185,6 @@ class sfSympalFormToolkit
   }
 
   /**
-   * Change theme widget to be dropdown of themes
-   *
-   * @param sfForm $form 
-   * @return void
-   */
-  public static function changeThemeWidget(sfForm $form)
-  {
-    $array = self::getThemeWidgetAndValidator();
-
-    $form->setWidget('theme', $array['widget']);
-    $form->setValidator('theme', $array['validator']);
-  }
-
-  /**
    * Change template widget to be dropdown of templates
    *
    * @param sfForm $form 
@@ -236,7 +222,7 @@ class sfSympalFormToolkit
       return false;
     }
 
-    $templates = sfSympalConfiguration::getActive()->getContentTemplates($type);
+    $templates = sfSympalConfig::getContentTemplates($type);
     $options = array('' => '');
     foreach ($templates as $name => $template)
     {
