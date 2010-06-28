@@ -139,7 +139,7 @@ class sfSympalConfig extends sfConfig
   }
 
   /**
-   * Get the current installed version of Sympal
+   * Get the current installed version of sympal
    *
    * @return string $version
    */
