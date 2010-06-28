@@ -61,4 +61,16 @@ EOF;
 
     $this->clearCache();
   }
+
+  /**
+   * Shortcut to clear the cache in a task
+   *
+   * @param array $options
+   * @return void
+   */
+  public function clearCache(array $options = array())
+  {
+    $task = new sfCacheClearTask($this->dispatcher, $this->formatter);
+    $task->run(array(), $options);
+  }
 }

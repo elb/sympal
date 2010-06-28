@@ -1,6 +1,6 @@
 <?php
 
-class sfSympalEventListTask extends sfSympalBaseTask
+class sfSympalEventListTask extends sfBaseTask
 {
   protected function configure()
   {

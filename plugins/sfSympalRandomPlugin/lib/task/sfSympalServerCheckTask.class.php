@@ -1,6 +1,6 @@
 <?php
 
-class sfSympalServerCheckTask extends sfSympalBaseTask
+class sfSympalServerCheckTask extends sfBaseTask
 {
   protected function configure()
   {

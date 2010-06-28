@@ -1,6 +1,6 @@
 <?php
 
-class sfSympalDeleteSiteTask extends sfSympalBaseTask
+class sfSympalDeleteSiteTask extends sfBaseTask
 {
   protected function configure()
   {

@@ -1,6 +1,6 @@
 <?php
 
-class sfSympalPurgeContentTask extends sfSympalBaseTask
+class sfSympalPurgeContentTask extends sfBaseTask
 {
   protected function configure()
   {

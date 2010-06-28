@@ -1,6 +1,6 @@
 <?php
 
-class sfSympalFixPermsTask extends sfSympalBaseTask
+class sfSympalFixPermsTask extends sfBaseTask
 {
   protected
     $failed  = array();
@@ -89,5 +89,15 @@ EOF;
         array_map(create_function('$f', 'return \' - \'.sfDebug::shortenFilePath($f);'), $this->failed)
       ), 'ERROR_LARGE');
     }
+  }
+
+  /**
+   * Check if we are in unix or not
+   *
+   * @return boolean
+   */
+  public function isUnix()
+  {
+    return DIRECTORY_SEPARATOR == '/';
   }
 }

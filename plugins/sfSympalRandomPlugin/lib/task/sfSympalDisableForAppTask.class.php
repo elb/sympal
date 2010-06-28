@@ -1,6 +1,6 @@
 <?php
 
-class sfSympalDisableForAppTask extends sfSympalBaseTask
+class sfSympalDisableForAppTask extends sfBaseTask
 {
   protected function configure()
   {
@@ -54,8 +54,6 @@ EOF;
     $find = 'class myUser extends sfSympalUser';
     $replace = 'class myUser extends sfBasicSecurityUser';
     file_put_contents($path, str_replace($find, $replace, $code));
-
-    $this->clearCache();
   }
 
   public function isSympalEnabled()
@@ -69,5 +67,17 @@ EOF;
       }
     }
     return true;
+  }
+
+  /**
+   * Shortcut to clear the cache in a task
+   *
+   * @param array $options
+   * @return void
+   */
+  public function clearCache(array $options = array())
+  {
+    $task = new sfCacheClearTask($this->dispatcher, $this->formatter);
+    $task->run(array(), $options);
   }
 }

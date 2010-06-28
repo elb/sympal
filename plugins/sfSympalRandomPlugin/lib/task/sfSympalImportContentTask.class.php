@@ -1,6 +1,6 @@
 <?php
 
-class sfSympalImportContentTask extends sfSympalBaseTask
+class sfSympalImportContentTask extends sfBaseTask
 {
   protected function configure()
   {

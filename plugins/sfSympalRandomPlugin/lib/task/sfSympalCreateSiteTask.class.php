@@ -13,7 +13,7 @@
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @version     svn:$Id$ $Author$
  */
-class sfSympalCreateSiteTask extends sfSympalBaseTask
+class sfSympalCreateSiteTask extends sfBaseTask
 {
   protected function configure()
   {

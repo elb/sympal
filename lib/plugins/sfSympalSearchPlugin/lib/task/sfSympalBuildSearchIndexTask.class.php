@@ -1,6 +1,6 @@
 <?php
 
-class sfSympalBuildSearchIndexTask extends sfSympalBaseTask
+class sfSympalBuildSearchIndexTask extends sfBaseTask
 {
   protected function configure()
   {

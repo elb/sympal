@@ -8,7 +8,7 @@
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Ryan Weaver <ryan@thatsquality.com>
  */
-class sfSympalEnableForAppTask extends sfSympalBaseTask
+class sfSympalEnableForAppTask extends sfBaseTask
 {
   protected function configure()
   {
@@ -111,5 +111,17 @@ EOF;
         file_put_contents($path, sfYaml::dump($routes));
       }
     }
+  }
+
+  /**
+   * Shortcut to clear the cache in a task
+   *
+   * @param array $options
+   * @return void
+   */
+  public function clearCache(array $options = array())
+  {
+    $task = new sfCacheClearTask($this->dispatcher, $this->formatter);
+    $task->run(array(), $options);
   }
 }
