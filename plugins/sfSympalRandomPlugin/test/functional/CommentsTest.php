@@ -8,7 +8,7 @@
  * @since       2010-01-22
  * @version     svn:$Id$ $Author$
  */
-require_once(dirname(__FILE__).'/../bootstrap/functional.php');
+require_once(dirname(__FILE__) . '/../bootstrap/functional.php');
 
 $browser = new sfSympalTestFunctional(new sfBrowser());
 $browser->setTester('doctrine', 'sfTesterDoctrine');
