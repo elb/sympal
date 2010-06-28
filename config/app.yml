@@ -14,13 +14,11 @@ all:
       options:
         cache_dir:  <?php echo sfConfig::get('sf_app_cache_dir') ?>/sympal_cache
 
-    # i18n configuration
-    language_codes: []       # Configure the available languages
-    default_culture: en      # Configure the default culture
-
+    # Configure the available languages
+    language_codes: []
     # if i18n is set to true in settings.yml, the following models+fields will actAs I18n
     internationalized_models:
-      sfSympalSite: [page_title, meta_keywords, meta_description]
+      sfSympalSite:    [page_title, meta_keywords, meta_description]
       sfSympalContent: [i18n_slug, page_title, meta_keywords, meta_description]
 
     # used for outputting date published slot. See sfDateFormat::getPattern()

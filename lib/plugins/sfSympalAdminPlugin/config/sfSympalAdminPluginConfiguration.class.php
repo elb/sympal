@@ -165,10 +165,6 @@ class sfSympalAdminPluginConfiguration extends sfPluginConfiguration
         sfContext::getInstance()->getUser(), 
         array('languages' => sfSympalConfig::getLanguageCodes())
       );
-      $widgetSchema = $languageForm->getWidgetSchema();
-      $validatorSchema = $languageForm->getValidatorSchema();
-
-      $form->addSetting(null, 'default_culture', 'Default Culture', $widgetSchema['language'], $validatorSchema['language']);
     }
 
     $form->addSetting(null, 'default_rendering_module', 'Default Rendering Module');
