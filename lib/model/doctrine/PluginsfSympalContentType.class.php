@@ -39,6 +39,13 @@ abstract class PluginsfSympalContentType extends BasesfSympalContentType
     return $this->_routeObject;
   }
 
+  /**
+   * Returns the module name this content type record should be rendered with
+   *
+   * Used when building the route for this content type
+   *
+   * @return string
+   */
   public function getModuleToRenderWith()
   {
     if ($moduleName = $this->_get('module'))
@@ -47,10 +54,17 @@ abstract class PluginsfSympalContentType extends BasesfSympalContentType
     }
     else
     {
-      return sfSympalConfig::get($this->getName(), 'default_rendering_module', sfSympalConfig::get('default_rendering_module', null, 'sympal_content_renderer'));
+      return sfSympalConfig::getDeep('content_types', $this['name'], 'default_rendering_module', sfSympalConfig::get('default_rendering_module', null, 'sympal_content_renderer'));
     }
   }
 
+  /**
+   * Returns the action name this content type record should be rendered with
+   *
+   * Used when building the route for this content type
+   *
+   * @return string
+   */
   public function getActionToRenderWith()
   {
     if ($actionName = $this->_get('action'))
@@ -59,7 +73,7 @@ abstract class PluginsfSympalContentType extends BasesfSympalContentType
     }
     else
     {
-      return sfSympalConfig::get($this->getName(), 'default_rendering_action', sfSympalConfig::get('default_rendering_action', null, 'index'));
+      return sfSympalConfig::getDeep('content_types', $this['name'], 'default_rendering_action', sfSympalConfig::get('default_rendering_action', null, 'index'));
     }
   }
 }
