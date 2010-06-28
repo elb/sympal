@@ -6,8 +6,6 @@ all:
 
     content_types:
       sfSympalContentList:
-        default_rendering_module: ~
-        default_rendering_action: ~
         content_templates:
           default_view:
             template: sympal_content_list/view

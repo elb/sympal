@@ -3,8 +3,6 @@ all:
     content_types:
       sfSympalPage:
         default_inline_editing_column_form: sfSympalPageForm
-        default_rendering_module: ~
-        default_rendering_action: ~
         default_theme: ~
         content_templates:
           default_view:
