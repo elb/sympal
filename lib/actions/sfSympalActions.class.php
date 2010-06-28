@@ -22,8 +22,6 @@ class sfSympalActions extends sfSympalExtendClass
     chdir(sfConfig::get('sf_root_dir'));
     $task = new sfCacheClearTask($this->_subject->getContext()->getEventDispatcher(), new sfFormatter());
     $task->run(array(), $options);
-
-    $this->resetSympalRoutesCache();
   }
 
   /**
