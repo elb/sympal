@@ -132,7 +132,8 @@ class sfSympalConfig extends sfConfig
       $ret = sfConfig::get('sf_i18n');
     }
 
-    if ($ret && empty(self::getLanguageCodes()))
+    $languageCodes = self::getLanguageCodes();
+    if ($ret && empty($languageCodes))
     {
       throw new sfException('I18n is enabled, but no language codes have been defined in app.yml');
     }
