@@ -3,10 +3,8 @@
 /**
  * Default actions class for sympal.
  * 
- * Similar to symfony's "default" module, but with additional actions
- * 
- * @package     
- * @subpackage  
+ * @package     sfSympalPlugin
+ * @subpackage  actions
  * @author      Ryan Weaver <ryan@thatsquality.com>
  * @since       2010-04-02
  * @version     svn:$Id$ $Author$
