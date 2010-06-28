@@ -13,11 +13,6 @@ class sfSympalCacheManager
 {
   protected
     $_dispatcher;
-  
-  protected
-    $_helperAutoload = null,
-    $_modules = null,
-    $_layouts = null;
 
   /**
    * Instantiate the sfSympalCache instance and prime the cache for this Sympal
