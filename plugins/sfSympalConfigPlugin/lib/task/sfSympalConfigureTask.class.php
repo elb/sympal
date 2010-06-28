@@ -1,6 +1,6 @@
 <?php
 
-class sfSympalConfigureTask extends sfSympalBaseTask
+class sfSympalConfigureTask extends sfBaseTask
 {
   protected function configure()
   {

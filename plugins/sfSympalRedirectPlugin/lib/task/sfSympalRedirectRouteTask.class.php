@@ -1,6 +1,6 @@
 <?php
 
-class sfSympalRedirectRouteTask extends sfSympalBaseTask
+class sfSympalRedirectRouteTask extends sfBaseTask
 {
   protected function configure()
   {
