@@ -19,7 +19,7 @@ abstract class Basesympal_content_menu_itemActions extends sfActions
 
   public function listenToAdminSaveObject(sfEvent $event)
   {
-    $this->resetSympalRoutesCache();
+    $this->getSympalConfiguration()->getCacheManager()->resetRouteCache();
   }
 
   public function executeIndex(sfWebRequest $request)

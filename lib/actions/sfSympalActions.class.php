@@ -12,17 +12,6 @@
 class sfSympalActions extends sfSympalExtendClass
 {
   /**
-   * Shortcut to reset the sympal routes cache from your actions
-   *
-   * @return void
-   */
-  public function resetSympalRoutesCache()
-  {
-    // Reset the routes cache incase of the url changing or a custom url was added
-    return $this->getSympalConfiguration()->getCacheManager()->resetRouteCache();
-  }
-
-  /**
    * Shortcut to the clear cache task from your actions
    *
    * @param array $options 

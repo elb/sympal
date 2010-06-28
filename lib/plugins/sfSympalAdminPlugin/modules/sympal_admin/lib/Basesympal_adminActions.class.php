@@ -34,7 +34,7 @@ abstract class Basesympal_adminActions extends sfActions
         case 'config':
         case 'i18n':
         case 'routing':
-          $this->resetSympalRoutesCache();
+          $this->getSympalConfiguration()->getCacheManager()->resetRouteCache();
         case 'module':
         case 'template':
           $this->clearCache(array('type' => $type));
