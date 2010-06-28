@@ -131,9 +131,7 @@ class sfSympalRecordTemplate extends Doctrine_Template
    */
   public function isI18ned()
   {
-    $i18nedModels = sfConfig::get('internationalized_models', null, array());
-
-    return sfSympalConfig::get('i18n') && isset($i18nedModels[$this->getModelName()]);
+    return sfSympalConfig::isI18nEnabled($this->getModelName());
   }
 
   /**
@@ -145,9 +143,10 @@ class sfSympalRecordTemplate extends Doctrine_Template
   {
     if ($this->isI18ned())
     {
-      $i18nedModels = sfSympalConfig::get('internationalized_models', null, array());
-      return $i18nedModels[$this->getModelName()];
-    } else {
+      return sfSympalConfig::get('internationalized_models', $this->getModelName(), array());
+    }
+    else
+    {
       return array();
     }
   }

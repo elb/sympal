@@ -14,18 +14,15 @@ all:
       options:
         cache_dir:  <?php echo sfConfig::get('sf_app_cache_dir') ?>/sympal_cache
 
-    # Callback to retrieve the cache driver used for storing various Sympal cache entries
-    get_cache_driver_callback: [sfSympalCacheManager, getCacheDriver]
+    # i18n configuration
+    language_codes: []       # Configure the available languages
+    default_culture: en      # Configure the default culture
 
-    # Configure internationalization
-    i18n: false
+    # if i18n is set to true in settings.yml, the following models+fields will actAs I18n
+    internationalized_models:
+      sfSympalSite: [page_title, meta_keywords, meta_description]
+      sfSympalContent: [i18n_slug, page_title, meta_keywords, meta_description]
 
-    # Configure the default culture
-    default_culture: en
-
-    # Configure the available languages
-    language_codes: []
-    
     # used for outputting date published slot. See sfDateFormat::getPattern()
     # http://trac.symfony-project.org/browser/branches/1.4/lib/i18n/sfDateFormat.class.php
     date_published_format: D
@@ -38,10 +35,6 @@ all:
     unpublished_content:
       forward_to: [sympal_default, unpublished_content]
       forward_404: false
-
-    internationalized_models:
-      sfSympalSite: [page_title, meta_keywords, meta_description]
-      sfSympalContent: [i18n_slug, page_title, meta_keywords, meta_description]
 
     # Configure the available formats to render content in
     content_formats:

@@ -32,16 +32,6 @@ class sfSympalConfig extends sfConfig
   }
 
   /**
-   * Get the array of language codes for i18n
-   *
-   * @return array $languageCodes
-   */
-  public static function getLanguageCodes()
-  {
-    return !empty(self::$config['app_sympal_config_language_codes']) ? self::$config['app_sympal_config_language_codes'] : array();
-  }
-
-  /**
    * Get a setting value
    *
    * @param string $group 
@@ -111,6 +101,16 @@ class sfSympalConfig extends sfConfig
   }
 
   /**
+   * Get the array of language codes for i18n
+   *
+   * @return array $languageCodes
+   */
+  public static function getLanguageCodes()
+  {
+    return self::get('language_codes', null, array());
+  }
+
+  /**
    * Check if i18n is enabled globally or for a given model
    *
    * @param string $name Optional name of the model to check for i18n on
@@ -118,11 +118,6 @@ class sfSympalConfig extends sfConfig
    */
   public static function isI18nEnabled($name = null)
   {
-    if (empty(self::$config['app_sympal_config_language_codes']))
-    {
-      return false;
-    }
-
     if ($name)
     {
       if (is_object($name))
@@ -130,12 +125,19 @@ class sfSympalConfig extends sfConfig
         $name = get_class($name);
       }
 
-      return isset(self::$config['app_sympal_config_i18n']) && self::$config['app_sympal_config_i18n'] && isset(self::$config['app_sympal_config_internationalized_models'][$name]);
+      $ret = sfConfig::get('sf_i18n') && self::get('internationalized_models', $name);
     }
     else
     {
-      return isset(self::$config['app_sympal_config_i18n']) && self::$config['app_sympal_config_i18n'];
+      $ret = sfConfig::get('sf_i18n');
     }
+
+    if ($ret && empty(self::getLanguageCodes()))
+    {
+      throw new sfException('I18n is enabled, but no language codes have been defined in app.yml');
+    }
+
+    return $ret;
   }
 
   /**
@@ -145,7 +147,7 @@ class sfSympalConfig extends sfConfig
    */
   public static function getCurrentVersion()
   {
-    return isset(self::$config['app_sympal_config_asset_paths']['current_version']) ? self::$config['app_sympal_config_asset_paths']['current_version'] : sfSympalPluginConfiguration::VERSION;
+    return sfSympalPluginConfiguration::VERSION;
   }
 
   /**
