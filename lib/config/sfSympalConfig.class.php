@@ -184,6 +184,17 @@ class sfSympalConfig extends sfConfig
   }
 
   /**
+   * Get array of configured content templates for a given model name
+   *
+   * @param string $model
+   * @return array $contentTemplates
+   */
+  public static function getContentTemplates($model)
+  {
+    return sfSympalConfig::getDeep('content_types', $model, 'content_templates', array());
+  }
+
+  /**
    * Write a setting to the config/app.yml. The api of this is the same as set()
    *
    * @see sfSympalConfig::set()

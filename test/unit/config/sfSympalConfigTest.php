@@ -3,7 +3,7 @@
 $app = 'sympal';
 require_once(dirname(__FILE__).'/../../bootstrap/unit.php');
 
-$t = new lime_test(6);
+$t = new lime_test(8);
 
 sfSympalConfig::set('test', true);
 $t->is(sfSympalConfig::get('test'), true, '->get() works with just one argument');
@@ -21,3 +21,7 @@ $t->is(isset($array['all']['sympal_config']['test_write_value']), true, '->write
 
 $t->is(sfSympalConfig::isI18nEnabled(), false, '->isI18nEnabled() correctly returns false');
 $t->is(sfSympalConfig::isI18nEnabled('sfSympalContent'), false, '->isI18nEnabled($modelName) correctly returns false');
+
+$contentTemplates = sfSympalconfig::getContentTemplates('sfSympalPage');
+$t->is(isset($contentTemplates['default_view']), true, '->getContentTemplates() returns default_view for sfSympalPage');
+$t->is(isset($contentTemplates['register']), true, '->getContentTemplates() returns register for sfSympalPage'); 

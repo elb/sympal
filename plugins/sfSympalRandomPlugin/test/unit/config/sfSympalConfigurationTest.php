@@ -11,16 +11,12 @@
  */
 
 $app = 'sympal';
-require_once(dirname(__FILE__).'/../../bootstrap/unit.php');
+require_once(dirname(__FILE__) . '/../../bootstrap/unit.php');
 
 $t = new lime_test(18);
 
 $sympalPluginConfiguration = sfContext::getInstance()->getConfiguration()->getPluginConfiguration('sfSympalPlugin');
 $sympalConfiguration = sfSympalConfiguration::getActive();
-
-$contentTemplates = $sympalConfiguration->getContentTemplates('sfSympalPage');
-$t->is(isset($contentTemplates['default_view']), true, '->getContentTemplates() returns default_view for sfSympalPage'); 
-$t->is(isset($contentTemplates['register']), true, '->getContentTemplates() returns register for sfSympalPage'); 
  
 $plugins = $sympalConfiguration->getPlugins(); 
 $t->is(is_array($plugins), true, '->getPlugins() returns array'); 

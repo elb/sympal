@@ -104,17 +104,6 @@ class sfSympalConfiguration
   }
 
   /**
-   * Get array of configured content templates for a given moel name
-   *
-   * @param string $model
-   * @return array $contentTemplates
-   */
-  public function getContentTemplates($model)
-  {
-    return sfSympalConfig::getDeep('content_types', $model, 'content_templates', array());
-  }
-
-  /**
    * Returns a value from the cache object (if there is one)
    * 
    * @param string $name The name/key of the cache to return

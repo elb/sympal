@@ -438,7 +438,7 @@ abstract class PluginsfSympalContent extends BasesfSympalContent
       $templateName = $this->getType()->getTemplate();
     }
 
-    $templates = sfSympalConfiguration::getActive()->getContentTemplates($this->getType()->getName());
+    $templates = sfSympalConfig::getContentTemplates($this['Type']['name']);
     if (isset($templates[$templateName]))
     {
       if (!is_array($templates[$templateName]) || !isset($templates[$templateName]['template']))
