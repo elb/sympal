@@ -19,7 +19,7 @@ class Basesympal_defaultActions extends sfActions
   }
 
   /**
-   * Changes the user's culture
+   * Changes the user's culture and then redirects
    */
   public function executeChange_language(sfWebRequest $request)
   {
@@ -37,7 +37,7 @@ class Basesympal_defaultActions extends sfActions
   }
 
   /**
-   * Changes the user's edit culture
+   * Changes the user's edit culture and then redirects
    */
   public function executeChange_edit_language(sfWebRequest $request)
   {
