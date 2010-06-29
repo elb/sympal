@@ -2,7 +2,25 @@ sfSympalPlugin
 ==============
 
 This plugin is the core of sympal CMF. It provides a base content and
-routing layer. In other words, this plugin is a basic system for creating
+routing layer.
+
+The goal of this plugin is two-fold:
+
+ 1. To allow the end-user to construct routes to different types of
+    content (i.e. models). Instead of hardcoding `/blog/:slug` into
+    `routing.yml`, why not allow the user to create a `Blog` object and
+    map it to any url?
+
+ 1. To accomplish the above while minimizing the effect on the developer's workflow.
+
+Dissecting the traditional symfony application
+----------------------------------------------
+
+---> Talk about how the routing of a traditional symfony application looks.
+
+
+
+In other words, this plugin is a basic system for creating
 database objects (`sfSympalContent`) which route to defined urls and
 render using defined methods.
 
