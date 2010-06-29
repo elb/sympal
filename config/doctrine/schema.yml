@@ -6,13 +6,16 @@ sfSympalSite:
       indexName: site_sluggable
   columns:
     title:
-      type: string(255)
+      type:    string(255)
+      notnull: true
+    app_name:
+      type:    string(255)
       notnull: true
     description:
-      type: clob
+      type:    clob
       notnull: false
-    page_title: string(255)
-    meta_keywords: string(500)
+    page_title:       string(255)
+    meta_keywords:    string(500)
     meta_description: string(500)
 
 sfSympalContent:
@@ -24,45 +27,45 @@ sfSympalContent:
       builder:      [sfSympalContent, slugBuilder]
   columns:
     site_id:
-      type: integer
+      type:    integer
       notnull: true
     content_type_id:
-      type: integer
+      type:    integer
       notnull: true
     last_updated_by_id: integer
-    created_by_id: integer
-    date_published: timestamp
-    custom_path: string(255)
-    template: string(255)
-    module: string(255)
-    action: string(255)
-    page_title: string(255)
-    meta_keywords: string(500)
-    meta_description: string(500)
-    i18n_slug: string(255)
+    created_by_id:      integer
+    date_published:     timestamp
+    custom_path:        string(255)
+    template:           string(255)
+    module:             string(255)
+    action:             string(255)
+    page_title:         string(255)
+    meta_keywords:      string(500)
+    meta_description:   string(500)
+    i18n_slug:          string(255)
   indexes:
     date_published:
       fields: [date_published]
   relations:
     LastUpdatedBy:
-      class: sfGuardUser 
-      local: last_updated_by_id
+      class:        sfGuardUser
+      local:        last_updated_by_id
       foreignAlias: LastUpdatedContent
-      onDelete: SET NULL
+      onDelete:     SET NULL
     CreatedBy:
-      class: sfGuardUser 
-      local: created_by_id
+      class:        sfGuardUser
+      local:        created_by_id
       foreignAlias: CreatedContent
-      onDelete: SET NULL
+      onDelete:     SET NULL
     Site:
-      local: site_id
-      class: sfSympalSite
-      onDelete: CASCADE
+      local:        site_id
+      class:        sfSympalSite
+      onDelete:     CASCADE
       foreignAlias: Content
     Type:
-      local: content_type_id
-      class: sfSympalContentType
-      onDelete: CASCADE
+      local:        content_type_id
+      class:        sfSympalContentType
+      onDelete:     CASCADE
       foreignAlias: Content
 
 sfSympalContentType:
