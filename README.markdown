@@ -1,8 +1,8 @@
 sfSympalPlugin
 ==============
 
-This plugin is the core of sympal CMF. It provides a base content and
-routing layer.
+This plugin is the core of the sympal CMF. It provides a base dynamic
+routing and content layer.
 
 The goal of this plugin is two-fold:
 
@@ -13,16 +13,41 @@ The goal of this plugin is two-fold:
 
  1. To accomplish the above while minimizing the effect on the developer's workflow.
 
-Dissecting the traditional symfony application
-----------------------------------------------
+A normal symfony application
+----------------------------
 
----> Talk about how the routing of a traditional symfony application looks.
+Every content-based application revolves follows a basic architecture. Each
+has a group of models and a set of routes linking those models to a series
+of modules and actions that render them. For example, suppose a project
+has a `Product` model with a `slug` column. A common method would be to
+create the following route to view each product:
 
+    product_show:
+      url:    /product/:slug
+      class   sfDoctrineRoute
+      param:  { module: product, action: show }
+      option: { model: Product, type: object }
 
+This plugin allows these routes to be built dynamically from a database
+object (`sfSympalContent`). Instead of hardcoding the url of each `Product`
+at `/product/:slug`, your user can select any url for any `Product` object.
 
-In other words, this plugin is a basic system for creating
-database objects (`sfSympalContent`) which route to defined urls and
-render using defined methods.
+This functionality forms the basic framework for any content management system.
+
+Content Types
+-------------
+
+Each `sfSympalContent` record has a one-to-one relationship with exactly
+one other model that holds all of the content needed to render the page.
+These models are collectively known as "content types" and can include any
+model, such as `News`, `Product`, or `Gallery` models. Each record of each
+content type model has a one-to-one relationship with an `sfSympalContent`
+record. Together, both records represent a dynamic url and a dynamic set
+of data.
+
+With this basic setup, we already have the fundamental pieces for a very
+powerful system. Specifically, __the user can create `Product`, `News`,
+or `Gallery` objects and map them to custom urls.
 
 The routing model: `sfSympalContent`
 ------------------------------------
@@ -56,17 +81,3 @@ and `meta_keywords`, `sfSympalContent` doesn't contain a lot of dynamic
 content that could be used to fill a page. What's worse, different sections
 of your site may require drastically different types of data. How can we
 use our `sfSympalContent` record to map to a wide variety of data?
-
-### Introducing "content types"
-
-Each `sfSympalContent` record has a one-to-one relationship with exactly
-one other model that holds all of the content needed to render the page.
-These models are collectively known as "content types" and can include any
-model, such as `News`, `Product`, or `Gallery` models. Each record of each
-content type model has a one-to-one relationship with an `sfSympalContent`
-record. Together, both records represent a dynamic url and a dynamic set
-of data.
-
-With this basic setup, we already have the fundamental pieces for a very
-powerful system. Specifically, __the user can create `Product`, `News`,
-or `Gallery` objects and map them to custom urls.
