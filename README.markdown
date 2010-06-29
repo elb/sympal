@@ -50,5 +50,5 @@ record. Together, both records represent a dynamic url and a dynamic set
 of data.
 
 With this basic setup, we already have the fundamental pieces for a very
-powerful system. Specifically, __the user can create a new `Product`,
-`News`, or `Gallery` item and map it to any url__.
+powerful system. Specifically, __the user can create `Product`, `News`,
+or `Gallery` objects and map them to custom urls.
