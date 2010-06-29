@@ -16,11 +16,10 @@ The goal of this plugin is two-fold:
 A normal symfony application
 ----------------------------
 
-Every content-based application revolves follows a basic architecture. Each
-has a group of models and a set of routes linking those models to a series
-of modules and actions that render them. For example, suppose a project
-has a `Product` model with a `slug` column. A common method would be to
-create the following route to view each product:
+Every content-based consists of a group of models and a set of routes
+linking those models to a series of modules and actions that render them.
+For example, suppose a project has a `Product` model with a `slug` column.
+A common method would be to create the following route to view each product:
 
     product_show:
       url:    /product/:slug
@@ -28,9 +27,9 @@ create the following route to view each product:
       param:  { module: product, action: show }
       option: { model: Product, type: object }
 
-This plugin allows these routes to be built dynamically from a database
-object (`sfSympalContent`). Instead of hardcoding the url of each `Product`
-at `/product/:slug`, your user can select any url for any `Product` object.
+This plugin allows these routes to be built dynamically. Instead of
+hardcoding the url of each `Product` at `/product/:slug`, your user can
+select any url for each `Product` object.
 
 This functionality forms the basic framework for any content management system.
 
