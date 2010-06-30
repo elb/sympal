@@ -115,3 +115,21 @@ used to output the content:
 Recall that the `$content` variable is an instance of `sfSympalContent`
 and that the `name` and `price` fields are passed to and returned from
 the related `Product` record.
+
+
+TODO
+----
+
+ * explain the value behind multiple sfSympalContentType records per content model
+
+ * talk about the "template" strategy for rendering
+
+ * explore and explain the idea and strategy behind binding the current
+   context with the matched content record. How do we do this, what does
+   it do for us.
+
+ * corrolary to the above: how is all the metadata set (page title, keywords),
+   etc?
+
+ * cascading configuration: explain how the url and rendering methods cascade
+   from the sfSympalContentType record down to the sfSympalContent record
