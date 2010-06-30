@@ -27,7 +27,8 @@ abstract class PluginsfSympalContent extends BasesfSympalContent
     if (is_string($type))
     {
       $typeString = $type;
-      $type = Doctrine_Core::getTable('sfSympalContentType')->findOneByName($type);
+
+      $type = Doctrine_Core::getTable('sfSympalContentType')->findOneByString($type);
 
       if (!$type)
       {

@@ -13,4 +13,27 @@ class PluginsfSympalContentTypeTable extends Doctrine_Table
 
     return $q->execute();
   }
+
+  /**
+   * Attempts to locate an sfSympalContentType record first by querying
+   * on slug and then by querying on name.
+   *
+   * @param  string $str The slug or name of a content type record
+   * @return sfSympalContentType|null
+   */
+  public function findOneByString($str)
+  {
+    $type = $this->createQuery('t')
+      ->where('t.slug = ?', $str)
+      ->fetchOne();
+
+    if (!$type)
+    {
+      $type = $this->createQuery('t')
+        ->where('t.name = ?', $str)
+        ->fetchOne();
+    }
+
+    return $type;
+  }
 }
