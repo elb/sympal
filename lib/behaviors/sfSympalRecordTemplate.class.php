@@ -1,16 +1,20 @@
 <?php
 
 /**
- * Doctrine template for all models in sympal to act as.
+ * Doctrine template for all models in sympal to act as. By implementing
+ * this template, you're allowing your model to be more flexible.
  * 
  * This template accomplishes several things:
  * 
  *   1) Adds I18N to tables "internationalized_models" config. The i18n
  *      filter class is configurable in app.yml (i18n_filter_class)
  * 
- *   2) Filter with sfSympalRecordEventFilter, which allows for extension of getters and setters
- * 
- *   3) Throw a sympal.table_name.set_table_definition event so that table definition can be modified real-time
+ *   2) Adds sfSympalRecordEventFilter, which throws symfony an event
+ *      (sympal.model_name.method_not_found) on each set and get that
+ *      is not recognized.
+ *
+ *   3) Throw a sympal.table_name.set_table_definition event so that
+ *      table definition can be modified at run-time.
  *
  * @package sfSympalPlugin
  * @author Jonathan H. Wage <jonwage@gmail.com>
