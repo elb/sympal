@@ -21,6 +21,11 @@ all:
       sfSympalSite:    [page_title, meta_keywords, meta_description]
       sfSympalContent: [i18n_slug, page_title, meta_keywords, meta_description]
 
+    # The class used for i18n models.
+    #  * sfDoctrineRecordI18nFilter is the default for symfony
+    #  * sfSympalDoctrineRecordI18nFilter adds "fallback" functionality
+    i18n_filter_class: sfSympalDoctrineRecordI18nFilter
+
     # used for outputting date published slot. See sfDateFormat::getPattern()
     # http://trac.symfony-project.org/browser/branches/1.4/lib/i18n/sfDateFormat.class.php
     date_published_format: D

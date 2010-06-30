@@ -1,12 +1,12 @@
 <?php
 
 /**
- * Doctrine template for all models in Sympal to act as. Allows Sympal to add
- * things to all models easily.
+ * Doctrine template for all models in sympal to act as.
  * 
- * Generally used internally to accomplish several things at once
+ * This template accomplishes several things:
  * 
- *   1) I18N tables & fields based on the "internationalized_models" config
+ *   1) Adds I18N to tables "internationalized_models" config. The i18n
+ *      filter class is configurable in app.yml (i18n_filter_class)
  * 
  *   2) Filter with sfSympalRecordEventFilter, which allows for extension of getters and setters
  * 
@@ -89,7 +89,10 @@ class sfSympalRecordTemplate extends Doctrine_Template
   }
 
   /**
-   * Make this model act as i18n
+   * Make this model act as i18n.
+   *
+   * Basically acts lke the normal i18n functionality except that the
+   * filter class is controlled via app.yml
    *
    * @param array $options Array of options for the i18n behavior
    * @param string $name The name of the i18n behavior
@@ -101,8 +104,10 @@ class sfSympalRecordTemplate extends Doctrine_Template
 
     if (!$this->_table->getOption('has_symfony_i18n_filter'))
     {
+      $filterClass = sfSympalConfig::get('i18n_filter_class', null, 'sfSympalDoctrineRecordI18nFilter');
+
       $this->_table
-        ->unshiftFilter(new sfSympalDoctrineRecordI18nFilter())
+        ->unshiftFilter(new $filterClass())
         ->setOption('has_symfony_i18n_filter', true)
       ;
     }

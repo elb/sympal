@@ -1,11 +1,14 @@
 <?php
 
 /**
- * Doctrine record filter which allows us to access properties of the related content
- * type record from the content record itself.
+ * Filter class applied to sfSympalContent
  *
- * Example: Imagine you have a sfSympalBlogPost content type and it has a property
- * named teaser. You could access that property from the sfSympalContent instance.
+ * Doctrine record filter which allows us to access properties of the
+ * related content type record from the content record itself.
+ *
+ * Example: Imagine you have a sfSympalBlogPost content type and it has
+ * a property named teaser. You could access that property from the
+ * sfSympalContent instance.
  *
  *     [php]
  *     echo $content->getTeaser();
@@ -15,8 +18,10 @@
  *     [php]
  *     echo $content->getRecord()->getTeaser();
  *
- * @package sfSympalCMFPlugin
+ * @package sfSympalPlugin
+ * @subpackage behaviors
  * @author Jonathan H. Wage <jonwage@gmail.com>
+ * @throws Doctrine_Record_UnknownPropertyException
  */
 class sfSympalContentFilter extends Doctrine_Record_Filter
 {
