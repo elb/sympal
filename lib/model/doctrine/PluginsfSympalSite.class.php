@@ -30,4 +30,17 @@ abstract class PluginsfSympalSite extends BasesfSympalSite
   {
     sfSympalToolkit::deleteApplication($this->slug);
   }
+
+  /**
+   * Getter and setter for backwards-compatibility with field name change
+   * from title to name
+   */
+  public function setTitle($v)
+  {
+    $this['name'] = $v;
+  }
+  public function getTitle()
+  {
+    return $this['name'];
+  }
 }

@@ -2,13 +2,10 @@ sfSympalSite:
   actAs:
     sfSympalRecordTemplate:
     Sluggable:
-      fields: [title]
+      fields: [name]
       indexName: site_sluggable
   columns:
-    title:
-      type:    string(255)
-      notnull: true
-    app_name:
+    name:
       type:    string(255)
       notnull: true
     description:
