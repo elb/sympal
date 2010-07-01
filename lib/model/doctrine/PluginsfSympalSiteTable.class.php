@@ -4,4 +4,21 @@
  */
 class PluginsfSympalSiteTable extends Doctrine_Table
 {
+  public function fetchCurrent($create = false)
+  {
+    $siteName = sfSympalConfig::getCurrentSiteName();
+
+    $site = $this->createQuery('s')
+      ->where('s.name = ?', $siteName)
+      ->fetchOne();
+
+    if (!$site && $create)
+    {
+      $site = new sfSympalSite();
+      $site->name = $siteName;
+      $site->save();
+    }
+
+    return $site;
+  }
 }

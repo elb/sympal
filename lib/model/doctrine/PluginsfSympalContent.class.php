@@ -501,6 +501,12 @@ abstract class PluginsfSympalContent extends BasesfSympalContent
 
   public function save(Doctrine_Connection $conn = null)
   {
+    if (!$this->relatedExists('Site'))
+    {
+      $site = Doctrine_Core::getTable('sfSympalSite')->fetchCurrent(true);
+      $this->Site = $site;
+    }
+
     $result = parent::save($conn);
 
 /*  @TODO put this in the search plugin

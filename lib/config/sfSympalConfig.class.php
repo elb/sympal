@@ -10,6 +10,22 @@
 class sfSympalConfig extends sfConfig
 {
   /**
+   * Returns the "name" of the current site
+   *
+   * @throws sfException
+   * @return string
+   */
+  public function getCurrentSiteName()
+  {
+    if (!$site = sfConfig::get('sf_sympal_site', sfConfig::get('sf_app')))
+    {
+      throw new sfException('No current site defined. If you receive this error in a task, be sure to initialize an application configuration.');
+    }
+
+    return $site;
+  }
+
+  /**
    * Check whether a Doctrine query result cache key should use result cache or not
    *
    * @param string $key 
