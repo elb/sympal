@@ -34,11 +34,16 @@ class sfSympalContentModelTemplate extends Doctrine_Template
   {
     try
     {
+      // can't check for method_exists because it wouldn't respect templates
       return call_user_func_array(array($this->getInvoker()->getRecord(), $method), $arguments);
     }
     catch (Exception $e)
     {
-      return null;
+      // this is a touchy spot. This is the correct action to take, but
+      // this will report a method not found on the content type model,
+      // which can be confusing (since you call the method on sfSympalContent
+      // However, catching this exception is wrong too.
+      throw $e;
     }
   }
 }
