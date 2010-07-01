@@ -1,10 +1,5 @@
 <?php
 
-/**
-  * Tests that getters and setters are passed from sfSympalContent
-  * to its content type record
-  */
-
 require_once(dirname(__FILE__).'/../../bootstrap/functional.php');
 require_once $configuration->getSymfonyLibDir().'/vendor/lime/lime.php';
 require_once sfConfig::get('sf_lib_dir').'/test/unitHelper.php';

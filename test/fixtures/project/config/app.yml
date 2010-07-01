@@ -1,6 +1,6 @@
 all:
   sympal_config:
     internationalized_models:
-      Product:     [name]
+      Product:     [name, description]
 
     language_codes: [en, es, fr]
