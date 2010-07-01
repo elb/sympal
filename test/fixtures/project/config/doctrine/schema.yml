@@ -4,3 +4,4 @@ Product:
     price:  double
   actAs:
     sfSympalContentTypeTemplate:
+    sfSympalRecordTemplate:

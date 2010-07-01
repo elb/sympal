@@ -1,3 +1,6 @@
 all:
   sympal_config:
-    test_write_value: 1
+    internationalized_models:
+      Product:     [name]
+
+    language_codes: [en, es, fr]
