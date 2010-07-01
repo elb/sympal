@@ -12,4 +12,9 @@
  */
 class Product extends BaseProduct
 {
+  // used as a dummy method that we call
+  public function testMethod($arg = null)
+  {
+    return ($arg === null) ? 'testing' : $arg;
+  }
 }
