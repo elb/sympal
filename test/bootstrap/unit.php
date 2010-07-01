@@ -28,3 +28,5 @@ else
 {
   $plugin_configuration = new sfPluginConfigurationGeneric($configuration, dirname(__FILE__).'/../..', 'sfSympalPlugin');
 }
+
+require_once sfConfig::get('sf_lib_dir').'/test/unitHelper.php';
