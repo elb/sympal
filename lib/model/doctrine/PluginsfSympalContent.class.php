@@ -11,8 +11,7 @@ abstract class PluginsfSympalContent extends BasesfSympalContent
     $_route,
     $_routeObject,
     $_editableSlotsExistOnPage = false,
-    $_contentRouteObject = null,
-    $_updateSearchIndex = true;
+    $_contentRouteObject = null;
   
   /**
    * Initializes a new sfSympalContent for the given type
@@ -494,28 +493,30 @@ abstract class PluginsfSympalContent extends BasesfSympalContent
       return $theme;
     }
   }
-
+/* @TODO put this in the search plugin
   public function disableSearchIndexUpdateForSave()
   {
     $this->_updateSearchIndex = false;
-  }
+  }*/
 
   public function save(Doctrine_Connection $conn = null)
   {
     $result = parent::save($conn);
 
+/*  @TODO put this in the search plugin
     if ($this->_updateSearchIndex)
     {
       sfSympalSearch::getInstance()->updateSearchIndex($this);
     }
 
-    $this->_updateSearchIndex = true;
+    $this->_updateSearchIndex = true;*/
 
     return $result;
   }
 
   public function delete(Doctrine_Connection $conn = null)
   {
+/*  @TODO put this back into the search plugin
     if ($this->_updateSearchIndex)
     {
       $index = sfSympalSearch::getInstance()->getIndex();
@@ -523,7 +524,7 @@ abstract class PluginsfSympalContent extends BasesfSympalContent
       {
         $index->delete($hit->id);
       }
-    }
+    }*/
 
     // delete content from accociated content type table
     Doctrine_Core::getTable($this->getType()->getName())
@@ -534,6 +535,7 @@ abstract class PluginsfSympalContent extends BasesfSympalContent
     return parent::delete($conn);
   }
 
+/* @TODO put this back in the search plugin
   public function getSearchData()
   {
     $searchData = array();
@@ -566,7 +568,7 @@ abstract class PluginsfSympalContent extends BasesfSympalContent
       $searchData[$slot->getName()] = $slot->getValue();
     }
     return $searchData;
-  }
+  }*/
   
   /**
    * Used by sfSympalContentSlot to render the created_at_id slot value
