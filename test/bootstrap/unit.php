@@ -1,33 +1,30 @@
 <?php
 
-$projectPath = dirname(__FILE__).'/../fixtures/project';
-require_once($projectPath.'/config/ProjectConfiguration.class.php');
-
-require_once(dirname(__FILE__).'/cleanup.php');
-
-if (!isset($app))
+if (!isset($_SERVER['SYMFONY']))
 {
-  $configuration = new ProjectConfiguration($projectPath);
-}
-else
-{
-  $configuration = ProjectConfiguration::getApplicationConfiguration($app, 'test', isset($debug) ? $debug : true);
-  $context = sfContext::createInstance($configuration);
+  throw new RuntimeException('Could not find symfony core libraries.');
 }
 
-if (isset($database) && $database)
-{
-  $database = new sfDatabaseManager($configuration);
-}
+require_once $_SERVER['SYMFONY'].'/autoload/sfCoreAutoload.class.php';
+sfCoreAutoload::register();
 
+$configuration = new sfProjectConfiguration(dirname(__FILE__).'/../fixtures/project');
 require_once $configuration->getSymfonyLibDir().'/vendor/lime/lime.php';
 
-if (!isset($context))
+function sfSympalPlugin_autoload_again($class)
 {
-  require_once dirname(__FILE__).'/../../config/sfSympalPluginConfiguration.class.php';
-  $plugin_configuration = new sfSympalPluginConfiguration($configuration, dirname(__FILE__).'/../..');
+  $autoload = sfSimpleAutoload::getInstance();
+  $autoload->reload();
+  return $autoload->autoload($class);
+}
+spl_autoload_register('sfSympalPlugin_autoload_again');
+
+if (file_exists($config = dirname(__FILE__).'/../../config/sfSympalPluginConfiguration.class.php'))
+{
+  require_once $config;
+  $plugin_configuration = new sfSympalPluginConfiguration($configuration, dirname(__FILE__).'/../..', 'sfSympalPlugin');
 }
 else
 {
-  $plugin_configuration = $context->getConfiguration()->getPluginConfiguration('sfSympalPlugin');
+  $plugin_configuration = new sfPluginConfigurationGeneric($configuration, dirname(__FILE__).'/../..', 'sfSympalPlugin');
 }
