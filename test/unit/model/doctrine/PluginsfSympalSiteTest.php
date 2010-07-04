@@ -4,12 +4,13 @@ require_once(dirname(__FILE__).'/../../../bootstrap/functional.php');
 
 $t = new lime_test(3);
 $tbl = Doctrine_Core::getTable('sfSympalSite');
-$site = $tbl->getCurrentSite(true); // create the site record
+create_content_type($t, 'Product');
+$site = $tbl->fetchCurrent(true); // create the site record
 
 $t->info('1 - Test that the delete recurses on the application level to the sfSympalContent records and then to the content type records');
 
   // create a content record
-  $product = sfSympalContent::create('Product');
+  $product = sfSympalContent::createNew('Product');
   $product->save();
 
   $site->refreshRelated('Content');

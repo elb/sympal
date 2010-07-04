@@ -2,7 +2,7 @@
 
 require_once(dirname(__FILE__).'/../../../bootstrap/functional.php');
 
-$t = new lime_test(5);
+$t = new lime_test(6);
 $tbl = Doctrine_Core::getTable('sfSympalSite');
 
 $t->info('1 - Test fetchCurrent().');
