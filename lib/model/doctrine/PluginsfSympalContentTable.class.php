@@ -74,6 +74,13 @@ class PluginsfSympalContentTable extends Doctrine_Table
     return $q;
   }
 
+  /**
+   * The method used in the content routing
+   *
+   * @throws sfException
+   * @param array $params
+   * @return sfSympalContent|null
+   */
   public function getContent($params = array())
   {
     $request = sfContext::getInstance()->getRequest();
@@ -181,6 +188,12 @@ class PluginsfSympalContentTable extends Doctrine_Table
     }
   }
 
+  /**
+   * Returns the base query for retrieving sfSympalContent records.
+   *
+   * @param string $alias The alias used for the sfSympalContent model
+   * @return Doctrine_Query
+   */
   public function getBaseQuery($alias = 'c')
   {
     $q = Doctrine_Query::create()
@@ -198,7 +211,7 @@ class PluginsfSympalContentTable extends Doctrine_Table
       ->innerJoin($alias.'.Type t')
       // Don't use param to work around Doctrine pgsql bug
       // with limit subquery and number of params
-      ->innerJoin(sprintf($alias.".Site si WITH si.slug = '%s'", sfConfig::get('sf_app')));
+      ->innerJoin(sprintf($alias.".Site si WITH si.slug = '%s'", sfSympalConfig::getCurrentSiteName()));
 
     if (sfSympalConfig::isI18nEnabled('sfSympalContentSlot'))
     {
