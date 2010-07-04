@@ -10,7 +10,7 @@ class sfSympalTestFunctional extends sfTestFunctional
     parent::__construct($hostname, $remote, $options);
     
     $this->setTester('doctrine', 'sfTesterDoctrine');
-    $this->setTester('theme', 'sfTesterTheme');
+    //$this->setTester('theme', 'sfTesterTheme');
   }
 
   public function signInAsAdmin()
