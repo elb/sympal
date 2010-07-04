@@ -171,7 +171,11 @@ class PluginsfSympalContentTable extends Doctrine_Table
     }
 
     $q->orderBy('l.slug ASC, a.slug ASC');
-    $q->enableSympalResultCache('sympal_get_content');
+
+    /**
+     * @TODO Re-implement the result cache
+     */
+    //$q->enableSympalResultCache('sympal_get_content');
     
     /*
      * If this sfSympalContent record has more than one content type (e.g. sfSympalPage)
@@ -191,6 +195,8 @@ class PluginsfSympalContentTable extends Doctrine_Table
   /**
    * Returns the base query for retrieving sfSympalContent records.
    *
+   * @TODO reimplement many of the joines in plugins
+   *
    * @param string $alias The alias used for the sfSympalContent model
    * @return Doctrine_Query
    */
@@ -198,15 +204,15 @@ class PluginsfSympalContentTable extends Doctrine_Table
   {
     $q = Doctrine_Query::create()
       ->from('sfSympalContent '.$alias)
-      ->leftJoin($alias.'.Groups g')
-      ->leftJoin('g.Permissions gp')
-      ->leftJoin($alias.'.EditGroups eg')
-      ->leftJoin('eg.Permissions egp')
-      ->leftJoin($alias.'.Slots s')
-      ->leftJoin($alias.'.MenuItem m')
-      ->leftJoin($alias.'.Links l')
-      ->leftJoin('l.Type lt')
-      ->leftJoin($alias.'.Assets a')
+      //->leftJoin($alias.'.Groups g')
+      //->leftJoin('g.Permissions gp')
+      //->leftJoin($alias.'.EditGroups eg')
+      //->leftJoin('eg.Permissions egp')
+      //->leftJoin($alias.'.Slots s')
+      //->leftJoin($alias.'.MenuItem m')
+      //->leftJoin($alias.'.Links l')
+      //->leftJoin('l.Type lt')
+      //->leftJoin($alias.'.Assets a')
       ->leftJoin($alias.'.CreatedBy u')
       ->innerJoin($alias.'.Type t')
       // Don't use param to work around Doctrine pgsql bug
@@ -215,7 +221,7 @@ class PluginsfSympalContentTable extends Doctrine_Table
 
     if (sfSympalConfig::isI18nEnabled('sfSympalContentSlot'))
     {
-      $q->leftJoin('s.Translation slt');
+      //$q->leftJoin('s.Translation slt');
     }
 
     if (sfSympalConfig::isI18nEnabled('sfSympalContent'))
@@ -223,9 +229,27 @@ class PluginsfSympalContentTable extends Doctrine_Table
       $q->leftJoin($alias.'.Translation ct');
     }
 
+    // throw an event that plugins can hook into the modify the query
+    if (sfApplicationConfiguration::hasActive())
+    {
+      sfApplicationConfiguration::getActive()
+        ->getEventDispatcher()
+        ->notify(new sfEvent($this, 'sympal.content.get_base_query', array(
+          'query' => $q,
+      )));
+    }
+
     return $q;
   }
 
+  /**
+   * Used by the admin generator.
+   *
+   * @TODO move this into the admin plugin (somehow)
+   *
+   * @param  $q
+   * @return Doctrine_Query
+   */
   public function getAdminGenQuery($q)
   {
     $q = Doctrine_Core::getTable('sfSympalContent')
@@ -257,6 +281,8 @@ class PluginsfSympalContentTable extends Doctrine_Table
    * Called by sfInlineObjectDoctrineResource to create a query that
    * will return a collection of objects given the array of keys and
    * key column
+   *
+   * @see sfInlineObjectDoctrineResource
    */
   public function getQueryForInlineObjects($keys, $keyColumn)
   {
@@ -267,13 +293,13 @@ class PluginsfSympalContentTable extends Doctrine_Table
       ->from('sfSympalContent c')
       ->innerJoin('c.Type t')
       ->innerJoin('c.Site s')
-      ->andWhere('s.slug = ?', sfConfig::get('sf_app'));
+      ->andWhere('s.slug = ?', sfSympalConfig::getCurrentSiteName());
 
     if (sfSympalConfig::isI18nEnabled('sfSympalContent'))
     {
       $q->leftJoin('c.Translation ct');
     }
-    
+
     return $q;
   }
 }
