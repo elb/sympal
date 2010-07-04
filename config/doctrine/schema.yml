@@ -1,9 +1,6 @@
 sfSympalSite:
   actAs:
     sfSympalRecordTemplate:
-    Sluggable:
-      fields: [name]
-      indexName: site_sluggable
   columns:
     name:
       type:    string(255)
