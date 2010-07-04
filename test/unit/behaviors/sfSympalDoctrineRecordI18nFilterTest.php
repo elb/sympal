@@ -4,7 +4,7 @@ require_once(dirname(__FILE__).'/../../bootstrap/functional.php');
 require_once $configuration->getSymfonyLibDir().'/vendor/lime/lime.php';
 require_once sfConfig::get('sf_lib_dir').'/test/unitHelper.php';
 
-$t = new lime_test(2);
+$t = new lime_test(3);
 
 $t->info('1 - Test that there is a fallback culture for the doctrine record.');
 
@@ -20,3 +20,16 @@ $context->getUser()->setCulture('es');
 
 $t->is($product->name, 'nombre', 'The name returns the spanish name as expected (we\'re in the spanish culture)');
 $t->is($product->description, 'english description', 'The description falls back to the english description.');
+
+$t->info('2 - Try calling an unknown function on a table class');
+// this addresses a problem in sfSympalDoctrineRecordI18nFilter that caused infinite recursion
+
+try
+{
+  Doctrine_Core::getTable('sfSympalSite')->getFakeMethod();
+  $t->fail('Exception not thrown');
+}
+catch (Doctrine_Table_Exception $e)
+{
+  $t->pass('Exception thrown');
+}
