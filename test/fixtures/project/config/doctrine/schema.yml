@@ -5,3 +5,15 @@ Product:
     price:  double
   actAs:
     sfSympalContentTypeTemplate:
+
+ProductPhoto:
+  columns:
+    title:    string(255)
+    filename: string(255)
+    product_id: integer
+  relations:
+    Product:
+      type:         one
+      foreignType:  many
+      onDelete:     cascade
+      foreignAlias: Photos

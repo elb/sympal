@@ -3,9 +3,11 @@
 
 class ProductTable extends Doctrine_Table
 {
-    
-    public static function getInstance()
-    {
-        return Doctrine_Core::getTable('Product');
-    }
+  // hook into the getFullTypeQuery query to join to the Photos
+  public function getContentQuery(Doctrine_Query $q)
+  {
+    $q->leftJoin('cr.Photos crp');
+
+    return $q;
+  }
 }
