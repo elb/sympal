@@ -1,5 +1,16 @@
 ## 1.0
 
+### Decoupling
+
+* sfSympalConfig has several methods that aren't tested and maybe shouldn'
+  belong in the class:
+
+  * shouldUseResultCache
+  * getAssetPath
+  * getAdminGeneratorTheme
+  * getAdminGeneratorClass
+  * 
+
 ### Bug Fixes and Improvements
 
 ### Performance
