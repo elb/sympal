@@ -1,3 +1,11 @@
+actions_clear_cache:
+  url:    /actions/clear-cache
+  param: { module: actions, action: clearCache }
+actions_get_sympal_configuration:
+  url:    /actions/get-sympal-configuration
+  param: { module: actions, action: getSympalConfiguration }
+
+
 forward_to_route:
   url: '/forward/to/route/:param1/:param2'
   param: { module: test, action: route_to_forward_to }
