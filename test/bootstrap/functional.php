@@ -25,3 +25,7 @@ new sfDatabaseManager($configuration);
 
 // so that all notices will appear
 error_reporting(E_ALL);
+
+// bring in a few of the unit-test files
+require_once $configuration->getSymfonyLibDir().'/vendor/lime/lime.php';
+require_once sfConfig::get('sf_lib_dir').'/test/unitHelper.php';
