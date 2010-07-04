@@ -82,6 +82,11 @@ class sfSympalCacheManager
   {
     $this->remove('routes.cache');
 
+    if (!sfContext::hasInstance())
+    {
+      return;
+    }
+
     $context = sfContext::getInstance();
     $configCache = $context->getConfigCache();
 
@@ -111,7 +116,7 @@ class sfSympalCacheManager
   {
     if ($this->getCacheDriver())
     {
-      return $this->getCacheDriver()->set($key, serialize($data), $lifeTime);
+      return $this->getCacheDriver()->set($key, $data, $lifeTime);
     }
   }
 
