@@ -12,6 +12,7 @@ $t->info('1 - Test fetchCurrent().');
   $site = $tbl->fetchCurrent(true);
   $t->is(get_class($site), 'sfSympalSite', '->fetchCurrnet(true) will create the record');
   $t->is($site->name, 'sympal', 'The new site record is given the right name.');
+  $t->is($site->slug, 'sympal', 'The new site record is given the right slug.');
 
   $site = $tbl->fetchCurrent(true);
   $t->is(get_class($site), 'sfSympalSite', '->fetchCurrnet() now returns the existent record');

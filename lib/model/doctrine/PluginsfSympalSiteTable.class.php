@@ -27,6 +27,7 @@ class PluginsfSympalSiteTable extends Doctrine_Table
     {
       $site = new sfSympalSite();
       $site->name = $siteName;
+      $site->slug = $siteName;
       $site->save();
     }
 

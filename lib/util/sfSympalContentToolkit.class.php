@@ -40,7 +40,7 @@ class sfSympalContentToolkit
 ';
 
       $routes = array();
-      $siteSlug = sfConfig::get('sf_app');
+      $siteSlug = sfSympalConfig::getCurrentSiteName();
       
       if (!sfContext::hasInstance())
       {

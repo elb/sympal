@@ -1,8 +1,14 @@
 sfSympalSite:
   actAs:
     sfSympalRecordTemplate:
+    Sluggable:
+      fields: [name]
+      indexName: site_sluggable
   columns:
-    name:
+    name:                   # A common indentifier for the site
+      type:    string(255)
+      notnull: true
+    slug:                   # The key for this site - corresponds with sfSympalConfig::getCurrentSiteName()
       type:    string(255)
       notnull: true
     description:
