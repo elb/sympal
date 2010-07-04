@@ -65,7 +65,7 @@ class Basesympal_editorActions extends sfActions
     }
     $contentTypeId = $this->contentType->getId();
     $this->content = Doctrine_Core::getTable('sfSympalContent')
-      ->getFullTypeQuery($this->contentType->getName(), 'c', $contentTypeId)
+      ->getFullTypeQuery($this->contentType, 'c')
       ->orderBy('m.root_id, m.lft ASC')
       ->execute();
     
