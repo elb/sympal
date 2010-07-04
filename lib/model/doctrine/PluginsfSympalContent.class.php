@@ -533,10 +533,7 @@ abstract class PluginsfSympalContent extends BasesfSympalContent
     }*/
 
     // delete content from accociated content type table
-    Doctrine_Core::getTable($this->getType()->getName())
-      ->findOneByContentId($this->getId())
-      ->delete()
-    ;
+    $this->getRecord()->delete();
     
     return parent::delete($conn);
   }
