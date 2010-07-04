@@ -4,19 +4,31 @@
  */
 class PluginsfSympalContentTable extends Doctrine_Table
 {
-  public function createSearchQuery($alias = 'c')
-  {
-    return $this->addPublishedQuery($alias, $this->getBaseQuery($alias));
-  }
 
-  public function getTypeQuery($typeName, $alias = 'c')
+  /**
+   * Returns the basic query used to join to the content type model
+   *
+   * @param string $type  The type name
+   * @param string $alias The alias for the sfSympalContent record
+   * @return Doctrine_Query
+   */
+  public function getTypeQuery($type, $alias = 'c')
   {
-    Doctrine_Core::initializeModels(array($typeName));
+    Doctrine_Core::initializeModels(array($type));
+
     return $this->createQuery($alias)
-      ->innerJoin($alias.'.'.$typeName.' cr');
+      ->innerJoin($alias.'.'.$type.' cr');
   }
 
-  public function getFullTypeQuery($type, $alias = 'c', $contentTypeId = null)
+  /**
+   * Returns the full query to be used when retrieving an sfSympalContent
+   * record that's fully joined to the correct content type record.
+   *
+   * @param string|integer|sfSympalContentType  $type   The name, id, or actual sfSympalContentType object
+   * @param string               $alias                 The alias to use for the sfSympalContent model         
+   * @return Doctrine_Query
+   */
+  public function getFullTypeQuery($type, $alias = 'c')
   {
     if (is_numeric($type))
     {
@@ -38,14 +50,10 @@ class PluginsfSympalContentTable extends Doctrine_Table
 
     $q = $this->getBaseQuery($alias);
 
+    // if we have a real sfSympalContentType record, add the WITH clause
     if ($type instanceof sfSympalContentType)
     {
-      $contentTypeId = $type->getId();
-    }
-
-    if ($contentTypeId)
-    {
-      $q->innerJoin($alias.'.'.$typeModelName.' cr WITH '.$alias.'.content_type_id = '.$contentTypeId);
+      $q->innerJoin($alias.'.'.$typeModelName.' cr WITH '.$alias.'.content_type_id = '.$type['id']);
     }
     else
     {
@@ -57,21 +65,13 @@ class PluginsfSympalContentTable extends Doctrine_Table
       $q->leftJoin('cr.Translation crt');
     }
 
+    // allow for a hook on the content type table to add to the query
     if (method_exists($table, 'getContentQuery'))
     {
-      $table->getContentQuery($q);
+      $q = $table->getContentQuery($q);
     }
 
     return $q;
-  }
-
-  public function getContentRecordsTypeBy($by, $value)
-  {
-    return Doctrine_Core::getTable('sfSympalContentType')
-      ->createQuery('t')
-      ->innerJoin('t.Content c')
-      ->where('c.'.$by.' = ?', $value)
-      ->fetchOne();
   }
 
   public function getContent($params = array())
