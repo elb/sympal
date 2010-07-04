@@ -38,6 +38,7 @@ class sfSympalSiteManager
   /**
    * Get the current sfSympalSite instance
    *
+   * @TODO re-enable the results cache
    * @return sfSympalSite $site
    */
   public function getSite()
@@ -47,7 +48,7 @@ class sfSympalSiteManager
       $this->_site =  Doctrine_Core::getTable('sfSympalSite')
         ->createQuery('s')
         ->where('s.slug = ?', $this->_siteSlug)
-        ->enableSympalResultCache('sympal_context_get_site')
+        //->enableSympalResultCache('sympal_context_get_site')
         ->fetchOne();
     }
 
