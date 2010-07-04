@@ -59,15 +59,26 @@ class sfSympalContentFilter extends Doctrine_Record_Filter
    */
   public function filterGet(Doctrine_Record $content, $name)
   {
-    try
+    $badNames = array('content_type_id', 'id');
+
+
+    /**
+     * When calling a method on a table class that doesn't exist, I've seen
+     * this cause an infinite recursion. We have the same hack in
+     * sfSympalDoctrineRecordI18nFilter
+     */
+    if (!in_array($name, $badNames))
     {
-      if ($content->getRecord())
+      try
       {
-        return $content->getRecord()->get($name);
+        if ($content->getRecord())
+        {
+          return $content->getRecord()->get($name);
+        }
       }
+      catch (Exception $e)
+      {}
     }
-    catch (Exception $e)
-    {}
 
     throw new Doctrine_Record_UnknownPropertyException(sprintf('Unknown record property / related component "%s" on "%s"', $name, get_class($content)));
   }

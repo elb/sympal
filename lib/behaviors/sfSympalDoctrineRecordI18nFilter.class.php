@@ -22,8 +22,8 @@ class sfSympalDoctrineRecordI18nFilter extends sfDoctrineRecordI18nFilter
   {
     /**
      * When calling a method on a table class that doesn't exist, I've seen
-     * the search for the id field cause infinite recursion. In general, if
-     * we're trying to get the id field, then we should never end up here.
+     * the search for the id field cause infinite recursion. This hack is
+     * also in sfSympalContentFilter.
      */
     if ($name != 'id')
     {
