@@ -9,7 +9,7 @@ function config_cleanup()
 }
 register_shutdown_function('config_cleanup');
 
-$t = new lime_test(8);
+$t = new lime_test(17);
 
 $t->info('1 - Test the basic get(), getDeep() and set() methods');
   sfSympalConfig::set('test', true);
