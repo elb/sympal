@@ -20,15 +20,25 @@ class sfSympalDoctrineRecordI18nFilter extends sfDoctrineRecordI18nFilter
    */
   public function filterGet(Doctrine_Record $record, $name)
   {
-    $culture = sfDoctrineRecord::getDefaultCulture();
-    if (isset($record['Translation'][$culture]) && $record['Translation'][$culture][$name])
+    /**
+     * When calling a method on a table class that doesn't exist, I've seen
+     * the search for the id field cause infinite recursion. In general, if
+     * we're trying to get the id field, then we should never end up here.
+     */
+    if ($name != 'id')
     {
-      return $record['Translation'][$culture][$name];
+      $culture = sfDoctrineRecord::getDefaultCulture();
+      if (isset($record['Translation'][$culture]) && $record['Translation'][$culture][$name])
+      {
+        return $record['Translation'][$culture][$name];
+      }
+      else
+      {
+        $defaultCulture = sfConfig::get('sf_default_culture');
+        return $record['Translation'][$defaultCulture][$name];
+      }
     }
-    else
-    {
-      $defaultCulture = sfConfig::get('sf_default_culture');
-      return $record['Translation'][$defaultCulture][$name];
-    }
+
+    throw new Doctrine_Record_UnknownPropertyException(sprintf('Unknown record property / related component "%s" on "%s"', $name, get_class($record)));
   }
 }
