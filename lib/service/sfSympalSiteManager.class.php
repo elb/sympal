@@ -32,7 +32,7 @@ class sfSympalSiteManager
   {
     $this->_dispatcher = $configuration->getEventDispatcher();
     $this->_configuration = $configuration;
-    $this->_siteSlug = $configuration->getApplication();
+    $this->_siteSlug = sfSympalConfig::getCurrentSiteName();
   }
 
   /**
