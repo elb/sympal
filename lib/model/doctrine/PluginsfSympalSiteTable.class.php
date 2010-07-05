@@ -8,7 +8,6 @@
  */
 class PluginsfSympalSiteTable extends Doctrine_Table
 {
-
   /**
    * Fetches the current sfSympalSite record
    *
@@ -17,8 +16,16 @@ class PluginsfSympalSiteTable extends Doctrine_Table
    */
   public function fetchCurrent($create = false)
   {
-    $siteName = sfSympalConfig::getCurrentSiteName();
+    return $this->fetchSite(sfSympalConfig::getCurrentSiteName(), $create);
+  }
 
+  /**
+   * @param  string $siteName The name of the site to get or create
+   * @param  bool   $create   Whether or not to create the record of it doesn't exist
+   * @return sfSympalSite|null
+   */
+  public function fetchSite($siteName, $create = false)
+  {
     $site = $this->createQuery('s')
       ->where('s.name = ?', $siteName)
       ->fetchOne();
