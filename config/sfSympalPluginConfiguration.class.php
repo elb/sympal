@@ -14,11 +14,10 @@
 class sfSympalPluginConfiguration extends sfPluginConfiguration
 {
   /**
-   * @var sfContext
    * @var sfSympalSiteManager
+   * @var sfSympalCacheManager
    */
   protected
-    $_context,
     $_siteManager,
     $_cacheManager;
 
@@ -51,8 +50,6 @@ class sfSympalPluginConfiguration extends sfPluginConfiguration
    */
   public function bootstrapContext(sfEvent $event)
   {
-    $this->_context = $event->getSubject();
-
     // register the extending actions class
     $class = sfConfig::get('app_sympal_config_extended_actions_class', 'sfSympalActions');
     $actions = new $class();
@@ -75,8 +72,6 @@ class sfSympalPluginConfiguration extends sfPluginConfiguration
    */
   public function filterTemplateParameters(sfEvent $event, $parameters)
   {
-    $parameters['sf_sympal_context'] = $this;
-
     // Don't override the variable if it's not set
     if (!isset($parameters['sf_sympal_site']))
     {
@@ -144,7 +139,7 @@ class sfSympalPluginConfiguration extends sfPluginConfiguration
   {
     $class = sfSympalConfig::get('content_renderer_class', null, 'sfSympalContentRenderer');
 
-    return new $class($this->_context, $content, $format);
+    return new $class($this->dispatcher, $content, $format);
   }
 
   /**
