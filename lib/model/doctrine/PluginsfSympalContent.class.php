@@ -555,6 +555,93 @@ abstract class PluginsfSympalContent extends BasesfSympalContent
     return parent::delete($conn);
   }
 
+  /**
+   * Returns the page title to be used for this content. This will retrieve
+   * the page title from the Site relation if not set on this record.
+   *
+   * @return string
+   */
+  public function getPageTitleForRendering()
+  {
+    if ($pageTitle = $this->getPageTitle())
+    {
+      return $pageTitle;
+    }
+    else if ($pageTitle = $this->getSite()->getPageTitle())
+    {
+      return $pageTitle;
+    }
+    else if (sfSympalConfig::get('auto_seo', 'title'))
+    {
+      if (method_exists($this->getContentTypeClassName(), 'getAutoSeoTitle'))
+      {
+        return $this->Record->getAutoSeoTitle();
+      }
+
+      return $this->getAutoSeoTitle();
+    }
+
+    return null;
+  }
+
+  /**
+   * Generates a page title for this content record
+   *
+   * @return string
+   */
+  public function getAutoSeoTitle()
+  {
+    $format = sfSympalConfig::get('auto_seo', 'title_format');
+    $find = array(
+      '%site_title%',
+      '%content_title%',
+      '%content_id%',
+    );
+
+    $replace = array(
+      $this->getSite()->getTitle(),
+      (string) $this,
+      $this->getId(),
+    );
+    $title = str_replace($find, $replace, $format);
+
+    return $title;
+  }
+
+  /**
+   * Returns the meta keyowrds to be used for this content record
+   *
+   * @return string
+   */
+  public function getMetaKeywordsForRendering()
+  {
+    if ($metaKeywords = $this->getMetaKeywords())
+    {
+      return $metaKeywords;
+    }
+    else if ($metaKeywords = $this->getSite()->getMetaKeywords())
+    {
+      return $metaKeywords;
+    }
+  }
+
+  /**
+   * Returns the meta description to be used for this content record
+   *
+   * @return string
+   */
+  public function getMetaDescriptionForRendering()
+  {
+    if ($metaDescription = $this->getMetaDescription())
+    {
+      return $metaDescription;
+    }
+    else if ($metaDescription = $this->getSite()->getMetaDescription())
+    {
+      return $metaDescription;
+    }
+  }
+
 /* @TODO put this back in the search plugin
   public function getSearchData()
   {

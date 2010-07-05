@@ -35,7 +35,7 @@ class sfSympalContentActionLoader
   public function __construct(sfActions $actions)
   {
     $this->_actions = $actions;
-    $this->_applicationConfiguration = $actions->getContext()->getApplicationConfiguration();
+    $this->_applicationConfiguration = $actions->getContext()->getConfiguration();
     $this->_user = $actions->getUser();
     $this->_response = $actions->getResponse();
     $this->_request = $actions->getRequest();
@@ -47,15 +47,32 @@ class sfSympalContentActionLoader
    *
    * Also sets the current content and site on the site manager service.
    *
+   * @param boolean $allow404 Whether or not to throw the normal 404 if the content does not exist.
    * @return sfSympalContent
    */
-  public function getContent()
+  public function getContent($allow404 = true)
   {
     if (!$this->_content)
     {
-      $this->_content = $this->_actions->getRoute()->getObject();
+      try
+      {
+        $this->_content = $this->_actions->getRoute()->getObject();
+      }
+      catch (sfError404Exception $e)
+      {
+        if ($allow404)
+        {
+          throw $e;
+        }
+      }
+
       if ($this->_content)
       {
+        if (!$this->_content instanceof sfSympalContent)
+        {
+          throw new sfException('The action loader can only be used on sfSympalContent object routes.');
+        }
+
         $siteManager = $this->_getSympalConfiguration()->getSiteManager();
         $siteManager->setSite($this->_content->getSite());
         $siteManager->setCurrentContent($this->_content);
@@ -80,7 +97,9 @@ class sfSympalContentActionLoader
    */
   public function loadContent()
   {
-    $content = $this->getContent();
+    // attempt to get the content
+    $content = $this->getContent(false);
+
     $this->_handleForward404($content);
     $this->_handleIsPublished($content);
     //$this->_user->checkContentSecurity($content);
@@ -106,7 +125,7 @@ class sfSympalContentActionLoader
     $renderer = $this->_getSympalConfiguration()
       ->getContentRenderer($content, $this->_request->getRequestFormat());
 
-    if ($fakeHtmlRequest)
+    if ($fakeHtmlRequest && $renderer->getFormat() != 'html')
     {
       $this->fakeHtmlRequest();
     }
@@ -127,18 +146,15 @@ class sfSympalContentActionLoader
    */
   public function fakeHtmlRequest()
   {
-    if ($renderer->getFormat() != 'html')
+    sfConfig::set('sf_web_debug', false);
+
+    $format = $this->_request->getRequestFormat();
+    $this->_request->setRequestFormat('html');
+    $this->_actions->setLayout(false);
+
+    if ($mimeType = $this->_request->getMimeType($format))
     {
-      sfConfig::set('sf_web_debug', false);
-
-      $format = $this->_request->getRequestFormat();
-      $this->_request->setRequestFormat('html');
-      $this->_actions->setLayout(false);
-
-      if ($mimeType = $this->_request->getMimeType($format))
-      {
-        $this->_response->setContentType($mimeType);
-      }
+      $this->_response->setContentType($mimeType);
     }
   }
 
@@ -150,66 +166,22 @@ class sfSympalContentActionLoader
   protected function _loadMetaData()
   {
     // page title
-    if ($pageTitle = $this->_content->getPageTitle())
+    if ($pageTitle = $this->_content->getPageTitleForRendering())
     {
       $this->_response->setTitle($pageTitle);
-    }
-    else if ($pageTitle = $this->_content->getSite()->getPageTitle())
-    {
-      $this->_response->setTitle($pageTitle);
-    }
-    else if (sfSympalConfig::get('auto_seo', 'title'))
-    {
-      $this->_response->setTitle($this->_getAutoSeoTitle());
     }
 
     // meta keywords
-    if ($metaKeywords = $this->_content->getMetaKeywords())
-    {
-      $this->_response->addMeta('keywords', $metaKeywords);
-    }
-    else if ($metaKeywords = $this->_content->getSite()->getMetaKeywords())
+    if ($metaKeywords = $this->_content->getMetaKeywordsForRendering())
     {
       $this->_response->addMeta('keywords', $metaKeywords);
     }
 
     // meta description
-    if ($metaDescription = $this->_content->getMetaDescription())
+    if ($metaDescription = $this->_content->getMetaDescriptionForRendering())
     {
       $this->_response->addMeta('description', $metaDescription);
     }
-    else if ($metaDescription = $this->_content->getSite()->getMetaDescription())
-    {
-      $this->_response->addMeta('description', $metaDescription);
-    }
-  }
-
-  /**
-   * Attempts to generate a rich page title
-   *
-   * @TODO re-implement the hook this had with menu items
-   *
-   * @return string
-   */
-  protected function _getAutoSeoTitle()
-  {
-    $title = (string) $this->_content;
-
-    $format = sfSympalConfig::get('auto_seo', 'title_format');
-    $find = array(
-      '%site_title%',
-      '%content_title%',
-      '%content_id%',
-    );
-
-    $replace = array(
-      $this->_content->getSite()->getTitle(),
-      (string) $this->_content,
-      $this->_content->getId(),
-    );
-    $title = str_replace($find, $replace, $format);
-
-    return $title;
   }
 
   /**
@@ -266,7 +238,6 @@ class sfSympalContentActionLoader
       // create the site and then refresh
       Doctrine_Core::getTable('sfSympalSite')->fetchCurrent(true);
       
-      $this->_actions->refresh();
       $this->_actions->redirect($this->_request->getUri());
     }
     else

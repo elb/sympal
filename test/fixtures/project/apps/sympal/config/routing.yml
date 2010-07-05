@@ -1,3 +1,4 @@
+# sfSympalActionsTest
 actions_clear_cache:
   url:    /actions/clear-cache
   param: { module: actions, action: clearCache }
@@ -5,6 +6,14 @@ actions_get_sympal_configuration:
   url:    /actions/get-sympal-configuration
   param: { module: actions, action: getSympalConfiguration }
 
+#sfSympalContentActionLoader
+content_action_loader_content:
+  url:   /content-action-loader/content/:id.:sf_format
+  class: sfDoctrineRoute
+  param: { module: content_action_loader, action: content, sf_format: html }
+  options:
+    model:  sfSympalContent
+    type:   object
 
 forward_to_route:
   url: '/forward/to/route/:param1/:param2'
