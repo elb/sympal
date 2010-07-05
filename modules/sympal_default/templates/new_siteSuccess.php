@@ -8,7 +8,7 @@
     ) ?>
   <?php else: ?>
     <?php echo __('%1% to begin building out the content for your site!', array(
-      '%1%' => link_to('Signin', '@sympal_signin')
+      '%1%' => link_to('Signin', '@sf_guard_signin')
     )) ?>
   <?php endif; ?>
 </p>

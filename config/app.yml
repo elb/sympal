@@ -7,9 +7,11 @@ all:
     content_action_loader_class: sfSympalContentActionLoader
     # The class used for rendering the content
     content_renderer_class: sfSympalContentRenderer
-
     # The class used for managing any general caching
     cache_manager_class:     sfSympalCacheManager
+
+    # whether to automatically enable the modules or not
+    enable_modules:  true
 
     # cache driver used for the cache manager
     cache_driver:

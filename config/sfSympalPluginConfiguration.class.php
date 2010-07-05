@@ -61,6 +61,19 @@ class sfSympalPluginConfiguration extends sfPluginConfiguration
     // create the cache manager instance
     $this->_cacheManager = $this->_createCacheManager();
 
+    // enable the modules
+    if (sfSympalConfig::get('enable_modules'))
+    {
+      sfConfig::set('sf_enabled_modules', array_merge(
+        sfConfig::get('sf_enabled_modules'),
+        array('sympal_default', 'sympal_content_renderer')
+      ));
+    }
+
+    // load the i18n helper
+    // @todo I don't love this here...
+    $this->configuration->loadHelpers('I18N');
+
     // throw the sympal load event
     $this->dispatcher->notify(new sfEvent($this, 'sympal.load', array()));
   }
