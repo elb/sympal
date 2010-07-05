@@ -6,11 +6,8 @@
 abstract class PluginsfSympalContent extends BasesfSympalContent
 {
   protected
-    $_allGroupsPermissions,
-    $_allEditGroupsPermissions,
     $_route,
     $_routeObject,
-    $_editableSlotsExistOnPage = false,
     $_contentRouteObject = null;
   
   /**
@@ -37,7 +34,9 @@ abstract class PluginsfSympalContent extends BasesfSympalContent
 
     if (!$type instanceof sfSympalContentType)
     {
-      throw new InvalidArgumentException(sprintf('Invalid Content Type', $type));
+      $type = is_object($type) ? get_class($type) : gettype($type);
+
+      throw new InvalidArgumentException(sprintf('Invalid Content Type. Expected sfSympalContentType, got %s', $type));
     }
 
     $name = $type->name;
