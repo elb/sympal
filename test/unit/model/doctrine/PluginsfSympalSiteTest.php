@@ -14,7 +14,7 @@ $t->info('1 - Test that the delete recurses on the application level to the sfSy
   $product->save();
 
   $site->refreshRelated('Content');
-  $t->isnt(count($site->Content), 1, 'Sanity check: the sfSympalSite record has one Content record');
+  $t->is(count($site->Content), 1, 'Sanity check: the sfSympalSite record has one Content record');
 
   $site->delete();
 
