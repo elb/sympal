@@ -12,6 +12,8 @@
 
 * Test PluginsfSympalContentTable::getContent()
 
+* Look into sfSympalContentRenderer::renderNonHtmlFormats() and sfSympalContent::getFormatData()
+
 ### Bug Fixes and Improvements
 
 ### Performance

@@ -184,7 +184,7 @@ class sfSympalContentActionLoader
 
   private function _handleIsPublished($record)
   {
-    if (!$record->isPublished() && !$this->_user->isEditMode())
+    if (!$record->getIsPublished() && !$this->_user->isEditMode())
     {
       if (sfSympalConfig::get('unpublished_content', 'forward_404'))
       {

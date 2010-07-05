@@ -8,6 +8,7 @@ abstract class PluginsfSympalContent extends BasesfSympalContent
   protected
     $_route,
     $_routeObject,
+    $_editableSlotsExistOnPage,
     $_contentRouteObject = null;
   
   /**
@@ -48,37 +49,29 @@ abstract class PluginsfSympalContent extends BasesfSympalContent
     return $content;
   }
 
-  public function isPublished()
-  {
-    return $this->date_published && strtotime($this->date_published) <= time() ? true : false;
-  }
-
-  public function setEditableSlotsExistOnPage($bool)
-  {
-    $this->_editableSlotsExistOnPage = $bool;
-  }
-
-  public function getEditableSlotsExistOnPage()
-  {
-    return $this->_editableSlotsExistOnPage;
-  }
-
+  /**
+   * Returns this module with which this record should be rendered
+   *
+   * @return string
+   */
   public function getModuleToRenderWith()
   {
     if ($module = $this->_get('module'))
     {
       return $module;
-    } else {
+    }
+    else
+    {
       return $this->getType()->getModuleToRenderWith();
     }
   }
 
-  public function hasCustomAction()
-  {
-    return ($this->_get('action') || sfSympalToolkit::moduleAndActionExists($this->getModuleToRenderWith(), $this->getCustomActionName()));
-  }
-
-  public function getCustomActionName()
+  /**
+   * Returns the action with which this record should be rendered.
+   *
+   * @return string
+   */
+  public function getActionToRenderWith()
   {
     if ($actionName = $this->_get('action'))
     {
@@ -86,82 +79,57 @@ abstract class PluginsfSympalContent extends BasesfSympalContent
     }
     else
     {
-      return $this->getUnderscoredSlug();
-    }
-  }
-
-  public function getUnderscoredSlug()
-  {
-    return str_replace('-', '_', $this->getSlug());
-  }
-
-  public function getActionToRenderWith()
-  {
-    if ($this->hasCustomAction())
-    {
-      return $this->getCustomActionName();
-    }
-    else
-    {
       return $this->getType()->getActionToRenderWith();
     }
   }
 
-  public function getUrl($options = array())
+  /**
+   * Returns the slug with underscores instead of dashes
+   *
+   * Used when creating routes for content records with a custom_path
+   *
+   * @return string
+   */
+  public function getUnderscoredSlug()
   {
-    return sfContext::getInstance()->getController()->genUrl($this->getRoute(), $options);
+    return str_replace('-', '_', $this['slug']);
   }
 
-  public function getPubDate()
-  {
-    return strtotime($this->date_published);
-  }
-
+  /**
+   * @return string
+   */
   public function getContentTypeClassName()
   {
     return $this->getType()->getName();
   }
 
-  public function getAllEditPermissions()
-  {
-    return $this->getAllPermissions('EditGroups');
-  }
-
-  public function getAllPermissions($key = 'Groups')
-  {
-    $cacheKey = sprintf('_all%sPermissions', $key);
-    if (!$this->$cacheKey)
-    {
-      $this->$cacheKey = array();
-      foreach ($this->$key as $group)
-      {
-        foreach ($group->Permissions as $permission)
-        {
-          $this->{$cacheKey}[] = $permission->name;
-        }
-      }
-    }
-    return $this->$cacheKey;
-  }
-
+  /**
+   * @return string
+   */
   public function __toString()
   {
     return $this->getHeaderTitle();
   }
 
   /**
-   * @todo make this work nicely again with the menu hierarchu
+   * @return string
    */
-  public function getIndented()
-  {
-    return (string) $this;
-  }
-
   public function getTitle()
   {
     return $this->getHeaderTitle();
   }
 
+  /**
+   * Returns the content type record related to this Content record, which
+   * could be one of many classes (depending on the content type).
+   *
+   * If the class name of the content type related to this content were
+   * "Product", then this method would be equivalent to the following:
+   *
+   * $content->Product
+   *
+   * @return Doctrine_Record|bool
+   */
   public function getRecord()
   {
     if ($this['Type']['name'])
@@ -176,19 +144,35 @@ abstract class PluginsfSympalContent extends BasesfSympalContent
     }
   }
 
+  /**
+   * Publishes this content with a published date of right now.
+   *
+   * @return void
+   */
   public function publish()
   {
-    $this->date_published = new Doctrine_Expression('NOW()');
+    $this->date_published = date('Y-m-d H:i:s');
     $this->save();
     $this->refresh();
   }
 
+  /**
+   * Upublishes this content
+   *
+   * @return void
+   */
   public function unpublish()
   {
     $this->date_published = null;
     $this->save();
   }
 
+  /**
+   * Attempts to retrieve some sort of "title" for this record by seeing
+   * if the content type record has a series of title-like columns
+   *
+   * @return string
+   */
   public function getHeaderTitle()
   {
     if ($record = $this->getRecord())
@@ -204,92 +188,65 @@ abstract class PluginsfSympalContent extends BasesfSympalContent
         try
         {
           return (string) $record->get($descriptionColumn);
-        } catch (Exception $e) {}
+        }
+        catch (Doctrine_Record_UnknownPropertyException $e) {}
       }
+
       return (string) $this;
     }
 
     return sprintf('No description for object of class "%s"', $this->getTable()->getComponentName());
   }
 
+  /**
+   * @deprecated
+   */
   public function getEditRoute()
   {
-    if ($this->exists())
-    {
-      return '@sympal_content_edit?id='.$this['id'];
-    } else {
-      throw new sfException('You cannot get the edit route of a object that does not exist.');
-    }
+    throw new sfException('Method deprecated. Use @sympal_content_edit?id=ID.');
   }
 
-  public function getFeedDescriptionPotentialSlots()
-  {
-    return array(
-      'body'
-    );
-  }
-
-  public function getFeedDescription()
-  {
-    if (method_exists($this->getContentTypeClassName(), 'getFeedDescription'))
-    {
-      return $this->getRecord()->getFeedDescription();
-    }
-
-    $slot = false;
-    foreach ($this->getFeedDescriptionPotentialSlots() as $slotName)
-    {
-      if ($this->hasSlot($slotName))
-      {
-        $slot = $this->getSlot($slotName);
-        break;
-      }
-    }
-
-    if ($slot === false && $this->Slots->count() > 0)
-    {
-      $slot = $this->Slots->getFirst();
-    }
-
-    if ($slot instanceof sfSympalContentSlot)
-    {
-      $slot->setContentRenderedFor($this);
-
-      return $slot->render();
-    }
-    else
-    {
-      return (string) $this;
-    }
-  }
-
-  public function getTeaser()
-  {
-    use_helper('Text');
-    return truncate_text(strip_tags($this->getFeedDescription()), 200);
-  }
-
+  /**
+   * Returns the content that will be output for xml, yml, and json formats
+   *
+   * This looks for a getXmlFormatData() named function on the content
+   * type record, then on the sfSympalContent record. If neither is found,
+   * getDefaultFormatData() is returned. In all cases, the method should
+   * return an array.
+   *
+   * @param  string $format The format (e.g. xml, json, yml)
+   * @return string
+   */
   public function getFormatData($format)
   {
     $method = 'get'.ucfirst($format).'FormatData';
+    
     if (method_exists($this->getContentTypeClassName(), $method))
     {
-      return $this->getRecord()->$method();
-    } else if (method_exists($this, $method)) {
+      $data = $this->getRecord()->$method();
+    }
+    else if (method_exists($this, $method))
+    {
       $data = $this->$method();
-    } else {
+    }
+    else
+    {
       $data = $this->getDefaultFormatData();
     }
+
     return Doctrine_Parser::dump($this->$method(), $format);
   }
 
+  /**
+   * Returns the default data to output for non-html formats that aren't
+   * otherwise handled by getFormatData().
+   *
+   * @return array
+   */
   public function getDefaultFormatData()
   {
     $data = $this->toArray(true);
     unset(
-      $data['Groups'],
-      $data['Links'],
-      $data['Assets'],
       $data['CreatedBy'],
       $data['Site']
     );
@@ -297,51 +254,76 @@ abstract class PluginsfSympalContent extends BasesfSympalContent
     return $data;
   }
 
-  public function getXmlFormatData()
-  {
-    return $this->getDefaultFormatData();
-  }
-
-  public function getYmlFormatData()
-  {
-    return $this->getDefaultFormatData();
-  }
-
-  public function getJsonFormatData()
-  {
-    return $this->getDefaultFormatData();
-  }
-
+  /**
+   * Returns whether or not this content is published
+   *
+   * @return bool
+   */
   public function getIsPublished()
   {
     return ($this->getDatePublished() && strtotime($this->getDatePublished()) <= time()) ? true : false;
   }
 
+  /**
+   * Returns whether or not this content is set with a published date in
+   * the future.
+   *
+   * If this content is already published (date_published in the past), this
+   * will return false.
+   *
+   * @return bool
+   */
   public function getIsPublishedInTheFuture()
   {
     return ($this->getDatePublished() && strtotime($this->getDatePublished()) > time()) ? true : false;
   }
 
+  /**
+   * Getter for the month published
+   *
+   * @param string $format
+   * @return string
+   */
   public function getMonthPublished($format = 'm')
   {
     return date('m', strtotime($this->getDatePublished()));
   }
 
+  /**
+   * Getter for the day published
+   *
+   * @return string
+   */
   public function getDayPublished()
   {
     return date('d', strtotime($this->getDatePublished()));
   }
 
+  /**
+   * Getter for the year published
+   *
+   * @return string
+   */
   public function getYearPublished()
   {
     return date('Y', strtotime($this->getDatePublished()));
   }
 
+  /**
+   * Returns the name of the author of this record, if CreatedBy is set
+   *
+   * @return string
+   */
   public function getAuthorName()
   {
     return $this->getCreatedById() ? $this->getCreatedBy()->getName() : null;
   }
 
+  /**
+   * Returns the author of the
+   *
+   * @return string
+   */
   public function getAuthorEmail()
   {
     return $this->getCreatedById() ? $this->getCreatedBy()->getEmailAddress() : null;
@@ -355,42 +337,87 @@ abstract class PluginsfSympalContent extends BasesfSympalContent
     return $this->custom_path ? true : false;
   }
 
+  /**
+   * Returns the route object related to this content record
+   *
+   * @return sfSympalContentRouteObject
+   */
   public function getContentRouteObject()
   {
     if (!$this->_contentRouteObject)
     {
       $this->_contentRouteObject = new sfSympalContentRouteObject($this);
     }
+
     return $this->_contentRouteObject;
   }
 
+  /**
+   * Returns the url to this content
+   *
+   * @param array $options The array of url options
+   * @return string
+   */
+  public function getUrl($options = array())
+  {
+    return sfContext::getInstance()->getController()->genUrl($this->getRoute(), $options);
+  }
+
+  /**
+   * Getter for the route name
+   *
+   * @return string
+   */
   public function getRoute()
   {
     return $this->getContentRouteObject()->getRoute();
   }
 
+  /**
+   * Getter for the route path
+   *
+   * @return string
+   */
   public function getRoutePath()
   {
     return $this->getContentRouteObject()->getRoutePath();
   }
 
+  /**
+   * Getter for the route name
+   *
+   * @return string
+   */
   public function getRouteName()
   {
     return $this->getContentRouteObject()->getRouteName();
   }
 
+  /**
+   * Getter for the route object
+   *
+   * @return sfRoute
+   */
   public function getRouteObject()
   {
     return $this->getContentRouteObject()->getRouteObject();
   }
 
+  /**
+   * Getter for the evaluated route path
+   *
+   * @return string
+   */
   public function getEvaluatedRoutePath()
   {
     return $this->getContentRouteObject()->getEvaluatedRoutePath();
   }
 
   /**
-   * Used by Sluggable to create the slug for this record
+   * Used by Sluggable to create the slug for this record.
+   *
+   * If a method called "slugBuilder" exists on the content type record,
+   * that will be called to retrieve the slug.
    *
    * @static
    * @param  string $text The text to slug
@@ -406,14 +433,11 @@ abstract class PluginsfSympalContent extends BasesfSympalContent
         return $record->slugBuilder($text);
       }
       catch (Doctrine_Record_UnknownPropertyException $e)
-      {
-        return Doctrine_Inflector::urlize($text);
+      {        
       }
     }
-    else
-    {
-      return Doctrine_Inflector::urlize($text);
-    }
+
+    return Doctrine_Inflector::urlize($text);
   }
 
   /**
@@ -601,5 +625,15 @@ abstract class PluginsfSympalContent extends BasesfSympalContent
     {
       return 'unpublished';
     }
+  }
+
+  public function setEditableSlotsExistOnPage($bool)
+  {
+    $this->_editableSlotsExistOnPage = $bool;
+  }
+
+  public function getEditableSlotsExistOnPage()
+  {
+    return $this->_editableSlotsExistOnPage;
   }
 }

@@ -68,7 +68,7 @@ class sfSympalContentRouteObject
   /**
    * Get the route path. i.e. /route/path/:slug
    *
-   * @return void
+   * @return string
    * @author Jonathan Wage
    */
   public function getRoutePath()
