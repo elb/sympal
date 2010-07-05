@@ -94,9 +94,10 @@ class sfSympalContentActionLoader
   }
 
   /**
+   * @param bool $fakeHtmlRequest Whether to fake an html request. Should usually be left as false.
    * @return sfSympalContentRenderer
    */
-  public function loadContentRenderer()
+  public function loadContentRenderer($fakeHtmlRequest = false)
   {
     // load and initialize the content
     $content = $this->loadContent();
@@ -105,11 +106,27 @@ class sfSympalContentActionLoader
     $renderer = $this->_getSympalConfiguration()
       ->getContentRenderer($content, $this->_request->getRequestFormat());
 
-    /**
-     * @TODO This seems strange. It looks like we're tricking the request
-     * into rendering as if we were html, but then still returning the
-     * correct mime-type in the response. Why?
-     */
+    if ($fakeHtmlRequest)
+    {
+      $this->fakeHtmlRequest();
+    }
+
+    return $renderer;
+  }
+
+  /**
+   * Allows the request to think it has an html format while allowing
+   * the respones to still return with the correct mime-type.
+   *
+   * The advantage is that the normal templates (with a format-specific
+   * filename suffix) will be used. This is useful in sympal_content_renderer
+   * when we simply want to get ourselves to the template so we can
+   * echo the content renderer.
+   *
+   * @return void
+   */
+  public function fakeHtmlRequest()
+  {
     if ($renderer->getFormat() != 'html')
     {
       sfConfig::set('sf_web_debug', false);
@@ -123,8 +140,6 @@ class sfSympalContentActionLoader
         $this->_response->setContentType($mimeType);
       }
     }
-
-    return $renderer;
   }
 
   /**
