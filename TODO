@@ -9,7 +9,8 @@
   * getAssetPath
   * getAdminGeneratorTheme
   * getAdminGeneratorClass
-  * 
+
+* Test PluginsfSympalContentTable::getContent()
 
 ### Bug Fixes and Improvements
 
