@@ -31,7 +31,9 @@ class sfSympalActions extends sfSympalExtendClass
    */
   public function getSympalContentActionLoader()
   {
-    return new sfSympalContentActionLoader($this->getSubject());
+    $class = sfSympalConfig::get('content_action_loader_class', null, 'sfSympalContentActionLoader');
+
+    return new $class($this->getSubject());
   }
 
   /**

@@ -142,7 +142,9 @@ class sfSympalPluginConfiguration extends sfPluginConfiguration
    */
   public function getContentRenderer(sfSympalContent $content, $format)
   {
-    return new sfSympalContentRenderer($this->_context, $content, $format);
+    $class = sfSympalConfig::get('content_renderer_class', null, 'sfSympalContentRenderer');
+
+    return new $class($this->_context, $content, $format);
   }
 
   /**

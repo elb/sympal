@@ -3,6 +3,10 @@ all:
 
     # The class used for the extended actions class
     extended_actions_class:  sfSympalActions
+    # The class used for loading the content
+    content_action_loader_class: sfSympalContentActionLoader
+    # The class used for rendering the content
+    content_renderer_class: sfSympalContentRenderer
 
     # The class used for managing any general caching
     cache_manager_class:     sfSympalCacheManager
@@ -38,6 +42,12 @@ all:
     unpublished_content:
       forward_to: [sympal_default, unpublished_content]
       forward_404: false
+
+    # Automatically set the response meta title based on the current content and menu item
+    auto_seo:
+      title: true
+      # The format that will be used as the title (site_title, content_title, content_id)
+      title_format: %content_title | %site_title%
 
     # Configure the available formats to render content in
     # The content routes will be created to match on any of these formats (sf_format)
