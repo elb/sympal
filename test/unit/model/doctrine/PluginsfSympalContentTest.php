@@ -2,7 +2,7 @@
 
 require_once(dirname(__FILE__).'/../../../bootstrap/functional.php');
 
-$t = new lime_test(6);
+$t = new lime_test(29);
 $tbl = Doctrine_Core::getTable('sfSympalContent');
 $type = create_content_type($t, 'Product');
 
@@ -72,6 +72,42 @@ $t->info('3 - Test some basic functions.');
   $t->info('  3.4 - Test getHeaderTitle()');
     $content->Product->name = 'test name';
     $t->is($content->getHeaderTitle(), 'test name', '->getHeaderTitle() grabs the name from the Product record.');
+
+  $t->info('  3.5 - Test getTemplateToRenderWith()');
+    $t->info('Exception thrown when default_view is not set');
+    try
+    {
+      $content->getTemplateToRenderWith();
+      $t->fail('Exception not thrown.');
+    }
+    catch (sfException $e)
+    {
+      $t->pass('Exception thrown: '.$e->getMessage());
+    }
+    sfSympalConfig::set('content_types', 'Product', array(
+      'content_templates' => array(
+        'default_view' => array('template' => 'some/template'),
+        'other_view'   => array('template' => 'other/template'),
+      )
+    ));
+
+    $t->is($content->getTemplateToRenderWith(), 'some/template', '->getTemplateToRenderWith() returns default_view template if no template is set.');
+    $content->template = 'other_view';
+    $t->is($content->getTemplateToRenderWith(), 'other/template', '->getTemplateToRenderWith() returns the template that is set on sfSympalContent.');
+
+$t->info('4 - Test the save() and delete() methods.');
+  Doctrine_Query::create()->from('sfSympalContent')->delete()->execute();
+  Doctrine_Query::create()->from('Product')->delete()->execute();
+
+  $content = new sfSympalContent();
+  $content->Type = $type;
+  $content->save();
+  $t->ok($content->relatedExists('Site'), '->save() automatically sets the Site relation if not set.');
+
+  $content->delete();
+  $productCount = Doctrine_Query::create()->from('Product')->count();
+  $t->is($productCount, 0, 'The delete of sfSympalContent cascades onto the content type record.');
+
 
 function test_create_new_bad_type(lime_test $t, $type)
 {

@@ -462,34 +462,27 @@ abstract class PluginsfSympalContent extends BasesfSympalContent
     }
 
     $templates = sfSympalConfig::getContentTemplates($this['Type']['name']);
-    if (isset($templates[$templateName]))
+
+    if (!isset($templates[$templateName]))
     {
-      if (!is_array($templates[$templateName]) || !isset($templates[$templateName]['template']))
-      {
-        throw new sfException(sprintf('Key "template" must be set under content_template "%s" in app.yml', $templateName));
-      }
-      $template = $templates[$templateName]['template'];
-    }
-    else
-    {
-      if (isset($templates['default_view']))
-      {
-        if (!is_array($templates['default_view']) || !isset($templates['default_view']['template']))
-        {
-          throw new sfException('Key "template" must be set under content_template "default_view" in app.yml');
-        }
-        $template = $templates['default_view']['template'];
-      }
-      else
+      $templateName = 'default_view';
+      if (!isset($templates[$templateName]))
       {
         throw new sfException(sprintf('No "default_view" template specified for "%s" content type', $this->getType()->getName()));
       }
     }
 
-    return $template;
+    if (!is_array($templates[$templateName]) || !isset($templates[$templateName]['template']))
+    {
+      throw new sfException(sprintf('Key "template" must be set under content_template "%s" in app.yml', $templateName));
+    }
+
+    return $templates[$templateName]['template'];
   }
 
   /**
+   * @TODO think about where to put the theme logic
+   *
    * Renders the theme name with which this Content should be rendered.
    * Priority is in this order
    * 
@@ -516,6 +509,7 @@ abstract class PluginsfSympalContent extends BasesfSympalContent
       return $theme;
     }
   }
+
 /* @TODO put this in the search plugin
   public function disableSearchIndexUpdateForSave()
   {
@@ -597,6 +591,8 @@ abstract class PluginsfSympalContent extends BasesfSympalContent
   }*/
   
   /**
+   * @TODO refactor this for the new system
+   *
    * Used by sfSympalContentSlot to render the created_at_id slot value
    * 
    * @see sfSympalContentSlot::getValueForRendering()
@@ -608,6 +604,8 @@ abstract class PluginsfSympalContent extends BasesfSympalContent
   }
   
   /**
+   * @TODO refactor this for the new system
+   * 
    * Used by sfSympalContentSlot to render the date_published slot value
    * 
    * @see sfSympalContentSlot::getValueForRendering()
@@ -627,11 +625,17 @@ abstract class PluginsfSympalContent extends BasesfSympalContent
     }
   }
 
+  /**
+   * @TODO refactor
+   */
   public function setEditableSlotsExistOnPage($bool)
   {
     $this->_editableSlotsExistOnPage = $bool;
   }
 
+  /**
+   * @TODO refactor
+   */
   public function getEditableSlotsExistOnPage()
   {
     return $this->_editableSlotsExistOnPage;
