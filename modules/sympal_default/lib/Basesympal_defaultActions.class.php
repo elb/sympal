@@ -44,4 +44,12 @@ class Basesympal_defaultActions extends sfActions
     $this->getUser()->setEditCulture($request->getParameter('language'));
     return $this->redirect($this->getRequest()->getReferer($this->getUser()->getReferer('@homepage')));
   }
+
+  /**
+   * User is forwarded to this action when a site record exists but not
+   * content for that site exists yet
+   */
+  public function executeNew_site(sfWebRequest $request)
+  {
+  }
 }

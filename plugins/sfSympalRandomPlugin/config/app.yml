@@ -133,11 +133,6 @@ all:
     # The displayed name. You can change this to the project name you build on top of Sympal for example.
     sympal_name: Sympal
 
-    # Automatically set the response meta title based on the current content and menu item
-    auto_seo:
-      title: true
-      title_format: %site_title% %separator% %ancestors%
-
     # The base query class to use - sfSympalDoctrineQuery adds easy query caching
     query_class:      sfSympalDoctrineQuery
 

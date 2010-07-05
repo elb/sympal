@@ -1,10 +1,15 @@
 <?php
 
 /**
- * Acts like an extension of sfActions to render sfSympalContent objects
+ * Used the retrieve the sfSympalContent record for an action and initialize
+ * it into the system, performing actions like:
+ *
+ *  * Setting the current content and site on the site manager
+ *  * Setting the page title, metadata
+ *  * Handling unpublished content
  * 
- * @package     sfSympalRenderingPlugin
- * @subpackage  util
+ * @package     sfSympalPlugin
+ * @subpackage  rendering
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Ryan Weaver <ryan@thatsquality.com>
  * @since       2010-03-31
@@ -19,9 +24,14 @@ class sfSympalContentActionLoader
     $_response,
     $_request,
     $_content,
-    $_menuItem,
     $_dispatcher;
 
+  /**
+   * Class constructor
+   *
+   * @param sfActions $actions
+   * @return void
+   */
   public function __construct(sfActions $actions)
   {
     $this->_actions = $actions;
@@ -32,6 +42,13 @@ class sfSympalContentActionLoader
     $this->_dispatcher = $this->_actions->getContext()->getEventDispatcher();
   }
 
+  /**
+   * Returns the current sfSympalContent record.
+   *
+   * Also sets the current content and site on the site manager service.
+   *
+   * @return sfSympalContent
+   */
   public function getContent()
   {
     if (!$this->_content)
@@ -39,43 +56,36 @@ class sfSympalContentActionLoader
       $this->_content = $this->_actions->getRoute()->getObject();
       if ($this->_content)
       {
-        $this->_getSympalConfiguration()
-          ->getSiteManager()
-          ->setSite($this->_content->getSite());
-        $this->_menuItem = $this->_content->getMenuItem();
+        $siteManager = $this->_getSympalConfiguration()->getSiteManager();
+        $siteManager->setSite($this->_content->getSite());
+        $siteManager->setCurrentContent($this->_content);
       }
     }
+
     return $this->_content;
   }
 
+  /**
+   * Loads and processes the sfSympalContent record associated with this action:
+   *
+   *  * Fetches the sfSympalContent record
+   *  * Handles the 404 if necessary
+   *  * Handles unpublished content
+   *  * Sets up the metadata (page title, etc)
+   *  * Throws a sympal.load_content event
+   *
+   * @todo Replace the security check
+   *
+   * @return sfSympalContent
+   */
   public function loadContent()
   {
     $content = $this->getContent();
     $this->_handleForward404($content);
     $this->_handleIsPublished($content);
-    $this->_user->checkContentSecurity($content);
+    //$this->_user->checkContentSecurity($content);
 
     $this->_loadMetaData($this->_response);
-
-    $this->_getSympalConfiguration()
-      ->getSiteManager()
-      ->setCurrentContent($content);
-
-    // Handle custom action
-    $customActionName = $content->getCustomActionName();
-    if ($customActionName && $customActionName !== $this->_request->getParameter('action'))
-    {
-      if (method_exists($this->_actions, ($function = 'execute'.ucfirst($customActionName))))
-      {
-        $this->_actions->$function($this->_request);
-      }
-
-      $customTemplatePath = sfConfig::get('sf_apps_dir').'/'.sfConfig::get('sf_app').'/modules/'.$content->getModuleToRenderWith().'/templates/'.$customActionName.'Success.php';
-      if (file_exists($customTemplatePath))
-      {
-        $this->_actions->setTemplate($customActionName);
-      }
-    }
 
     // throw the sympal.load_content event
     $this->_dispatcher->notify(new sfEvent($this, 'sympal.load_content', array('content' => $content)));
@@ -83,12 +93,23 @@ class sfSympalContentActionLoader
     return $content;    
   }
 
+  /**
+   * @return sfSympalContentRenderer
+   */
   public function loadContentRenderer()
   {
+    // load and initialize the content
     $content = $this->loadContent();
+
+    // get the renderer
     $renderer = $this->_getSympalConfiguration()
       ->getContentRenderer($content, $this->_request->getRequestFormat());
 
+    /**
+     * @TODO This seems strange. It looks like we're tricking the request
+     * into rendering as if we were html, but then still returning the
+     * correct mime-type in the response. Why?
+     */
     if ($renderer->getFormat() != 'html')
     {
       sfConfig::set('sf_web_debug', false);
@@ -106,23 +127,34 @@ class sfSympalContentActionLoader
     return $renderer;
   }
 
-  private function _loadMetaData()
+  /**
+   * Loads the metadata from the content object
+   *
+   * @return void
+   */
+  protected function _loadMetaData()
   {
     // page title
     if ($pageTitle = $this->_content->getPageTitle())
     {
       $this->_response->setTitle($pageTitle);
-    } else if ($pageTitle = $this->_content->getSite()->getPageTitle()) {
+    }
+    else if ($pageTitle = $this->_content->getSite()->getPageTitle())
+    {
       $this->_response->setTitle($pageTitle);
-    } else if (sfSympalConfig::get('auto_seo', 'title')) {
-      $this->_response->setTitle($this->_getAutoSeoTitle($this->_response));
+    }
+    else if (sfSympalConfig::get('auto_seo', 'title'))
+    {
+      $this->_response->setTitle($this->_getAutoSeoTitle());
     }
 
     // meta keywords
     if ($metaKeywords = $this->_content->getMetaKeywords())
     {
       $this->_response->addMeta('keywords', $metaKeywords);
-    } else if ($metaKeywords = $this->_content->getSite()->getMetaKeywords()) {
+    }
+    else if ($metaKeywords = $this->_content->getSite()->getMetaKeywords())
+    {
       $this->_response->addMeta('keywords', $metaKeywords);
     }
 
@@ -130,61 +162,52 @@ class sfSympalContentActionLoader
     if ($metaDescription = $this->_content->getMetaDescription())
     {
       $this->_response->addMeta('description', $metaDescription);
-    } else if ($metaDescription = $this->_content->getSite()->getMetaDescription()) {
+    }
+    else if ($metaDescription = $this->_content->getSite()->getMetaDescription())
+    {
       $this->_response->addMeta('description', $metaDescription);
     }
   }
 
-  private function _getAutoSeoTitle()
+  /**
+   * Attempts to generate a rich page title
+   *
+   * @TODO re-implement the hook this had with menu items
+   *
+   * @return string
+   */
+  protected function _getAutoSeoTitle()
   {
-    if ($this->_menuItem)
-    {
-      $breadcrumbs = $this->_menuItem->getBreadcrumbs();
-      $children = array();
-      foreach ($breadcrumbs->getChildren() as $child)
-      {
-        $children[] = $child->renderLabel();
-      }
-      array_shift($children);
+    $title = (string) $this->_content;
 
-      $title = implode(sfSympalConfig::get('breadcrumbs_separator', null, ' / '), $children);
-    } else {
-      $title = (string) $this->_content;
-    }
     $format = sfSympalConfig::get('auto_seo', 'title_format');
     $find = array(
       '%site_title%',
       '%content_title%',
-      '%menu_item_label%',
       '%content_id%',
-      '%separator%',
-      '%ancestors%'
     );
+
     $replace = array(
       $this->_content->getSite()->getTitle(),
       (string) $this->_content,
-      ($this->_menuItem ? $this->_menuItem->getLabel() : (string) $this->_content),
       $this->_content->getId(),
-      sfSympalConfig::get('breadcrumbs_separator'),
-      ($title ? $title : (string) $this->_content)
     );
     $title = str_replace($find, $replace, $format);
-    $this->_response->setTitle($title);
+
     return $title;
   }
 
-  private function _createSite()
+  /**
+   * Handles the situation where a content record is unpublished
+   *
+   * @TODO re-implement the isEditMode() situation
+   * @param  sfSympalContent $record The unpublished content record
+   * @return void
+   */
+  protected function _handleIsPublished(sfSympalContent $record)
   {
-    $siteManager = $this->_sympalContext->getService('site_manager');
-    
-    chdir(sfConfig::get('sf_root_dir'));
-    $task = new sfSympalCreateSiteTask($this->_dispatcher, new sfFormatter());
-    $task->run(array($siteManager->getSiteSlug()), array('no-confirmation' => true));
-  }
-
-  private function _handleIsPublished($record)
-  {
-    if (!$record->getIsPublished() && !$this->_user->isEditMode())
+    //if (!$record->getIsPublished() && !$this->_user->isEditMode())
+    if (!$record->getIsPublished())
     {
       if (sfSympalConfig::get('unpublished_content', 'forward_404'))
       {
@@ -206,43 +229,50 @@ class sfSympalContentActionLoader
       ->getPluginConfiguration('sfSympalPlugin');
   }
 
-  private function _handleForward404($record)
+  /**
+   * Handle the 404 for a content record
+   *
+   * @param  sfSympalContent|null $record
+   * @return void
+   */
+  protected function _handleForward404(sfSympalContent $record = null)
   {
-    if (!$record)
+    if ($record)
     {
-      $siteManager = $this->_sympalContext->getService('site_manager');
-      $site = $siteManager->getSite();
+      return;
+    }
 
-      // No site record exception
-      if (!$site)
-      {
-        // Site doesn't exist for this application make sure the user wants to create a site for this application
-        $this->_actions->askConfirmation(
-          sprintf('No site found for the application named "%s"', $siteManager->getSiteSlug()),
-          sprintf('Do you want to create a site for the application named "%s"? Clicking yes will create a site record in the database and allow you to begin building out the content for your site!', $this->_sympalContext->getSiteSlug())
-        );
+    $siteManager = $this->_getSympalConfiguration()->getSiteManager();
+    $site = $siteManager->getSite();
 
-        $this->_createSite();
-        $this->_actions->refresh();
+    // No site record exception
+    if (!$site)
+    {
+      // create the site and then refresh
+      Doctrine_Core::getTable('sfSympalSite')->fetchCurrent(true);
+      
+      $this->_actions->refresh();
+      $this->_actions->redirect($this->_request->getUri());
+    }
+    else
+    {
       // Check for no content and redirect to default new site page
-      } else {
-        $q = Doctrine_Query::create()
-          ->from('sfSympalContent c')
-          ->andWhere('c.site_id = ?', $site->getId());
-        $count = $q->count();
-        if (!$count)
-        {
-          $this->_actions->forward('sympal_default', 'new_site');
-        }
-        
-        $parameters = $this->_actions->getRoute()->getParameters();
-        $msg = sprintf(
-          'No %s record found that relates to sfSympalContent record id "%s"',
-          $parameters['sympal_content_type'],
-          $parameters['sympal_content_type_id']
-        );
-        $this->_actions->forward404($msg);
+      $q = Doctrine_Query::create()
+        ->from('sfSympalContent c')
+        ->andWhere('c.site_id = ?', $site->getId());
+      $count = $q->count();
+      if (!$count)
+      {
+        $this->_actions->forward('sympal_default', 'new_site');
       }
+
+      $parameters = $this->_actions->getRoute()->getParameters();
+      $msg = sprintf(
+        'No %s record found that relates to sfSympalContent record id "%s"',
+        $parameters['sympal_content_type'],
+        $parameters['sympal_content_type_id']
+      );
+      $this->_actions->forward404($msg);
     }
   }
 }

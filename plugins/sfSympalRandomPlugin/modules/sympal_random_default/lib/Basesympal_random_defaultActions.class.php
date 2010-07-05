@@ -22,13 +22,4 @@ class Basesympal_random_default extends sympal_random_defaultActions
     $this->message = $request->getAttribute('message');
     $this->isAjax = $request->getAttribute('is_ajax');
   }
-
-  /**
-   * User is forwarded to this action when a site record exists but not
-   * content for that site exists yet
-   */
-  public function executeNew_site(sfWebRequest $request)
-  {
-    $this->loadSiteTheme();
-  }
 }
