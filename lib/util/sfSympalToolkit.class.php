@@ -10,7 +10,7 @@ class sfSympalToolkit
 {
 
   /**
-   * Get the content routes yaml
+   * Get the content routes yaml - used in routing.ml
    *
    * @return string $yaml
    */
@@ -108,13 +108,14 @@ class sfSympalToolkit
     }
     catch (Exception $e)
     {
-      // for now, I'd like to not obfuscate the errors - rather reportthem
+      // for now, I'd like to not obfuscate the errors - rather report them
       throw $e;
     }
   }
 
   /**
-   * Render a formatted exception message
+   * Render a formatted exception message. Used when rendering content
+   * and something goes wrong.
    *
    * @param Exception $e
    * @return string $html
@@ -154,9 +155,10 @@ class sfSympalToolkit
    * and action. If one doesn't exist, it then looks for a partial matching
    * the module and action pair.
    *
-   * @param string $module 
-   * @param string $action 
-   * @param array $variables 
+   * @param string $module The module name
+   * @param string $action The partial, or component name
+   * @param array $variables Te variables to pass into the component or partial
+   * 
    * @return string $html
    */
   public static function getSymfonyResource($module, $action = null, $variables = array())
@@ -203,24 +205,5 @@ class sfSympalToolkit
     {
       return false;
     }
-  }
-
-  /**
-   * Get all available language codes/flags
-   *
-   * @return array $codes
-   */
-  public static function getAllLanguageCodes()
-  {
-    $flags = sfFinder::type('file')
-      ->in(sfContext::getInstance()->getConfiguration()->getPluginConfiguration('sfSympalPlugin')->getRootDir().'/web/images/flags');
-
-    $codes = array();
-    foreach ($flags as $flag)
-    {
-      $info = pathinfo($flag);
-      $codes[] = $info['filename'];
-    }
-    return $codes;
   }
 }
