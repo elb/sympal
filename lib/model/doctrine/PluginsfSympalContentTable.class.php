@@ -241,22 +241,6 @@ class PluginsfSympalContentTable extends Doctrine_Table
 
     return $q;
   }
-
-  /**
-   * Used by the admin generator.
-   *
-   * @TODO move this into the admin plugin (somehow)
-   *
-   * @param  $q
-   * @return Doctrine_Query
-   */
-  public function getAdminGenQuery($q)
-  {
-    $q = Doctrine_Core::getTable('sfSympalContent')
-      ->getFullTypeQuery(sfContext::getInstance()->getUser()->getAttribute('content_type_id'), 'r');
-
-    return $q;
-  }
   
   /**
    * Adds the necessary where clause to only return published content
@@ -299,6 +283,22 @@ class PluginsfSympalContentTable extends Doctrine_Table
     {
       $q->leftJoin('c.Translation ct');
     }
+
+    return $q;
+  }
+
+  /**
+   * Used by the admin generator.
+   *
+   * @TODO move this into the admin plugin (somehow) and test
+   *
+   * @param  $q
+   * @return Doctrine_Query
+   */
+  public function getAdminGenQuery($q)
+  {
+    $q = Doctrine_Core::getTable('sfSympalContent')
+      ->getFullTypeQuery(sfContext::getInstance()->getUser()->getAttribute('content_type_id'), 'r');
 
     return $q;
   }
