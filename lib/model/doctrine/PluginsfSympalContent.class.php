@@ -145,6 +145,50 @@ abstract class PluginsfSympalContent extends BasesfSympalContent
   }
 
   /**
+   * Returns whether or not the field name exists on this record, the
+   * content type record, or either Translation records.
+   *
+   * @param  string $name The field name
+   * @return bool
+   */
+  public function hasField($name)
+  {
+    // check this model
+    if ($this->_table->hasField($name))
+    {
+      return true;
+    }
+
+    // check sfSympalContentTranslation
+    $className = get_class($this);
+    if (Doctrine_Core::isValidModelClass($className.'Translation'))
+    {
+      if (Doctrine_Core::getTable($className.'Translation')->hasField($name))
+      {
+        return true;
+      }
+    }
+
+    // check the content type record
+    $className = $this->getType()->getName();
+    if (Doctrine_Core::getTable($className)->hasField($name))
+    {
+      return true;
+    }
+
+    // check the Translation class of the content type record
+    if (Doctrine_Core::isValidModelClass($className.'Translation'))
+    {
+      if (Doctrine_Core::getTable($className.'Translation')->hasField($name))
+      {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  /**
    * Publishes this content with a published date of right now.
    *
    * @return void
