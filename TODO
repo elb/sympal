@@ -14,6 +14,11 @@
 
 * Look into sfSympalContentRenderer::renderNonHtmlFormats() and sfSympalContent::getFormatData()
 
+* The slug builder is weak. There is no real way to guarantee that a slug
+  will be created at all, and we (by virtue of naming the custom routes
+  sympal_content_SLUG) require all slugs to be unique, when they need
+  only be unique per content type
+
 ### Bug Fixes and Improvements
 
 ### Performance

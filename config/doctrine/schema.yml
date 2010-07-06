@@ -25,12 +25,16 @@ sfSympalContent:
     sfSympalContentModelTemplate:
     Sluggable:
       builder:      [sfSympalContent, slugBuilder]
+      uniqueBy:     [content_type_id]      
   columns:
     site_id:
       type:    integer
       notnull: true
     content_type_id:
       type:    integer
+      notnull: true
+    slug:
+      type:    string(255)
       notnull: true
     last_updated_by_id: integer
     created_by_id:      integer
