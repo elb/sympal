@@ -68,7 +68,7 @@ class sfSympalToolkit
       foreach ($contents as $content)
       {
         $routes['content_'.$content->getId()] = sprintf($routeTemplate,
-          substr($content->getRouteName(), 1),
+          ($content->getRoutePath() == '/') ? 'homepage' : substr($content->getRouteName(), 1),
           $content->getRoutePath(),
           $content->getModuleToRenderWith(),
           $content->getActionToRenderWith(),

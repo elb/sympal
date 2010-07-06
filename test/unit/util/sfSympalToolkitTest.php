@@ -3,7 +3,7 @@
 $app = 'sympal';
 require_once(dirname(__FILE__).'/../../bootstrap/functional.php');
 
-$t = new lime_test(14);
+$t = new lime_test(17);
 
 $t->info('Make a call to the test/test partial. It prints out the value of $var');
 $resource = sfSympalToolkit::getSymfonyResource('test', 'test', array('var' => 'Unit Testing'));
@@ -41,7 +41,7 @@ $t->info('1 - Test the getContentRoutesYaml() method');
   $t->is(count($routes), 2, 'Two routes are created for the one content type and one custom content');
   test_content_route($t, $routes['sympal_content_testing_product'], $type, '/products/testing-product', array('action' => 'custom_action', 'sympal_content_id' => $content->id));
 
-  $t->info('  1.2 - Pass a custom_path');
+  $t->info('  1.3 - Pass a custom_path');
   $content->action = null;
   $content->custom_path = '/my/path';
   $content->save();
@@ -49,6 +49,15 @@ $t->info('1 - Test the getContentRoutesYaml() method');
   $routes = sfYaml::load(sfSympalToolkit::getContentRoutesYaml());
   $t->is(count($routes), 2, 'Two routes are created for the one content type and one custom content');
   test_content_route($t, $routes['sympal_content_testing_product'], $type, '/my/path.:sf_format', array('sympal_content_id' => $content->id));
+
+  $t->info('  1.4 - Pass a custom_path that is the homepage');
+  $content->action = null;
+  $content->custom_path = '/';
+  $content->save();
+  $content->getContentRouteObject()->compile($content);
+  $routes = sfYaml::load(sfSympalToolkit::getContentRoutesYaml());
+  $t->is(count($routes), 2, 'Two routes are created for the one content type and one custom content');
+  test_content_route($t, $routes['homepage'], $type, '/', array('sympal_content_id' => $content->id));
 
 function test_content_route(lime_test $t, $route, sfSympalContentType $type, $url = '/products/:slug.:sf_format', $params = array())
 { 

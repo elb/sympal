@@ -10,7 +10,7 @@ all:
     # The class used for managing any general caching
     cache_manager_class:     sfSympalCacheManager
 
-    # whether to automatically enable the modules or not
+    # whether to automatically enable the standard modules or not
     enable_modules:  true
 
     # cache driver used for the cache manager
