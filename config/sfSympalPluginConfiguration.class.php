@@ -71,7 +71,6 @@ class sfSympalPluginConfiguration extends sfPluginConfiguration
           'sympal_content_renderer',
           'sympal_content_types',
           'sympal_content',
-          'sympal_sites',
         )
       ));
     }
