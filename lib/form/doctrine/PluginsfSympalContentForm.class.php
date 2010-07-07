@@ -35,19 +35,7 @@ abstract class PluginsfSympalContentForm extends BasesfSympalContentForm
     $this->validatorSchema['theme'] = $field['validator'];*/
 
     // Sets up the template widget
-    sfSympalFormToolkit::changeTemplateWidget($this);
-
-    // Sets up the module widget
-    sfSympalFormToolkit::changeModuleWidget($this);
-
-    if (!$this->object->content_type_id)
-    {
-      $this->object->Type = Doctrine_Core::getTable('sfSympalContentType')->findOneBySlug('page');
-    }
-    else
-    {
-      $this->object->Type;
-    }
+    sfSympalToolkit::changeTemplateWidget($this);
 
     // @todo replace this with something non-invasive
     //$this->configureMenuSection();
@@ -61,15 +49,18 @@ abstract class PluginsfSympalContentForm extends BasesfSympalContentForm
     $typeFormClass = $typeModelClass . 'Form';
 
     $record = $this->object->getRecord();
-    $record->mapValue('contentForm', $this);
-    $typeForm = new $typeFormClass($record);
-
-    unset($typeForm['id'], $typeForm['content_id']);
-
-    if (count($typeForm))
+    if ($record)
     {
-      $this->embedForm('TypeForm', $typeForm);
-      $this->widgetSchema['TypeForm']->setLabel($this->object->Type->label);
+      $record->mapValue('contentForm', $this);
+      $typeForm = new $typeFormClass($record);
+
+      unset($typeForm['id'], $typeForm['content_id']);
+
+      if (count($typeForm))
+      {
+        $this->embedForm('TypeForm', $typeForm);
+        $this->widgetSchema['TypeForm']->setLabel($this->object->Type->label);
+      }
     }
   }
 

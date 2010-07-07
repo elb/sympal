@@ -1,8 +1,6 @@
 <?php
 
 require_once dirname(__FILE__).'/../lib/Basesympal_contentActions.class.php';
-require_once dirname(__FILE__).'/../lib/sympal_contentGeneratorConfiguration.class.php';
-require_once dirname(__FILE__).'/../lib/sympal_contentGeneratorHelper.class.php';
 
 /**
  * sympal_content actions.
