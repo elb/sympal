@@ -1,8 +1,6 @@
 <?php
 
 require_once dirname(__FILE__).'/../lib/Basesympal_sitesActions.class.php';
-require_once dirname(__FILE__).'/../lib/sympal_sitesGeneratorConfiguration.class.php';
-require_once dirname(__FILE__).'/../lib/sympal_sitesGeneratorHelper.class.php';
 
 /**
  * sympal_sites actions.

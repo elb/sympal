@@ -73,14 +73,13 @@ class Basesympal_sitesActions extends autosympal_sitesActions
       array('object' => $site)
     ));
 
-    if ($site === $this->getSympalContext()->getSite())
+    if ($site === sfSympalConfig::getCurrentSiteName())
     {
       $this->getUser()->setFlash('error', 'You cannot delete the site you are currently in!');
     }
     else
     {
       $site->delete();
-      $site->deleteApplication();
       
       $this->getUser()->setFlash('notice', 'The item was deleted successfully.');
     }
