@@ -24,12 +24,16 @@ abstract class PluginsfSympalContentTypeForm extends BasesfSympalContentTypeForm
     $this->widgetSchema['name']->setLabel('Model name');
 
     // Sets up the template widget
-    sfSympalFormToolkit::changeTemplateWidget($this);
+    sfSympalToolkit::changeTemplateWidget($this);
 
     // Sets up the module widget
-    sfSympalFormToolkit::changeModuleWidget($this);
+    //sfSympalToolkit::changeModuleWidget($this);
+    
 
-    $models = array_keys(sfSympalConfig('content_templates'));
+    // get the content type models and make an array where the keys are the values
+    $models = array_keys(sfSympalConfig::get('content_types', null, array()));
+    $models = array_combine(array_values($models), array_values($models));
+
     foreach ($models as $model)
     {
       $table = Doctrine_Core::getTable($model);

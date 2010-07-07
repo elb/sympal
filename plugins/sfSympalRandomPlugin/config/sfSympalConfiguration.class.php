@@ -80,30 +80,6 @@ class sfSympalConfiguration
   }
 
   /**
-   * Get array of all modules
-   *
-   * @return array $modules
-   */
-  public function getModules()
-  {
-    if ($this->_modules === null)
-    {
-      // check if it's in the cache
-      if ($this->getCache('configuration.modules'))
-      {
-        $this->_modules = $this->getCache('configuration.modules');
-      }
-      else
-      {
-        $this->_modules = $this->_generateModulesArray();
-        $this->setCache('configuration.modules', $this->_modules);
-      }
-    }
-
-    return $this->_modules;
-  }
-
-  /**
    * Returns a value from the cache object (if there is one)
    * 
    * @param string $name The name/key of the cache to return
@@ -140,38 +116,5 @@ class sfSympalConfiguration
   public function getEventDispatcher()
   {
     return $this->_dispatcher;
-  }
-
-  /**
-   * Find all modules that exist in this project and application
-   *
-   * @return array
-   */
-  protected function _generateModulesArray()
-  {
-    $modules = array();
-    $paths = $this->getPluginPaths();
-    $paths['sfDoctrineGuardPlugin'] = $this->getProjectConfiguration()->getPluginConfiguration('sfDoctrineGuardPlugin')->getRootDir();
-    $paths['application'] = sfConfig::get('sf_app_dir');
-
-    foreach ($paths as $path)
-    {
-      $path = $path . '/modules';
-      $find = glob($path . '/*');
-
-      if (is_array($find))
-      {
-        foreach ($find as $module)
-        {
-          if (is_dir($module))
-          {
-            $info = pathinfo($module);
-            $modules[] = $info['basename'];
-          }
-        }
-      }
-    }
-
-    return $modules;
   }
 }

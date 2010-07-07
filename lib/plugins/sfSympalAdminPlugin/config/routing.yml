@@ -37,28 +37,12 @@ sympal_config_save:
 
 
 # Admin-generated content-related modules
-sympal_content_types:
-  class:                  sfDoctrineRouteCollection
-  options:
-    model:                sfSympalContentType
-    module:               sympal_content_types
-    prefix_path:          admin/content/types
-    with_wildcard_routes: true
-
 sympal_content_slots:
   class:                  sfDoctrineRouteCollection
   options:
     model:                sfSympalContentSlot
     module:               sympal_content_slots
     prefix_path:          admin/content/slots
-    with_wildcard_routes: true
-
-sympal_sites:
-  class:                  sfDoctrineRouteCollection
-  options:
-    model:                sfSympalSite
-    module:               sympal_sites
-    prefix_path:          admin/sites
     with_wildcard_routes: true
 
 sympal_redirects:
@@ -68,31 +52,3 @@ sympal_redirects:
     module:               sympal_redirects
     prefix_path:          admin/redirects
     with_wildcard_routes: true
-
-
-# The slightly more complex content admin module
-sympal_content:
-  class:                  sfDoctrineRouteCollection
-  options:
-    model:                sfSympalContent
-    module:               sympal_content
-    prefix_path:          admin/content/manage
-    with_wildcard_routes: true
-
-# Displays a list of the content types, like an index page for all content
-sympal_content_types_index:
-  url:  /admin/content
-  param: { module: sympal_content, action: content_types_index }
-
-# Displays and allows for editing of a content record's slot
-sympal_content_edit_slots:
-  url:  /admin/content/:id/edit_slots
-  param: { module: sympal_content, action: edit_slots }
-
-sympal_content_create_type:
-  url:    /admin/content/manage/create/:type
-  param:  { module: sympal_content, action: create_type }
-
-sympal_content_list_type:
-  url:    /admin/content/manage/type/:type
-  param: { module: sympal_content, action: list_type }

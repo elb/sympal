@@ -227,9 +227,7 @@ class sfSympalConfig extends sfConfig
    */
   public static function getAdminGeneratorTheme()
   {
-    $theme = sfSympalConfig::get('themes', sfSympalConfig::get('admin_theme'));
-
-    return isset($theme['admin_generator_theme']) ? $theme['admin_generator_theme'] : sfSympalConfig::get('default_admin_generator_theme', null, 'sympal_admin');
+    return sfSympalConfig::get('default_admin_generator_theme', null, 'default');
   }
 
   /**
@@ -239,9 +237,7 @@ class sfSympalConfig extends sfConfig
    */
   public static function getAdminGeneratorClass()
   {
-    $theme = sfSympalConfig::get('themes', sfSympalConfig::get('admin_theme'));
-
-    return isset($theme['admin_generator_class']) ? $theme['admin_generator_class'] : sfSympalConfig::get('default_admin_generator_class', null, 'sfSympalDoctrineGenerator');
+    return sfSympalConfig::get('default_admin_generator_class', null, 'sfDoctrineGenerator');
   }
 
   /**

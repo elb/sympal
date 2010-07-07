@@ -170,8 +170,6 @@ class PluginsfSympalContentTable extends Doctrine_Table
       }
     }
 
-    $q->orderBy('l.slug ASC, a.slug ASC');
-
     /**
      * @TODO Re-implement the result cache
      */

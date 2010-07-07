@@ -102,31 +102,6 @@ class sfSympalFormToolkit
   }
 
   /**
-   * Change the widget for choosing a module
-   *
-   * @param sfForm $form 
-   * @return void
-   */
-  public static function changeModuleWidget(sfForm $form)
-  {
-    $modules = sfSympalConfiguration::getActive()->getModules();
-    $options = array('' => '');
-    foreach ($modules as $module)
-    {
-      $options[$module] = $module;
-    }
-    $widgetSchema = $form->getWidgetSchema();
-    $widgetSchema['module'] = new sfWidgetFormChoice(array(
-      'choices'   => $options
-    ));
-    $validatorSchema = $form->getValidatorSchema();
-    $validatorSchema['module'] = new sfValidatorChoice(array(
-      'choices'   => array_keys($options),
-      'required' => false
-    ));
-  }
-
-  /**
    * Change date widgets to jquery rich date widget
    *
    * @param string $name
@@ -182,60 +157,5 @@ class sfSympalFormToolkit
       $widgetSchema[$fieldName] = new $widgetClass($widgetOptions, array('class'=> 'slot_'.strtolower($type)));
       $validatorSchema[$fieldName] = new $validatorClass($validatorOptions);
     }
-  }
-
-  /**
-   * Change template widget to be dropdown of templates
-   *
-   * @param sfForm $form 
-   * @return void
-   */
-  public static function changeTemplateWidget(sfForm $form)
-  {
-    $array = self::getTemplateWidgetAndValidator($form);
-
-    if ($array)
-    {
-      $form->setWidget('template', $array['widget']);
-      $form->setValidator('template', $array['validator']);
-    }
-  }
-
-  /**
-   * Get the content templates widget and validator
-   *
-   * @param sfForm $form 
-   * @return array $widgetAndValidator
-   */
-  public static function getTemplateWidgetAndValidator(sfForm $form)
-  {
-    if ($form instanceof sfSympalContentForm)
-    {
-      $type = $form->getObject()->getType()->getName();
-    }
-    else if ($form instanceof sfSympalContentTypeForm)
-    {
-      $type = $form->getObject()->getName();
-    }
-    else
-    {
-      return false;
-    }
-
-    $templates = sfSympalConfig::getContentTemplates($type);
-    $options = array('' => '');
-    foreach ($templates as $name => $template)
-    {
-      $options[$name] = sfInflector::humanize($name);
-    }
-    $widget = new sfWidgetFormChoice(array(
-      'choices'   => $options
-    ));
-    $validator = new sfValidatorChoice(array(
-      'choices'   => array_keys($options),
-      'required' => false
-    ));
-
-    return array('widget' => $widget, 'validator' => $validator);
   }
 }

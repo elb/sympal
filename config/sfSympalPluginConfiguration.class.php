@@ -66,7 +66,13 @@ class sfSympalPluginConfiguration extends sfPluginConfiguration
     {
       sfConfig::set('sf_enabled_modules', array_merge(
         sfConfig::get('sf_enabled_modules'),
-        array('sympal_default', 'sympal_content_renderer')
+        array(
+          'sympal_default',
+          'sympal_content_renderer',
+          'sympal_content_types',
+          'sympal_content',
+          'sympal_sites',
+        )
       ));
     }
 
