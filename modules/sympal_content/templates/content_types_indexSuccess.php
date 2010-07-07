@@ -1,10 +1,5 @@
 <h1><?php echo __('Manage Content') ?></h1>
 
-<?php echo get_sympal_breadcrumbs(array(
-  'Dashboard' => '@sympal_dashboard',
-  'Site Content' => '@sympal_content_types_index'
-)) ?>
-
 <div id="sf_admin_container">
   <div id="sf_admin_content">
     <div class="sf_admin_list">

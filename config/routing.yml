@@ -70,4 +70,8 @@ sympal_content_create_type:
 
 sympal_content_list_type:
   url:    /admin/content/manage/type/:type
+  class:  sfDoctrineRoute
   param: { module: sympal_content, action: list_type }
+  options:
+    model: sfSympalContent
+    type:  list

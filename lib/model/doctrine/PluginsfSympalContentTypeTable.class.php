@@ -9,7 +9,8 @@ class PluginsfSympalContentTypeTable extends Doctrine_Table
     $q = $this->createQuery('t')
       ->orderBy('t.name ASC');
 
-    $q->enableSympalResultCache('sympal_get_content_types');
+    // @TODO re-enable in the correct way
+    //$q->enableSympalResultCache('sympal_get_content_types');
 
     return $q->execute();
   }

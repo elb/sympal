@@ -132,7 +132,6 @@ class Basesympal_contentActions extends autoSympal_contentActions
     $contentTypeId = $content['content_type_id'];
     $type = Doctrine_Core::getTable('sfSympalContentType')->find($contentTypeId);
     $this->sf_sympal_content = sfSympalContent::createNew($type);
-    $this->sf_sympal_content->Site = $this->getSympalContext()->getSite();
 
     $this->form = new sfSympalContentForm($this->sf_sympal_content);
 
@@ -148,34 +147,15 @@ class Basesympal_contentActions extends autoSympal_contentActions
   {
     $this->sf_sympal_content = $this->_getContent($request);
     $user = $this->getUser();
-    $user->checkContentSecurity($this->sf_sympal_content);
+    // @TODO replace this
+    //$user->checkContentSecurity($this->sf_sympal_content);
 
-    $this->getSympalContext()->getService('site_manager')->setCurrentContent($this->sf_sympal_content);
+    $this->getSympalConfiguration()->getSiteManager()->setCurrentContent($this->sf_sympal_content);
 
     $this->getResponse()->setTitle('Sympal Admin / Editing '.$this->sf_sympal_content);
 
-    $this->form = $this->configuration->getForm($this->sf_sympal_content);
+    $this->form = new sfSympalContentForm($this->sf_sympal_content);
   }
-
-  /**
-   * Displays and allows for editing of a content record's slot
-   */
-  public function executeEdit_slots(sfWebRequest $request)
-  {
-    $this->sf_sympal_content = $this->_getContent($request);
-    $this->getSympalContext()->setCurrentContent($this->sf_sympal_content);
-    $this->getSympalContext()->getContentRenderer($this->sf_sympal_content)->render();
-
-    // throw the sympal.load_content event
-    $this->dispatcher->notify(new sfEvent($this, 'sympal.load_content', array('content' => $this->sf_sympal_content)));
-
-    // refresh the content record and refresh its internal slots list
-    $this->sf_sympal_content->refresh(true);
-    $this->sf_sympal_content->getSlotsByName(true);
-
-    $this->getContext()->getConfiguration()->getPluginConfiguration('sfSympalEditorPlugin')->loadEditorAssets();
-  }
-
 
   /*
    * *************  Batch functions
@@ -266,7 +246,7 @@ class Basesympal_contentActions extends autoSympal_contentActions
       }
       else
       {
-        $this->redirect($content->getEditRoute());
+        $this->redirect($this->generateUrl('sympal_content_edit', $content));
       }
     }
     else
@@ -298,14 +278,20 @@ class Basesympal_contentActions extends autoSympal_contentActions
         {
           $this->contentType = Doctrine_Core::getTable('sfSympalContentType')->findOneByNameOrSlug($type, $type);
         }
-        $this->getUser()->setAttribute('content_type_id', $this->contentType->id);
-        $this->getRequest()->setAttribute('content_type', $this->contentType);
+
+        if ($this->contentType)
+        {
+          $this->getUser()->setAttribute('content_type_id', $this->contentType->id);
+          $this->getRequest()->setAttribute('content_type', $this->contentType);
+        }
       }
       else
       {
         $this->contentType = Doctrine_Core::getTable('sfSympalContentType')->find($this->getUser()->getAttribute('content_type_id'));
       }
     }
+
+    $this->forward404Unless($this->contentType);
 
     return $this->contentType;
   }
