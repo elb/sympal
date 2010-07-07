@@ -1,1 +1,9 @@
 <?php echo sfSympalContentToolkit::getRedirectRoutesYaml() ?>
+
+sympal_redirects:
+  class:                  sfDoctrineRouteCollection
+  options:
+    model:                sfSympalRedirect
+    module:               sympal_redirects
+    prefix_path:          admin/redirects
+    with_wildcard_routes: true
