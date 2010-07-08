@@ -49,40 +49,6 @@ abstract class PluginsfSympalContent extends BasesfSympalContent
   }
 
   /**
-   * Returns this module with which this record should be rendered
-   *
-   * @return string
-   */
-  public function getModuleToRenderWith()
-  {
-    if ($module = $this->_get('module'))
-    {
-      return $module;
-    }
-    else
-    {
-      return $this->getType()->getModuleToRenderWith();
-    }
-  }
-
-  /**
-   * Returns the action with which this record should be rendered.
-   *
-   * @return string
-   */
-  public function getActionToRenderWith()
-  {
-    if ($actionName = $this->_get('action'))
-    {
-      return $actionName;
-    }
-    else
-    {
-      return $this->getType()->getActionToRenderWith();
-    }
-  }
-
-  /**
    * Returns the slug with underscores instead of dashes
    *
    * Used when creating routes for content records with a custom_path

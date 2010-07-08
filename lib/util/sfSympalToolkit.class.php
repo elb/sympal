@@ -65,20 +65,26 @@ class sfSympalToolkit
         ->createQuery('c')
         ->leftJoin('c.Type t')
         ->innerJoin('c.Site s')
-        ->where("(c.custom_path IS NOT NULL AND c.custom_path != '') OR (c.module IS NOT NULL AND c.module != '') OR (c.action IS NOT NULL AND c.action != '')")
+        ->where("(c.custom_path IS NOT NULL AND c.custom_path != '') OR (c.rendering_method IS NOT NULL AND c.rendering_method != '')")
         ->andWhere('s.slug = ?', $siteSlug)
         ->execute();
       foreach ($contents as $content)
       {
-        $contentObject = $sympalConfiguration->getContentObject($content);
+        $typeObject = $content->Type->getTypeObject();
+        // determine the rendering method - use the type's default if the method is invalid
+        $renderingMethod = $typeObject->hasRenderingMethod($content->rendering_method) ? $content->rendering_method : $typeObject->getDefaultRenderingMethod();
+
+        // figure out the module/action from the rendering method, use default if blank
+        $module = isset($renderingMethod['module']) ? $renderingMethod['module'] : sfSympalConfig::get('default_rendering_module'. null, 'sympal_content_renderer');
+        $action = isset($renderingMethod['action']) ? $renderingMethod['action'] : sfSympalConfig::get('default_rendering_action'. null, 'index');
 
         $routes['content_'.$content->getId()] = sprintf($routeTemplate,
-          $contentObject->getContentRouteObject()->getRouteName(),
-          $contentObject->getContentRouteObject()->getRoutePath(),
-          $contentObject->getModuleToRenderWith(),
-          $contentObject->getActionToRenderWith(),
-          $contentObject->getContentRecord()->Type->slug,
-          $contentObject->getContentRecord()->id,
+          $content->getContentRouteObject()->getRouteName(),
+          $content->getContentRouteObject()->getRoutePath(),
+          $module,
+          $action,
+          $typeObject->getKey(),
+          $content->id,
           implode('|', sfSympalConfig::getLanguageCodes()),
           implode('|', sfSympalConfig::get('content_formats'))
         );
@@ -91,6 +97,8 @@ class sfSympalToolkit
       foreach ($contentTypes as $contentType)
       {
         $renderingMethod = $contentType->getDefaultRenderingMethod();
+        
+        // figure out the module/action from the rendering method, use default if blank
         $module = isset($renderingMethod['module']) ? $renderingMethod['module'] : sfSympalConfig::get('default_rendering_module'. null, 'sympal_content_renderer');
         $action = isset($renderingMethod['action']) ? $renderingMethod['action'] : sfSympalConfig::get('default_rendering_action'. null, 'index');
 
