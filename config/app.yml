@@ -10,6 +10,10 @@ all:
     # The class used for managing any general caching
     cache_manager_class:     sfSympalCacheManager
 
+    # The class used to represent the content type object
+    content_type_object_class: sfSympalContentTypeObject
+    content_object_class:      sfSympalContentObject
+
     # whether to automatically enable the standard modules or not
     enable_modules:  true
 

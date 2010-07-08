@@ -31,7 +31,6 @@ class sfSympalToolkit
     action: %s
     sf_format: html
     sympal_content_type: %s
-    sympal_content_type_id: %s
     sympal_content_id: %s
   class: sfDoctrineRoute
   options:
@@ -54,6 +53,10 @@ class sfSympalToolkit
         sfContext::createInstance($configuration);
       }
 
+      $sympalConfiguration = sfApplicationConfiguration::getActive()
+        ->getPluginConfiguration('sfSympalPlugin');
+      
+
       /*
        * Step 1) Process all sfSympalContent records with a custom_path,
        *         module, or action. These have sympal_content_* routes
@@ -67,14 +70,15 @@ class sfSympalToolkit
         ->execute();
       foreach ($contents as $content)
       {
+        $contentObject = $sympalConfiguration->getContentObject($content);
+
         $routes['content_'.$content->getId()] = sprintf($routeTemplate,
-          ($content->getRoutePath() == '/') ? 'homepage' : substr($content->getRouteName(), 1),
-          $content->getRoutePath(),
-          $content->getModuleToRenderWith(),
-          $content->getActionToRenderWith(),
-          $content->Type->name,
-          $content->Type->id,
-          $content->id,
+          $contentObject->getContentRouteObject()->getRouteName(),
+          $contentObject->getContentRouteObject()->getRoutePath(),
+          $contentObject->getModuleToRenderWith(),
+          $contentObject->getActionToRenderWith(),
+          $contentObject->getContentRecord()->Type->slug,
+          $contentObject->getContentRecord()->id,
           implode('|', sfSympalConfig::getLanguageCodes()),
           implode('|', sfSympalConfig::get('content_formats'))
         );
@@ -83,18 +87,19 @@ class sfSympalToolkit
       /*
        * Step 2) Create a route for each sfSympalContentType record
        */
-      $contentTypes = Doctrine::getTable('sfSympalContentType')
-        ->createQuery('t')
-        ->execute();
+      $contentTypes = $sympalConfiguration->getAllContentTypeObjects();
       foreach ($contentTypes as $contentType)
       {
-        $routes['content_type_'.$contentType->getId()] = sprintf($routeTemplate,
-          substr($contentType->getRouteName(), 1),
+        $renderingMethod = $contentType->getDefaultRenderingMethod();
+        $module = isset($renderingMethod['module']) ? $renderingMethod['module'] : sfSympalConfig::get('default_rendering_module'. null, 'sympal_content_renderer');
+        $action = isset($renderingMethod['action']) ? $renderingMethod['action'] : sfSympalConfig::get('default_rendering_action'. null, 'index');
+
+        $routes['content_type_'.$contentType->getKey()] = sprintf($routeTemplate,
+          $contentType->getRouteName(),
           $contentType->getRoutePath(),
-          $contentType->getModuleToRenderWith(),
-          $contentType->getActionToRenderWith(),
-          $contentType->name,
-          $contentType->id,
+          $module,
+          $action,
+          $contentType->getKey(),
           null,
           implode('|', sfSympalConfig::getLanguageCodes()),
           implode('|', sfSympalConfig::get('content_formats'))

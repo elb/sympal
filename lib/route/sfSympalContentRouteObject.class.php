@@ -3,7 +3,7 @@
 /**
  * Class responsible for generating the route information for a sfSympalContent
  * instance. Abstracted to this class so it can be used standalone and cached 
- * alone from the sfSympalContent instance
+ * alone from the sfSympalContentObject instance
  *
  * @package sfSympalPlugin
  * @author Jonathan H. Wage <jonwage@gmail.com>
@@ -17,18 +17,18 @@ class sfSympalContentRouteObject
     $_routeObject,
     $_routeValues;
 
-  public function __construct(sfSympalContent $content)
+  public function __construct(sfSympalContentObject $content)
   {
     $this->compile($content);
   }
 
   /**
-   * Compile all the information for the given sfSympalContent instance
+   * Compile all the information for the given sfSympalContentObject instance
    *
-   * @param sfSympalContent $content
+   * @param sfSympalContentObject $content
    * @return void
    */
-  public function compile(sfSympalContent $content)
+  public function compile(sfSympalContentObject $content)
   {
     $this->_routeName = $this->_buildRouteName($content);
     $this->_routePath = $this->_buildRoutePath($content);
@@ -146,11 +146,13 @@ class sfSympalContentRouteObject
   /**
    * Build the array of all culture values for the given content record
    *
-   * @param sfSympalContent $content 
+   * @param sfSympalContentObject $content 
    * @return array $routeValues
    */
-  protected function _buildRouteValues(sfSympalContent $content)
+  protected function _buildRouteValues(sfSympalContentObject $content)
   {
+    $contentRecord = $content->getContentRecord();
+
     $variables = $this->getRouteObject()->getVariables();
     $isI18nEnabled = sfSympalConfig::isI18nEnabled();
 
@@ -165,22 +167,22 @@ class sfSympalContentRouteObject
     {
       foreach (array_keys($variables) as $name)
       {
-        if ($isI18nEnabled && $name == 'slug' && $i18nSlug = $content->Translation[$code]->i18n_slug)
+        if ($isI18nEnabled && $name == 'slug' && $i18nSlug = $contentRecord->Translation[$code]->i18n_slug)
         {
           $values[$code][$name] = $i18nSlug;
         }
-        else if ($content->hasField($name))
+        else if ($contentRecord->hasField($name))
         {
-          if ($isI18nEnabled && isset($content->Translation[$code]->$name))
+          if ($isI18nEnabled && isset($contentRecord->Translation[$code]->$name))
           {
-            $values[$code][$name] = $content->Translation[$code]->$name;
+            $values[$code][$name] = $contentRecord->Translation[$code]->$name;
           } else {
-            $values[$code][$name] = $content->$name;
+            $values[$code][$name] = $contentRecord->$name;
           }
         }
-        else if (method_exists($content, $method = 'get'.sfInflector::camelize($name)))
+        else if (method_exists($contentRecord, $method = 'get'.sfInflector::camelize($name)))
         {
-          $values[$code][$name] = $content->$method();
+          $values[$code][$name] = $contentRecord->$method();
         }
       }
     }
@@ -190,21 +192,29 @@ class sfSympalContentRouteObject
   /**
    * Build the route name for the given content record
    *
-   * @param sfSympalContent $content 
+   * @param sfSympalContentObject $content 
    * @return string $routeName
    */
-  protected function _buildRouteName(sfSympalContent $content)
+  protected function _buildRouteName(sfSympalContentObject $content)
   {
-    if ($content->get('custom_path', false) || $content->get('module', false) || $content->get('action', false))
+    $contentRecord = $content->getContentRecord();
+
+    if ($contentRecord->get('custom_path', false) || $contentRecord->get('module', false) || $contentRecord->get('action', false))
     {
+      // The homepage "/" receives special consideration
+      if ($contentRecord->get('custom_path') == '/')
+      {
+        return 'homepage';
+      }
+
       // if custom_path OR module OR action, we have a sympal_content_% route
-      return '@sympal_content_' . $content->getUnderscoredSlug();
+      return 'sympal_content_' . $content->getUnderscoredSlug();
     }
-    else if ($content->getType()->getDefaultPath())
+    else if ($content->getTypeObject()->getData('default_path'))
     {
-      return $content->getType()->getRouteName();
+      return $content->getTypeObject()->getRouteName();
     }
-    else if ($content->getSlug())
+    else if ($contentRecord->getSlug())
     {
       return '@sympal_content_view';
     }
@@ -213,13 +223,15 @@ class sfSympalContentRouteObject
   /**
    * Build the sfRoute object for the given content record
    *
-   * @param sfSympalContent $content 
+   * @param sfSympalContentObject $content 
    * @return sfRoute $routeObject
    */
-  protected function _buildRouteObject(sfSympalContent $content)
+  protected function _buildRouteObject(sfSympalContentObject $content)
   {
+    $contentRecord = $content->getContentRecord();
+
     // Generate a route object for this content only if it has a custom path
-    if ($content->hasCustomPath())
+    if ($contentRecord->custom_path)
     {
       return new sfRoute($this->getRoutePath(), array(
         'sf_format' => 'html',
@@ -229,22 +241,24 @@ class sfSympalContentRouteObject
     }
     else
     {
-      return $content->getType()->getRouteObject();
+      return $content->getTypeObject()->getRouteObject();
     }
   }
 
   /**
    * Build the route path for the given content record
    *
-   * @param sfSympalContent $content 
+   * @param sfSympalContentObject $content 
    * @return string $routePath
    */
-  protected function _buildRoutePath(sfSympalContent $content)
+  protected function _buildRoutePath(sfSympalContentObject $content)
   {
+    $contentRecord = $content->getContentRecord();
+
     // If content has a custom path then lets use it
-    if ($content->hasCustomPath())
+    if ($contentRecord->custom_path)
     {
-      $path = $content->custom_path;
+      $path = $contentRecord->custom_path;
       if ($path != '/')
       {
         $path .= '.:sf_format';
@@ -264,8 +278,9 @@ class sfSympalContentRouteObject
      * object where we ask it to determine what its real url would have been
      * had there been more custom module and action.
      */
-    else if ($content->get('module', false) || $content->get('action', false))
+    else if ($contentRecord->get('module', false) || $contentRecord->get('action', false))
     {
+      throw new sfException('This block still needs refactoring to the new content object system.');
       $cloned = $content->copy(false);
       $cloned->module = null;
       $cloned->action = null;
@@ -273,12 +288,12 @@ class sfSympalContentRouteObject
       return $cloned->getContentRouteObject()->getEvaluatedRoutePath();
     }
     // Otherwise fallback and get route path from the content type
-    else if ($path = $content->getType()->getRoutePath())
+    else if ($path = $content->getTypeObject()->getRoutePath())
     {
       return $path;
     }
     // Default if nothing else can be found
-    else if ($content->getSlug())
+    else if ($contentRecord->getSlug())
     {
       return '/content/:slug';
     }

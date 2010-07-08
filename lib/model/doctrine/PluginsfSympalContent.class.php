@@ -6,8 +6,6 @@
 abstract class PluginsfSympalContent extends BasesfSympalContent
 {
   protected
-    $_route,
-    $_routeObject,
     $_editableSlotsExistOnPage,
     $_contentRouteObject = null;
   
@@ -379,82 +377,6 @@ abstract class PluginsfSympalContent extends BasesfSympalContent
   public function hasCustomPath()
   {
     return $this->custom_path ? true : false;
-  }
-
-  /**
-   * Returns the route object related to this content record
-   *
-   * @return sfSympalContentRouteObject
-   */
-  public function getContentRouteObject()
-  {
-    if (!$this->_contentRouteObject)
-    {
-      $this->_contentRouteObject = new sfSympalContentRouteObject($this);
-    }
-
-    return $this->_contentRouteObject;
-  }
-
-  /**
-   * Returns the url to this content
-   *
-   * @param array $options The array of url options
-   * @return string
-   */
-  public function getUrl($options = array())
-  {
-    return sfContext::getInstance()->getController()->genUrl($this->getRoute(), $options);
-  }
-
-  /**
-   * Getter for the route name
-   *
-   * @return string
-   */
-  public function getRoute()
-  {
-    return $this->getContentRouteObject()->getRoute();
-  }
-
-  /**
-   * Getter for the route path
-   *
-   * @return string
-   */
-  public function getRoutePath()
-  {
-    return $this->getContentRouteObject()->getRoutePath();
-  }
-
-  /**
-   * Getter for the route name
-   *
-   * @return string
-   */
-  public function getRouteName()
-  {
-    return $this->getContentRouteObject()->getRouteName();
-  }
-
-  /**
-   * Getter for the route object
-   *
-   * @return sfRoute
-   */
-  public function getRouteObject()
-  {
-    return $this->getContentRouteObject()->getRouteObject();
-  }
-
-  /**
-   * Getter for the evaluated route path
-   *
-   * @return string
-   */
-  public function getEvaluatedRoutePath()
-  {
-    return $this->getContentRouteObject()->getEvaluatedRoutePath();
   }
 
   /**

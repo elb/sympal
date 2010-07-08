@@ -4,10 +4,12 @@ all:
       product:
         model:    Product
         label:    Product
-        rendering_options:
+        rendering_methods:
           default:
+            label:    Default product view
             template: product/view
           other_view:
             template: product/other_view
           custom_action:
-            action:   product/customAction
+            module:   product
+            action:   customAction

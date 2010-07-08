@@ -22,6 +22,15 @@ class sfSympalPluginConfiguration extends sfPluginConfiguration
     $_cacheManager;
 
   /**
+   * @var array of sfSympalContentTypeObject
+   * @var boolean
+   */
+  protected
+    $_contentTypeObjects = array(),
+    $_allContentTypeObjectsInitialized = false,
+    $_contentObjects = array();
+
+  /**
    * sfSympalPlugin version number
    */
   const VERSION = '1.0.0-ALPHA5';
@@ -149,6 +158,9 @@ class sfSympalPluginConfiguration extends sfPluginConfiguration
   /**
    * Get a sfSympalContentRenderer instance for a given sfSympalContent instance
    *
+   * The renderer can then be output in the view, and will render the
+   * correct partial (if one was set).
+   *
    * @param sfSympalContent $content The sfSympalContent instance
    * @param string $format Optional format to render
    * @return sfSympalContentRenderer $renderer
@@ -158,6 +170,82 @@ class sfSympalPluginConfiguration extends sfPluginConfiguration
     $class = sfSympalConfig::get('content_renderer_class', null, 'sfSympalContentRenderer');
 
     return new $class($this->dispatcher, $content, $format);
+  }
+
+  /**
+   * @param  string $key The app.yml key to the content type 
+   * @return sfSympalContentTypeObject
+   */
+  public function getContentTypeObject($key)
+  {
+    if (!isset($this->_contentTypeObjects[$key]))
+    {
+      $config = sfSympalConfig::get('content_types', $key);
+
+      if (!$config)
+      {
+        throw new InvalidArgumentException(sprintf('No configuration found for content type "%s"', $key));
+      }
+
+      if (!isset($config['model']))
+      {
+        throw new sfException(sprintf('Content type configuration for "%s" is missing the "model" key.'));
+      }
+
+      if (!isset($config['rendering_methods']) || !isset($config['rendering_methods']['default']))
+      {
+        throw new sfException(sprintf('Content type configuration for "%s" is missing the "rendering_methods[default]" key.'));
+      }
+
+      $class = sfConfig::get('content_type_object_class', 'sfSympalContentTypeObject');
+      $this->_contentTypeObjects[$key] = new $class($key, $config);
+    }
+
+    return $this->_contentTypeObjects[$key];
+  }
+
+  /**
+   * Returns an array of all of the currently defined sfSympalContentTypeObject instnaces
+   *
+   * @return array of sfSympalContentTypeObject
+   */
+  public function getAllContentTypeObjects()
+  {
+    /**
+     * If all of the content type objects haven't been initialized, iterate
+     * through them and initialize each.
+     */
+    if (!$this->_allContentTypeObjectsInitialized)
+    {
+      $contentTypeKeys = array_keys(sfConfig::get('app_sympal_config_content_types', array()));
+
+      foreach ($contentTypeKeys as $contentTypeKey)
+      {
+        $this->getContentTypeObject($contentTypeKey);
+      }
+
+      $this->_allContentTypeObjectsInitialized = true;
+    }
+
+    return $this->_contentTypeObjects;
+  }
+
+  /**
+   * Retrieves the content object for the given sfSympalContent instance
+   *
+   * @param sfSympalContent $content
+   * @return sfSympalContentObject
+   */
+  public function getContentObject(sfSympalContent $content)
+  {
+    if (!isset($this->_contentObjects[$content->id]))
+    {
+      $type = $this->getContentTypeObject($content->Type->slug);
+
+      $this->_contentObjects[$content->id] = new sfSympalContentObject($content, $type);
+    }
+
+    return $this->_contentObjects[$content->id];
   }
 
   /**
