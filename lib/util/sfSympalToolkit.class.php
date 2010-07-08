@@ -74,9 +74,19 @@ class sfSympalToolkit
         // determine the rendering method - use the type's default if the method is invalid
         $renderingMethod = $typeObject->hasRenderingMethod($content->rendering_method) ? $content->rendering_method : $typeObject->getDefaultRenderingMethod();
 
+        $defaultModule = sfSympalConfig::get('default_rendering_module'. null, 'sympal_content_renderer');
+        $defaultAction = sfSympalConfig::get('default_rendering_action'. null, 'index');
+
         // figure out the module/action from the rendering method, use default if blank
-        $module = isset($renderingMethod['module']) ? $renderingMethod['module'] : sfSympalConfig::get('default_rendering_module'. null, 'sympal_content_renderer');
-        $action = isset($renderingMethod['action']) ? $renderingMethod['action'] : sfSympalConfig::get('default_rendering_action'. null, 'index');
+        $module = isset($renderingMethod['module']) ? $renderingMethod['module'] : $defaultModule;
+        $action = isset($renderingMethod['action']) ? $renderingMethod['action'] : $defaultAction;
+
+        if ($module == $defaultModule && $action == $defaultAction && !$content->custom_path)
+        {
+          // this has a custom rendering_method, but in reality, it has nothing
+          // that makes it custom, so just skip it.
+          continue;
+        }
 
         $routes['content_'.$content->getId()] = sprintf($routeTemplate,
           $content->getContentRouteObject()->getRouteName(),
