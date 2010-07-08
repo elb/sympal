@@ -55,6 +55,8 @@ class sfSympalToolkit
 
       $sympalConfiguration = sfApplicationConfiguration::getActive()
         ->getPluginConfiguration('sfSympalPlugin');
+      $defaultModule = sfSympalConfig::get('default_rendering_module'. null, 'sympal_content_renderer');
+      $defaultAction = sfSympalConfig::get('default_rendering_action'. null, 'index');
       
 
       /*
@@ -73,9 +75,6 @@ class sfSympalToolkit
         $typeObject = $content->Type->getTypeObject();
         // determine the rendering method - use the type's default if the method is invalid
         $renderingMethod = $typeObject->hasRenderingMethod($content->rendering_method) ? $content->rendering_method : $typeObject->getDefaultRenderingMethod();
-
-        $defaultModule = sfSympalConfig::get('default_rendering_module'. null, 'sympal_content_renderer');
-        $defaultAction = sfSympalConfig::get('default_rendering_action'. null, 'index');
 
         // figure out the module/action from the rendering method, use default if blank
         $module = isset($renderingMethod['module']) ? $renderingMethod['module'] : $defaultModule;
@@ -109,8 +108,8 @@ class sfSympalToolkit
         $renderingMethod = $contentType->getDefaultRenderingMethod();
         
         // figure out the module/action from the rendering method, use default if blank
-        $module = isset($renderingMethod['module']) ? $renderingMethod['module'] : sfSympalConfig::get('default_rendering_module'. null, 'sympal_content_renderer');
-        $action = isset($renderingMethod['action']) ? $renderingMethod['action'] : sfSympalConfig::get('default_rendering_action'. null, 'index');
+        $module = isset($renderingMethod['module']) ? $renderingMethod['module'] : $defaultModule;
+        $action = isset($renderingMethod['action']) ? $renderingMethod['action'] : $defaultAction;
 
         $routes['content_type_'.$contentType->getKey()] = sprintf($routeTemplate,
           $contentType->getRouteName(),
