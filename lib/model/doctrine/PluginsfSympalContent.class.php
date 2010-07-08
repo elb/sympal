@@ -6,6 +6,7 @@
 abstract class PluginsfSympalContent extends BasesfSympalContent
 {
   protected
+    $_routeObject,
     $_editableSlotsExistOnPage,
     $_contentRouteObject = null;
   
@@ -23,7 +24,7 @@ abstract class PluginsfSympalContent extends BasesfSympalContent
     {
       $typeString = $type;
 
-      $type = Doctrine_Core::getTable('sfSympalContentType')->findOneBySlug($type);
+      $type = Doctrine_Core::getTable('sfSympalContentType')->findOneByString($type);
 
       if (!$type)
       {
@@ -377,6 +378,32 @@ abstract class PluginsfSympalContent extends BasesfSympalContent
   public function hasCustomPath()
   {
     return $this->custom_path ? true : false;
+  }
+
+  /**
+   * Returns the route object related to this content record
+   *
+   * @return sfSympalContentRouteObject
+   */
+  public function getContentRouteObject()
+  {
+    if (!$this->_contentRouteObject)
+    {
+      $this->_contentRouteObject = new sfSympalContentRouteObject($this);
+    }
+
+    return $this->_contentRouteObject;
+  }
+
+  /**
+   * Returns the url to this content
+   *
+   * @param array $options The array of url options
+   * @return string
+   */
+  public function getUrl($options = array())
+  {
+    return sfContext::getInstance()->getController()->genUrl($this->getRoute(), $options);
   }
 
   /**
