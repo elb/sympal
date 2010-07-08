@@ -231,24 +231,6 @@ class sfSympalPluginConfiguration extends sfPluginConfiguration
   }
 
   /**
-   * Retrieves the content object for the given sfSympalContent instance
-   *
-   * @param sfSympalContent $content
-   * @return sfSympalContentObject
-   */
-  public function getContentObject(sfSympalContent $content)
-  {
-    if (!isset($this->_contentObjects[$content->id]))
-    {
-      $type = $this->getContentTypeObject($content->Type->slug);
-
-      $this->_contentObjects[$content->id] = new sfSympalContentObject($content, $type);
-    }
-
-    return $this->_contentObjects[$content->id];
-  }
-
-  /**
    * Mark necessary sympal classes as safe
    * 
    * These classes won't be wrapped with the output escaper
