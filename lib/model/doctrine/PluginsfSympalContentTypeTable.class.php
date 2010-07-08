@@ -4,37 +4,4 @@
  */
 class PluginsfSympalContentTypeTable extends Doctrine_Table
 {
-  public function getAllContentTypes()
-  {
-    $q = $this->createQuery('t')
-      ->orderBy('t.name ASC');
-
-    // @TODO re-enable in the correct way
-    //$q->enableSympalResultCache('sympal_get_content_types');
-
-    return $q->execute();
-  }
-
-  /**
-   * Attempts to locate an sfSympalContentType record first by querying
-   * on slug and then by querying on name.
-   *
-   * @param  string $str The slug or name of a content type record
-   * @return sfSympalContentType|null
-   */
-  public function findOneByString($str)
-  {
-    $type = $this->createQuery('t')
-      ->where('t.slug = ?', $str)
-      ->fetchOne();
-
-    if (!$type)
-    {
-      $type = $this->createQuery('t')
-        ->where('t.name = ?', $str)
-        ->fetchOne();
-    }
-
-    return $type;
-  }
 }

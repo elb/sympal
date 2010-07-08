@@ -5,7 +5,7 @@ sfSympalSite:
       fields: [name]
       indexName: site_sluggable
   columns:
-    name:                   # A common indentifier for the site
+    name:                   # A common identifier for the site
       type:    string(255)
       notnull: true
     slug:                   # The key for this site - corresponds with sfSympalConfig::getCurrentSiteName()
@@ -25,7 +25,7 @@ sfSympalContent:
     sfSympalContentModelTemplate:
     Sluggable:
       builder:      [sfSympalContent, slugBuilder]
-      uniqueBy:     [content_type_id]      
+      uniqueBy:     [content_type_id]
   columns:
     site_id:
       type:    integer
@@ -36,8 +36,6 @@ sfSympalContent:
     slug:
       type:    string(255)
       notnull: true
-    last_updated_by_id: integer
-    created_by_id:      integer
     date_published:     timestamp
     custom_path:        string(255)
     template:           string(255)
@@ -47,20 +45,12 @@ sfSympalContent:
     meta_keywords:      string(500)
     meta_description:   string(500)
     i18n_slug:          string(255)
+    last_updated_by_id: integer
+    created_by_id:      integer
   indexes:
     date_published:
       fields: [date_published]
   relations:
-    LastUpdatedBy:
-      class:        sfGuardUser
-      local:        last_updated_by_id
-      foreignAlias: LastUpdatedContent
-      onDelete:     SET NULL
-    CreatedBy:
-      class:        sfGuardUser
-      local:        created_by_id
-      foreignAlias: CreatedContent
-      onDelete:     SET NULL
     Site:
       local:        site_id
       class:        sfSympalSite
@@ -71,27 +61,26 @@ sfSympalContent:
       class:        sfSympalContentType
       onDelete:     CASCADE
       foreignAlias: Content
+    LastUpdatedBy:
+      class:        sfGuardUser
+      local:        last_updated_by_id
+      foreignAlias: LastUpdatedContent
+      onDelete:     SET NULL
+    CreatedBy:
+      class:        sfGuardUser
+      local:        created_by_id
+      foreignAlias: CreatedContent
+      onDelete:     SET NULL
 
 sfSympalContentType:
   actAs:
     sfSympalRecordTemplate:
-    Sluggable:
-      fields:    [label]
-      indexName: content_type_sluggable
   columns:
-    # The name of the model to use as the data source (e.g. sfSympalPage).
-    # Must act as sfSympalContentTypeTemplate
-    name:
-      type: string(255)
-      notnull: true
-    description: clob
-    label:
+    # The the key corresponding to the app.yml entry
+    slug:
       type: string(255)
       notnull: true
     default_path: string(255)
-    template: string(255)
-    module: string(255)
-    action: string(255)
   indexes:
-    content_type_name:
-      fields: [name]
+    content_type_slug:
+      fields: [slug]

@@ -1,9 +1,13 @@
 all:
   sympal_config:
     content_types:
-      Product:
-        content_templates:
-          default_view:
+      product:
+        model:    Product
+        label:    Product
+        rendering_options:
+          default:
             template: product/view
           other_view:
             template: product/other_view
+          custom_action:
+            action:   product/customAction

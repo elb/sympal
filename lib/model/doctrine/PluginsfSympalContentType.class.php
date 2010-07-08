@@ -12,11 +12,21 @@ abstract class PluginsfSympalContentType extends BasesfSympalContentType
     return (string) $this->getLabel();
   }
 
+  /**
+   * Returns the route name that's used for this content type
+   *
+   * @return string
+   */
   public function getRouteName()
   {
-    return '@'.str_replace('-', '_', $this->getSlug());
+    return '@'.str_replace('-', '_', $this['key']);
   }
 
+  /**
+   * Returns the url/path used for the route that represents this content type
+   *
+   * @return string
+   */
   public function getRoutePath()
   {
     $path = $this->default_path;
@@ -24,9 +34,15 @@ abstract class PluginsfSympalContentType extends BasesfSympalContentType
     {
       $path .= '.:sf_format';
     }
+
     return $path;
   }
 
+  /**
+   * Returns the actual route object for the route that represents this content type
+   *
+   * @return sfRoute
+   */
   public function getRouteObject()
   {
     if (!$this->_routeObject)
@@ -36,6 +52,7 @@ abstract class PluginsfSympalContentType extends BasesfSympalContentType
         'sf_culture' => sfConfig::get('default_culture')
       ));
     }
+
     return $this->_routeObject;
   }
 
