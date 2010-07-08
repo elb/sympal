@@ -17,7 +17,7 @@ class sfSympalContentTypeObject
   protected
     $_key,
     $_options,
-    $_contentType;
+    $_contentTypeRecord;
 
   /**
    * @var sfRoute
@@ -29,14 +29,14 @@ class sfSympalContentTypeObject
    *
    * @param  string               $key          The unique identifying key for this type object
    * @param  array                $options      The options array sourced from app.yml
-   * @param  sfSympalContentType  $contentType  An optional content type to use as a data source
+   * @param  sfSympalContentType  $contentTypeRecord  An optional content type to use as a data source
    * @return void
    */
-  public function __construct($key, $options, sfSympalContentType $contentType = null)
+  public function __construct($key, $options, sfSympalContentType $contentTypeRecord = null)
   {
     $this->_key = $key;
     $this->_options = $options;
-    $this->_contentType = $contentType;
+    $this->_contentTypeRecord = $contentTypeRecord;
   }
 
   /**
@@ -45,11 +45,13 @@ class sfSympalContentTypeObject
    *
    * @param  string $name   The option name
    * @param  mixed $default The default to return if the option doesn't exist
+   * @param  boolean $ignoreModel Whether to ignore the model and only retrieve from the raw config
+   *
    * @return mixed
    */
-  public function getOption($name, $default = null)
+  public function getOption($name, $default = null, $ignoreModel = false)
   {
-    if ($value = $this->_getDataFromContentType($name))
+    if (!$ignoreModel && $value = $this->_getDataFromContentType($name))
     {
       return $value;
     }
@@ -71,9 +73,9 @@ class sfSympalContentTypeObject
    */
   public function _getDataFromContentType($name)
   {
-    if ($this->_contentType && $this->_contentType->contains($name))
+    if ($this->getContentTypeRecord()->contains($name))
     {
-      return $this->_contentType->get($name);
+      return $this->getContentTypeRecord()->get($name);
     }
   }
 
@@ -200,5 +202,25 @@ class sfSympalContentTypeObject
     }
 
     return $this->_routeObject;
+  }
+
+  /**
+   * Returns the related content type record
+   *
+   * @return sfSympalContentType
+   */
+  public function getContentTypeRecord()
+  {
+    if(!$this->_contentTypeRecord)
+    {
+      $tbl = Doctrine_Core::getTable('sfSympalContentType');
+      $this->_contentTypeRecord = $tbl->findOneBySlug($this->getKey());
+      if (!$this->_contentTypeRecord)
+      {
+        $this->_contentTypeRecord = $tbl->createType($this->getKey());
+      }
+    }
+
+    return $this->_contentTypeRecord;
   }
 }

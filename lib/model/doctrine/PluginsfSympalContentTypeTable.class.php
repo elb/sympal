@@ -6,17 +6,18 @@ class PluginsfSympalContentTypeTable extends Doctrine_Table
 {
 
   /**
+   * Creates a new content type with some sensible defaults.
+   *
    * @param  string $slug   The key/slug identifier to give the type
-   * @param  string $model  The related content type model
    * @param  $data  $data   Any other dat that should be merged in
    * @return sfSympalContentType
    */
-  public function createType($slug, $model, $data = array())
+  public function createType($slug, $data = array())
   {
     $class = $this->getOption('name');
     $type = new $class();
     $type['slug'] = $slug;
-    $type['model'] = $model;
+    $type['default_path'] = '/'.$type['slug'].'/:slug';
     $type->fromArray($data);
 
     return $type;
