@@ -75,7 +75,7 @@ sfSympalContentType:
     sfSympalRecordTemplate:
   columns:
     # The the key corresponding to the app.yml entry
-    slug:
+    key:
       type: string(255)
       notnull: true
     default_path: string(255)

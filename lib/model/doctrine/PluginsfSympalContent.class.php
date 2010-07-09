@@ -65,7 +65,7 @@ abstract class PluginsfSympalContent extends BasesfSympalContent
    */
   public function getContentTypeClassName()
   {
-    return $this->getType()->getTypeObject()->getOption('model');
+    return $this->getType()->getTypeObject()->get('model');
   }
 
   /**
@@ -669,6 +669,27 @@ abstract class PluginsfSympalContent extends BasesfSympalContent
     {
       return 'unpublished';
     }
+  }
+
+  /**
+   * For a data that exists both in sfSympalContent and sfSympalContentType
+   * (either in the model or in the config), this will return the value from
+   * the sfSympalContent object if it exists and default to sfSympalContentType
+   * object otherwise.
+   *
+   * This gives us a type of cascading configuration.
+   *
+   * @param  string $name The name of the field to look for
+   * @return void
+   */
+  public function getContentOption($name, $default = null)
+  {
+    if ($this->contains($name) && $value = $this->get($name))
+    {
+      return $value;
+    }
+
+    return $this->Type->getTypeObject()->get($name, $default);
   }
 
   /**

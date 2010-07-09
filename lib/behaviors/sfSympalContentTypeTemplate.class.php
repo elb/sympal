@@ -24,6 +24,8 @@ class sfSympalContentTypeTemplate extends sfSympalRecordTemplate
     parent::setTableDefinition();
 
     $this->hasColumn('content_id', 'integer');
+
+    $this->addListener(new sfSympalContentTypeListener($this->_options));
   }
 
   /**

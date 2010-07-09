@@ -206,7 +206,7 @@ class sfSympalContentRouteObject
       // if custom_path OR module OR action, we have a sympal_content_% route
       return 'sympal_content_' . $content->getUnderscoredSlug();
     }
-    else if ($content->Type->getTypeObject()->getData('default_path'))
+    else if ($content->Type->getTypeObject()->get('default_path'))
     {
       return $content->Type->getTypeObject()->getRouteName();
     }

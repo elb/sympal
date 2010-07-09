@@ -261,4 +261,31 @@ class sfSympalConfig extends sfConfig
       return false;
     }
   }
+
+  /**
+   * Attempts to look through all of the content_types to find one that
+   * matches the given model. This is used when a content type model is
+   * trying to guess its content type.
+   *
+   * If there are multiple content types configured for a given model,
+   * this will use the first it finds. In those cases, the ContentType
+   * should be manually set so the record doesn't have to guess.
+   *
+   * @static
+   * @throws sfException
+   * @param  string $model The model to match up to a content type
+   * @return string
+   */
+  public static function getContentTypeKeyFromModel($model)
+  {
+    foreach (self::get('content_types', null, array()) as $key => $typeArr)
+    {
+      if (isset($typeArr) && $typeArr['model'] == $model)
+      {
+        return $key;
+      }
+    }
+
+    throw new sfException(sprintf('Could not find content type for model "%s"', $model));
+  }
 }
