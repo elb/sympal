@@ -91,7 +91,7 @@ abstract class PluginsfSympalContent extends BasesfSympalContent
     }
 
     // check the content type record
-    $className = $this->getType()->getName();
+    $className = $this->getType()->getTypeObject()->get('model');
     if (Doctrine_Core::getTable($className)->hasField($name))
     {
       return true;
