@@ -65,3 +65,37 @@ function create_guard_user($username, $data = array())
 
   return $user;
 }
+
+function has_filter(lime_test $t, Doctrine_Record $record, $filterClass)
+{
+  foreach ($record->getTable()->getFilters() as $filter)
+  {
+    if (get_class($filter) == $filterClass)
+    {
+      $t->pass(sprintf('Filter %s is on this record', $filterClass));
+
+      return;
+    }
+  }
+
+  $t->fail(sprintf('Filter %s is NOT on this record', $filterClass));
+}
+
+function has_listener(lime_test $t, Doctrine_Record $record, $listenerClass)
+{
+  $i = 0;
+  $listeners = array();
+  while ($listener = $record->getTable()->getRecordListener()->get($i++))
+  {
+    if (get_class($listener) == $listenerClass)
+    {
+      $t->pass(sprintf('Listener %s is on this record', $listenerClass));
+
+      return;
+    }
+
+    $listeners[] = get_class($listener);
+  }
+
+  $t->fail(sprintf('Listener %s is NOT on this record (%s)', $listenerClass, implode(', ', $listeners)));
+}
