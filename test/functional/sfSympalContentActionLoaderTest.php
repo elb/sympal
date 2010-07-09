@@ -26,12 +26,11 @@ $browser->info('1 - Test 404 handler with no site object - will create the recor
   ->end()
 ;
 
-create_content_type($browser->test(), 'Product');
-$content = sfSympalContent::createNew('Product');
-$content->Product->name = 'Some product';
-$content->meta_keywords = 'keyword test';
-$content->meta_description = 'foo bar';
-$content->save();
+$product = new Product();
+$product->name = 'Some product';
+$product->Content->meta_keywords = 'keyword test';
+$product->Content->meta_description = 'foo bar';
+$product->save();
 
 $browser->info('  1.2 - Surf back to the no content route, with a content record in the db')
   ->get('/content-action-loader/content/fake')
@@ -44,7 +43,7 @@ $browser->info('  1.2 - Surf back to the no content route, with a content record
 
 $browser->info('2 - Load a real piece of content')
   ->info('  2.1 - Load an unpublished piece of content')
-  ->get('/content-action-loader/content/'.$content->id)
+  ->get('/content-action-loader/content/'.$product->Content->id)
 
   ->isForwardedTo('sympal_default', 'unpublished_content')
 
@@ -58,11 +57,11 @@ $siteManager = $browser->getContext()
   ->getSiteManager();
 
 $browser->test()->is(get_class($siteManager->getSite()), 'sfSympalSite', 'The site record is set');
-$browser->test()->is($siteManager->getCurrentContent()->id, $content->id, 'The current content record is set');
+$browser->test()->is($siteManager->getCurrentContent()->id, $product->Content->id, 'The current content record is set');
 
 $browser->info('  2.2 - Load a real, published piece of content');
-$content->publish();
-$browser->get('/content-action-loader/content/'.$content->id)
+$product->Content->publish();
+$browser->get('/content-action-loader/content/'.$product->Content->id)
 
   ->with('response')->begin()
     ->isStatusCode(200)
@@ -75,7 +74,7 @@ $browser->test()->ok(strpos($response, '<meta name="keywords" content="keyword t
 $browser->test()->ok(strpos($response, '<meta name="description" content="foo bar" />') !== false, 'The meta description is set.');
 
 $browser->info('3 - Goto the url with an alternative sf_format, see that the request is faked out.')
-  ->get('/content-action-loader/content/'.$content->id.'.xml')
+  ->get('/content-action-loader/content/'.$product->Content->id.'.xml')
 
   ->with('request')->begin()
     ->info('  3.1 - The sf_format is xml')
