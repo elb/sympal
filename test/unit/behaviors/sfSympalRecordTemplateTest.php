@@ -2,7 +2,7 @@
 
 require_once(dirname(__FILE__).'/../../bootstrap/functional.php');
 
-$t = new lime_test(8);
+$t = new lime_test(9);
 
 $product = new Product();
 
@@ -12,6 +12,7 @@ $t->info('1 - Test that all the correct filters are set');
     'sfSympalDoctrineRecordI18nFilter',
     'sfSympalRecordEventFilter',
     'Doctrine_Record_Filter_Standard',
+    'sfSympalContentTypeFilter', // actually comes from sfSympalContenTypeTemplate
   );
 
   foreach ($filters as $filter)
