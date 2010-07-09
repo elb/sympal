@@ -195,7 +195,7 @@ class sfSympalContentRouteObject
    */
   protected function _buildRouteName(sfSympalContent $content)
   {
-    if ($content->get('custom_path', false) || $content->get('module', false) || $content->get('action', false))
+    if ($content->get('custom_path', false) || $content->get('rendering_method', false))
     {
       // The homepage "/" receives special consideration
       if ($content->get('custom_path') == '/')
@@ -247,8 +247,6 @@ class sfSympalContentRouteObject
    */
   protected function _buildRoutePath(sfSympalContent $content)
   {
-    $content = $content->getContentRecord();
-
     // If content has a custom path then lets use it
     if ($content->custom_path)
     {
@@ -272,12 +270,10 @@ class sfSympalContentRouteObject
      * object where we ask it to determine what its real url would have been
      * had there been more custom module and action.
      */
-    else if ($content->get('module', false) || $content->get('action', false))
+    else if ($content->get('rendering_method', false))
     {
-      throw new sfException('This block still needs refactoring to the new content object system.');
       $cloned = $content->copy(false);
-      $cloned->module = null;
-      $cloned->action = null;
+      $cloned->rendering_method = null;
       
       return $cloned->getContentRouteObject()->getEvaluatedRoutePath();
     }
