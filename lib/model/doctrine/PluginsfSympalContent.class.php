@@ -13,8 +13,8 @@ abstract class PluginsfSympalContent extends BasesfSympalContent
   /**
    * Initializes a new sfSympalContent for the given type
    * 
-   * @param   mixed $type Specify either the name of the content type (e.g. sfSympalPage)
-   *                      or pass in a sfSympalContentType object
+   * @param   mixed $type Specify either the key of the sfSympalContentTypeObject
+   *                      or pass in a sfSympalContentTypeObject itself
    * 
    * @return  sfSympalContent
    */
@@ -22,27 +22,27 @@ abstract class PluginsfSympalContent extends BasesfSympalContent
   {
     if (is_string($type))
     {
-      $typeString = $type;
-
-      $type = Doctrine_Core::getTable('sfSympalContentType')->findOneByString($type);
-
-      if (!$type)
-      {
-        throw new InvalidArgumentException(sprintf('Could not find Sympal Content Type named "%s"', $typeString));
-      }
+      $type = sfApplicationConfiguration::getActive()
+        ->getPluginConfiguration('sfSympalPlugin')
+        ->getContentTypeObject($type);
     }
 
-    if (!$type instanceof sfSympalContentType)
+    if (!$type instanceof sfSympalContentTypeObject)
     {
       $type = is_object($type) ? get_class($type) : gettype($type);
 
       throw new InvalidArgumentException(sprintf('Invalid Content Type. Expected sfSympalContentType, got %s', $type));
     }
 
-    $name = $type->name;
+    if (!$type->getContentTypeRecord())
+    {
+      throw new sfException('sfSympalContentObject must have a content record.');
+    }
+
+    $name = $type->getOption('model');
 
     $content = new sfSympalContent();
-    $content->Type = $type;
+    $content->Type = $type->getContentTypeRecord();
     $content->$name = new $name();
 
     return $content;
@@ -65,7 +65,7 @@ abstract class PluginsfSympalContent extends BasesfSympalContent
    */
   public function getContentTypeClassName()
   {
-    return $this->getType()->getName();
+    return $this->getType()->getTypeObject()->getOption('model');
   }
 
   /**

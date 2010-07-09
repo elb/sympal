@@ -11,12 +11,6 @@ require_once $configuration->getSymfonyLibDir().'/vendor/lime/lime.php';
 
 $t = new lime_test(4);
 
-$t->info('...create a content type for Product');
-$type = new sfSympalContentType();
-$type->name = 'Product';
-$type->label = 'Product';
-$type->save();
-
 $t->info('...create a Content record linking to Product');
 $content = sfSympalContent::createNew('product');
 $content->Product->name = 'test product';
