@@ -5,11 +5,10 @@ require_once(dirname(__FILE__).'/../../../bootstrap/functional.php');
 $t = new lime_test(10);
 $tbl = Doctrine_Core::getTable('sfSympalContent');
 
-create_content_type($t, 'Product');
-$content = create_content($t, 'Product');
-$user = create_guard_user('admin');
-$content->CreatedBy = $user;
-$content->save();
+$product = new Product();
+$user = Doctrine_Core::getTable('sfGuardUser')->findOneByUsername('admin');
+$product->Content->CreatedBy = $user;
+$product->save();
 $tbl->clear();
 
 $t->info('1 - Test getTypeQuery() and getFullTypeQuery()');
