@@ -81,7 +81,7 @@ class sfSympalContentTypeTemplate extends sfSympalRecordTemplate
    * @param string $alias The alias used for the sfSympalContent model
    * @return Doctrine_Query
    */
-  public function getBaseContentQuery($alias = 'cr')
+  public function getBaseContentQueryTableProxy($alias = 'cr')
   {
     $tbl = $this->getInvoker()->getTable();
     
@@ -129,32 +129,15 @@ class sfSympalContentTypeTemplate extends sfSympalRecordTemplate
    * @param array $params The params passed in from the route
    * @return Doctrine_Record
    */
-  public function fetchFromRouting(array $params)
+  public function fetchFromRoutingTableProxy(array $params)
   {
-    $contentType = $params['sympal_content_type'];
-    $contentId = $params['sympal_content_id'];
+    $tbl = $this->getInvoker()->getTable();
+    $contentTbl = $tbl->getRelation('Content')->getTable();
+    
+    $contentSlug = $params['slug'];
+    $contentId = $params['content_id'];
 
-    if (($contentId || $contentSlug) && !$contentType && !$contentTypeId)
-    {
-      if ($contentId)
-      {
-        $type = $this->getContentRecordsTypeBy('id', $contentId);
-      }
-      else if ($contentSlug)
-      {
-        $type = $this->getContentRecordsTypeBy('slug', $contentSlug);
-      }
-
-      if ($type)
-      {
-        $contentType = $type->getName();
-      }
-      else
-      {
-        return false;
-      }
-    }
-    $q = $this->getBaseContentQuery();
+    $q = $this->getInvoker()->getTable()->getBaseContentQuery();
 
     // If we have an explicit content id
     if ($contentId)
@@ -165,7 +148,7 @@ class sfSympalContentTypeTemplate extends sfSympalRecordTemplate
     }
     else if ($contentSlug)
     {
-      if ($this->hasRelation('Translation') && $this->getRelation('Translation')->getTable()->hasField('slug'))
+      if ($contentTbl->hasRelation('Translation') && $contentTbl->getRelation('Translation')->getTable()->hasField('slug'))
       {
         $q->andWhere('c.slug = ? OR ct.i18n_slug = ?', array($contentSlug, $contentSlug));
       }
@@ -183,34 +166,30 @@ class sfSympalContentTypeTemplate extends sfSympalRecordTemplate
       $paramFound = false;
       foreach ($params as $key => $value)
       {
-        if ($key == 'slug' && $this->hasRelation('Translation'))
+        if ($contentTbl->hasField($key))
         {
-          $paramFound = true;
-          $q->andWhere('c.slug = ? OR ct.i18n_slug = ?', array($value, $value));
-          continue;
-        }
-
-        if ($this->hasField($key))
-        {
+          // found on the Content record
           $paramFound = true;
           $q->andWhere('c.'.$key.' = ?', $value);
         }
-        else if ($this->hasRelation('Translation') && $this->getRelation('Translation')->getTable()->hasField($key))
+        else if ($contentTbl->hasRelation('Translation') && $contentTbl->getRelation('Translation')->getTable()->hasField($key))
         {
+          // found on the Content->Translation record
           $paramFound = true;
           $q->andWhere('ct.'.$key, $value);
         }
-        else if ($this->getRelation($contentType)->getTable()->hasField($key))
+        if ($tbl->hasField($key))
         {
+          // found on the invoker record
           $paramFound = true;
           $q->andWhere('cr.'.$key.' = ?', $value);
         }
-      }
-
-      // If no params were found to add a condition on lets find where slug = action_name
-      if (!$paramFound)
-      {
-        $q->andWhere('c.slug = ?', $request->getParameter('action'));
+        else if ($tbl->hasRelation('Translation') && $tbl->getRelation('Translation')->getTable()->hasField($key))
+        {
+          // found on the invoker translation record
+          $paramFound = true;
+          $q->andWhere('crt.'.$key, $value);
+        }
       }
     }
 
