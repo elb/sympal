@@ -5,6 +5,7 @@ Product:
     price:  double
   actAs:
     sfSympalContentTypeTemplate:
+      filter_fields:   [slug, page_title]
 
 ProductPhoto:
   columns:
