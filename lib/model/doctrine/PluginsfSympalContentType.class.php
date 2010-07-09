@@ -19,6 +19,6 @@ abstract class PluginsfSympalContentType extends BasesfSympalContentType
   {
     return sfApplicationConfiguration::getActive()
       ->getPluginConfiguration('sfSympalPlugin')
-      ->getContentTypeObject($this->slug);
+      ->getContentTypeObject($this->key);
   }
 }

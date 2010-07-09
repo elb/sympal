@@ -1,6 +1,6 @@
 <?php
 
-class sfSympalContentTypeListener extends Doctrine_Template_Listener
+class sfSympalContentTypeListener extends Doctrine_Record_Listener
 {
   /**
    * @var array
@@ -29,16 +29,16 @@ class sfSympalContentTypeListener extends Doctrine_Template_Listener
     $record = $event->getInvoker();
 
     // if the content type appears to already be setup, leave it.
-    if ($record['Content']['ContentType']['key'])
+    if ($record['Content']['Type']['key'])
     {
       return;
     }
 
     // find a content type key by the model
     $key = sfSympalConfig::getContentTypeKeyFromModel($record->getTable()->getOption('name'));
-    $contentType = Doctrine_Core::getTable('sfSympalContent')->getOrCreateType($key);
+    $contentType = Doctrine_Core::getTable('sfSympalContentType')->getOrCreateType($key);
 
     // attach the content type to the Content record
-    $record['Content']['ContentType'] = $contentType;
+    $record['Content']['Type'] = $contentType;
   }
 }

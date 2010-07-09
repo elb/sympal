@@ -80,5 +80,5 @@ sfSympalContentType:
       notnull: true
     default_path: string(255)
   indexes:
-    content_type_slug:
-      fields: [slug]
+    content_type_key:
+      fields: [key]

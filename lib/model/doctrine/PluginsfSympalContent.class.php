@@ -9,13 +9,13 @@ abstract class PluginsfSympalContent extends BasesfSympalContent
     $_routeObject,
     $_editableSlotsExistOnPage,
     $_contentRouteObject = null;
-  
+
   /**
    * Initializes a new sfSympalContent for the given type
-   * 
+   *
    * @param   mixed $type Specify either the key of the sfSympalContentTypeObject
    *                      or pass in a sfSympalContentTypeObject itself
-   * 
+   *
    * @return  sfSympalContent
    */
   public static function createNew($type)
@@ -39,7 +39,7 @@ abstract class PluginsfSympalContent extends BasesfSympalContent
       throw new sfException('sfSympalContentObject must have a content record.');
     }
 
-    $name = $type->getOption('model');
+    $name = $type['model'];
 
     $content = new sfSympalContent();
     $content->Type = $type->getContentTypeRecord();
@@ -97,11 +97,13 @@ abstract class PluginsfSympalContent extends BasesfSympalContent
    */
   public function getRecord()
   {
-    if ($this['Type']['name'])
+    if ($this['Type']['key'])
     {
-      Doctrine_Core::initializeModels(array($this['Type']['name']));
+      $model = $this['Type']->getTypeObject()->getModel();
 
-      return $this[$this['Type']['name']];
+      Doctrine_Core::initializeModels(array($model));
+
+      return $this[$model];
     }
     else
     {
@@ -229,7 +231,7 @@ abstract class PluginsfSympalContent extends BasesfSympalContent
   public function getFormatData($format)
   {
     $method = 'get'.ucfirst($format).'FormatData';
-    
+
     if (method_exists($this->getContentTypeClassName(), $method))
     {
       $data = $this->getRecord()->$method();
@@ -392,7 +394,7 @@ abstract class PluginsfSympalContent extends BasesfSympalContent
         return $record->slugBuilder($text);
       }
       catch (Doctrine_Record_UnknownPropertyException $e)
-      {        
+      {
       }
     }
 
@@ -401,15 +403,15 @@ abstract class PluginsfSympalContent extends BasesfSympalContent
 
   /**
    * This gets the correct template to render with
-   * 
+   *
    * The process is this:
    *   1) Look first on the content record itself for a template "name"
    *   2) Look next on the type record for a template "name"
-   * 
+   *
    * We then retrieve the actual template (module/template) by looking
    * under the "content_templates" key of the current content template's
    * configuration for the template "name".
-   * 
+   *
    * If all else fails, the "default_view" template name of the current
    * content type config will be used
    */
@@ -444,13 +446,13 @@ abstract class PluginsfSympalContent extends BasesfSympalContent
    *
    * Renders the theme name with which this Content should be rendered.
    * Priority is in this order
-   * 
+   *
    *   * Content->theme
    *   * ContentType->theme
    *   * Site->theme
-   * 
+   *
    * If none of the above are found, this Content record has no theme preference
-   * 
+   *
    * @return string
    */
   public function getThemeToRenderWith()
@@ -510,7 +512,7 @@ abstract class PluginsfSympalContent extends BasesfSympalContent
 
     // delete content from accociated content type table
     $this->getRecord()->delete();
-    
+
     return parent::delete($conn);
   }
 
@@ -635,12 +637,12 @@ abstract class PluginsfSympalContent extends BasesfSympalContent
     }
     return $searchData;
   }*/
-  
+
   /**
    * @TODO refactor this for the new system
    *
    * Used by sfSympalContentSlot to render the created_at_id slot value
-   * 
+   *
    * @see sfSympalContentSlot::getValueForRendering()
    * @return string
    */
@@ -648,12 +650,12 @@ abstract class PluginsfSympalContent extends BasesfSympalContent
   {
     return $this->created_by_id ? $this->CreatedBy->username : 'nobody';
   }
-  
+
   /**
    * @TODO refactor this for the new system
-   * 
+   *
    * Used by sfSympalContentSlot to render the date_published slot value
-   * 
+   *
    * @see sfSympalContentSlot::getValueForRendering()
    * @return string
    */
