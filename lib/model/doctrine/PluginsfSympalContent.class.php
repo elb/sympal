@@ -11,44 +11,6 @@ abstract class PluginsfSympalContent extends BasesfSympalContent
     $_contentRouteObject = null;
 
   /**
-   * Initializes a new sfSympalContent for the given type
-   *
-   * @param   mixed $type Specify either the key of the sfSympalContentTypeObject
-   *                      or pass in a sfSympalContentTypeObject itself
-   *
-   * @return  sfSympalContent
-   */
-  public static function createNew($type)
-  {
-    if (is_string($type))
-    {
-      $type = sfApplicationConfiguration::getActive()
-        ->getPluginConfiguration('sfSympalPlugin')
-        ->getContentTypeObject($type);
-    }
-
-    if (!$type instanceof sfSympalContentTypeObject)
-    {
-      $type = is_object($type) ? get_class($type) : gettype($type);
-
-      throw new InvalidArgumentException(sprintf('Invalid Content Type. Expected sfSympalContentType, got %s', $type));
-    }
-
-    if (!$type->getContentTypeRecord())
-    {
-      throw new sfException('sfSympalContentObject must have a content record.');
-    }
-
-    $name = $type['model'];
-
-    $content = new sfSympalContent();
-    $content->Type = $type->getContentTypeRecord();
-    $content->$name = new $name();
-
-    return $content;
-  }
-
-  /**
    * Returns the slug with underscores instead of dashes
    *
    * Used when creating routes for content records with a custom_path
