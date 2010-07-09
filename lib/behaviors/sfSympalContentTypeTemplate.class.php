@@ -13,6 +13,27 @@
  */
 class sfSympalContentTypeTemplate extends sfSympalRecordTemplate
 {
+  protected $_options = array(
+    // options that will be passed to the internal sluggable behavior
+    'sluggable' => array(
+      'name'          => 'slug',
+      'unique'        => false,
+      'uniqueBy'      =>  array(),
+      'uniqueIndex'   =>  true,
+      'canUpdate'     => false,
+      'fields'        =>  array(),
+      'builder'       =>  array('Doctrine_Inflector', 'urlize'),
+      'provider'      =>  null,
+      'indexName'     =>  null,
+    ),
+
+    // Any fields listed here exist on the related sfSympalContent record
+    // but can be get/set as if they were on this record.
+    'filter_fields' => array(
+      'slug'
+    ),
+  );
+
   /**
    * Hook into the content type models setTableDefinition() process and add 
    * a content_id column
@@ -26,6 +47,9 @@ class sfSympalContentTypeTemplate extends sfSympalRecordTemplate
     $this->hasColumn('content_id', 'integer');
 
     $this->addListener(new sfSympalContentTypeListener($this->_options));
+    $this->addListener(new Doctrine_Template_Listener_Sluggable($this->_options['sluggable']));
+
+    $this->_table->unshiftFilter(new sfSympalContentTypeFilter($this->_options['filter_fields']));
   }
 
   /**

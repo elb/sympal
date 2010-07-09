@@ -73,15 +73,7 @@ abstract class PluginsfSympalContent extends BasesfSympalContent
    */
   public function __toString()
   {
-    return $this->getHeaderTitle();
-  }
-
-  /**
-   * @return string
-   */
-  public function getTitle()
-  {
-    return $this->getHeaderTitle();
+    return $this->Record->__toString();
   }
 
   /**
@@ -176,37 +168,6 @@ abstract class PluginsfSympalContent extends BasesfSympalContent
   {
     $this->date_published = null;
     $this->save();
-  }
-
-  /**
-   * Attempts to retrieve some sort of "title" for this record by seeing
-   * if the content type record has a series of title-like columns
-   *
-   * @return string
-   */
-  public function getHeaderTitle()
-  {
-    if ($record = $this->getRecord())
-    {
-      $guesses = array('name',
-                       'title',
-                       'username',
-                       'subject');
-
-      // we try to guess a column which would give a good description of the object
-      foreach ($guesses as $descriptionColumn)
-      {
-        try
-        {
-          return (string) $record->get($descriptionColumn);
-        }
-        catch (Doctrine_Record_UnknownPropertyException $e) {}
-      }
-
-      return (string) $this;
-    }
-
-    return sprintf('No description for object of class "%s"', $this->getTable()->getComponentName());
   }
 
   /**
@@ -372,33 +333,6 @@ abstract class PluginsfSympalContent extends BasesfSympalContent
   public function getUrl($options = array())
   {
     return sfContext::getInstance()->getController()->genUrl($this->getRoute(), $options);
-  }
-
-  /**
-   * Used by Sluggable to create the slug for this record.
-   *
-   * If a method called "slugBuilder" exists on the content type record,
-   * that will be called to retrieve the slug.
-   *
-   * @static
-   * @param  string $text The text to slug
-   * @param  sfSympalContent $content
-   * @return string
-   */
-  public static function slugBuilder($text, sfSympalContent $content)
-  {
-    if ($record = $content->getRecord())
-    {
-      try
-      {
-        return $record->slugBuilder($text);
-      }
-      catch (Doctrine_Record_UnknownPropertyException $e)
-      {
-      }
-    }
-
-    return Doctrine_Inflector::urlize($text);
   }
 
   /**

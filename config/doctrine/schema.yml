@@ -22,10 +22,6 @@ sfSympalContent:
   actAs:
     Timestampable:
     sfSympalRecordTemplate:
-    sfSympalContentModelTemplate:
-    Sluggable:
-      builder:      [sfSympalContent, slugBuilder]
-      uniqueBy:     [content_type_id]
   columns:
     site_id:
       type:    integer
