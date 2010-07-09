@@ -11,5 +11,6 @@ all:
           other_view:
             template: product/other_view
           custom_action:
-            module:   product
             action:   customAction
+          custom_module:
+            module:   product

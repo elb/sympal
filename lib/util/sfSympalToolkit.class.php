@@ -30,13 +30,12 @@ class sfSympalToolkit
     module: %s
     action: %s
     sf_format: html
-    sympal_content_type: %s
     sympal_content_id: %s
   class: sfDoctrineRoute
   options:
-    model: sfSympalContent
+    model: %s
     type: object
-    method: getContent
+    method: fetchFromRouting
     allow_empty: true
   requirements:
     sf_culture:  (%s)
@@ -55,9 +54,8 @@ class sfSympalToolkit
 
       $sympalConfiguration = sfApplicationConfiguration::getActive()
         ->getPluginConfiguration('sfSympalPlugin');
-      $defaultModule = sfSympalConfig::get('default_rendering_module'. null, 'sympal_content_renderer');
-      $defaultAction = sfSympalConfig::get('default_rendering_action'. null, 'index');
-      
+      $defaultModule = sfSympalConfig::get('default_rendering_module', null, 'sympal_content_renderer');
+      $defaultAction = sfSympalConfig::get('default_rendering_action', null, 'index');
 
       /*
        * Step 1) Process all sfSympalContent records with a custom_path,
@@ -74,7 +72,7 @@ class sfSympalToolkit
       {
         $typeObject = $content->Type->getTypeObject();
         // determine the rendering method - use the type's default if the method is invalid
-        $renderingMethod = $typeObject->hasRenderingMethod($content->rendering_method) ? $content->rendering_method : $typeObject->getDefaultRenderingMethod();
+        $renderingMethod = $typeObject->hasRenderingMethod($content->rendering_method) ? $typeObject->getRenderingMethod($content->rendering_method) : $typeObject->getDefaultRenderingMethod();
 
         // figure out the module/action from the rendering method, use default if blank
         $module = isset($renderingMethod['module']) ? $renderingMethod['module'] : $defaultModule;
@@ -92,8 +90,8 @@ class sfSympalToolkit
           $content->getContentRouteObject()->getRoutePath(),
           $module,
           $action,
-          $typeObject->getKey(),
           $content->id,
+          $content->Record->getTable()->getOption('name'),
           implode('|', sfSympalConfig::getLanguageCodes()),
           implode('|', sfSympalConfig::get('content_formats'))
         );
@@ -116,8 +114,8 @@ class sfSympalToolkit
           $contentType->getRoutePath(),
           $module,
           $action,
-          $contentType->getKey(),
           null,
+          $contentType->getContentTypeRecord()->getTable()->getOption('name'),
           implode('|', sfSympalConfig::getLanguageCodes()),
           implode('|', sfSympalConfig::get('content_formats'))
         );
