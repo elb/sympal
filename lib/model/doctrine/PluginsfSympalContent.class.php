@@ -6,9 +6,7 @@
 abstract class PluginsfSympalContent extends BasesfSympalContent
 {
   protected
-    $_routeObject,
-    $_editableSlotsExistOnPage,
-    $_contentRouteObject = null;
+    $_contentRouteObject;
 
   /**
    * Returns the slug with underscores instead of dashes
@@ -130,14 +128,6 @@ abstract class PluginsfSympalContent extends BasesfSympalContent
   {
     $this->date_published = null;
     $this->save();
-  }
-
-  /**
-   * @deprecated
-   */
-  public function getEditRoute()
-  {
-    throw new sfException('Method deprecated. Use @sympal_content_edit?id=ID.');
   }
 
   /**
@@ -337,42 +327,6 @@ abstract class PluginsfSympalContent extends BasesfSympalContent
     return $templates[$templateName]['template'];
   }
 
-  /**
-   * @TODO think about where to put the theme logic
-   *
-   * Renders the theme name with which this Content should be rendered.
-   * Priority is in this order
-   *
-   *   * Content->theme
-   *   * ContentType->theme
-   *   * Site->theme
-   *
-   * If none of the above are found, this Content record has no theme preference
-   *
-   * @return string
-   */
-  public function getThemeToRenderWith()
-  {
-    if ($theme = $this->getTheme())
-    {
-      return $theme;
-    }
-    else if ($theme = $this->getType()->getTheme())
-    {
-      return $theme;
-    }
-    else if ($theme = $this->getSite()->getTheme())
-    {
-      return $theme;
-    }
-  }
-
-/* @TODO put this in the search plugin
-  public function disableSearchIndexUpdateForSave()
-  {
-    $this->_updateSearchIndex = false;
-  }*/
-
   public function save(Doctrine_Connection $conn = null)
   {
     if (!$this->relatedExists('Site'))
@@ -383,29 +337,11 @@ abstract class PluginsfSympalContent extends BasesfSympalContent
 
     $result = parent::save($conn);
 
-/*  @TODO put this in the search plugin
-    if ($this->_updateSearchIndex)
-    {
-      sfSympalSearch::getInstance()->updateSearchIndex($this);
-    }
-
-    $this->_updateSearchIndex = true;*/
-
     return $result;
   }
 
   public function delete(Doctrine_Connection $conn = null)
   {
-/*  @TODO put this back into the search plugin
-    if ($this->_updateSearchIndex)
-    {
-      $index = sfSympalSearch::getInstance()->getIndex();
-      foreach ($index->find('pk:'.$this->getId()) as $hit)
-      {
-        $index->delete($hit->id);
-      }
-    }*/
-
     // delete content from accociated content type table
     $this->getRecord()->delete();
 
@@ -499,41 +435,6 @@ abstract class PluginsfSympalContent extends BasesfSympalContent
     }
   }
 
-/* @TODO put this back in the search plugin
-  public function getSearchData()
-  {
-    $searchData = array();
-    $clone = clone $this;
-    $data = $clone->toArray(false);
-    if ($data)
-    {
-      foreach ($data as $key => $value)
-      {
-        if (is_scalar($value))
-        {
-          $searchData[$key] = $value;
-        }
-      }
-    }
-    $data = $clone->getRecord()->toArray(false);
-    if ($data)
-    {
-      foreach ($data as $key => $value)
-      {
-        if (is_scalar($value))
-        {
-          $searchData[$key] = $value;
-        }
-      }
-    }
-    foreach ($this->getSlots() as $slot)
-    {
-      $slot->setContentRenderedFor($this);
-      $searchData[$slot->getName()] = $slot->getValue();
-    }
-    return $searchData;
-  }*/
-
   /**
    * @TODO refactor this for the new system
    *
@@ -588,21 +489,5 @@ abstract class PluginsfSympalContent extends BasesfSympalContent
     }
 
     return $this->Type->getTypeObject()->get($name, $default);
-  }
-
-  /**
-   * @TODO refactor
-   */
-  public function setEditableSlotsExistOnPage($bool)
-  {
-    $this->_editableSlotsExistOnPage = $bool;
-  }
-
-  /**
-   * @TODO refactor
-   */
-  public function getEditableSlotsExistOnPage()
-  {
-    return $this->_editableSlotsExistOnPage;
   }
 }

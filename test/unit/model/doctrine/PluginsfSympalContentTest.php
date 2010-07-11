@@ -4,22 +4,10 @@ require_once(dirname(__FILE__).'/../../../bootstrap/functional.php');
 
 $t = new lime_test(29);
 $tbl = Doctrine_Core::getTable('sfSympalContent');
-$type = create_content_type($t, 'Product');
 
-$t->info('1 - Test the ::createNew() method');
-
-  $t->info('  1.1 - Passing in an invalid type throws an exception');
-    test_create_new_bad_type($t, 'fake');
-    test_create_new_bad_type($t, new stdClass());
-    test_create_new_bad_type($t, array());
-
-  $t->info('  1.2 - Create a new type successfully.');
-    $content = sfSympalContent::createNew('Product');
-    $content->save();
-    $t->is($content->Type->id, $type->id, '::createNew() creates with the correct type');
-    $t->ok($content->relatedExists('Product'), '::createNew() creates the correct content type relation');
-    $productCount = Doctrine_Query::create()->from('Product')->count();
-    $t->is($productCount, 1, '::createNew() (after a save) results in exactly one Product record.');
+$product = new Product();
+$product->save();
+$content = $product->Content;
 
 $t->info('2 - Test some published functions.');
 
@@ -52,14 +40,14 @@ $t->info('2 - Test some published functions.');
 
 $t->info('3 - Test some basic functions.');
 
-  $t->info('  3.1 - Test getModuleToRenderWith() & getModuleToRenderWith()');
+/*  $t->info('  3.1 - Test getModuleToRenderWith() & getModuleToRenderWith()');
     $t->is($content->getModuleToRenderWith(), $type->getModuleToRenderWith(), '->getModuleToRenderWith() returns the type\'s module if no module is explicitly set.');
     $content->module = 'unit_test';
     $t->is($content->getModuleToRenderWith(), 'unit_test', '->getModuleToRenderWith() returns the module set on the content record if set.');
 
     $t->is($content->getActionToRenderWith(), $type->getActionToRenderWith(), '->getActionToRenderWith() returns the type\'s action if no action is explicitly set.');
     $content->action = 'unit_test_action';
-    $t->is($content->getActionToRenderWith(), 'unit_test_action', '->getActionToRenderWith() returns the action set on the content record if set.');
+    $t->is($content->getActionToRenderWith(), 'unit_test_action', '->getActionToRenderWith() returns the action set on the content record if set.');*/
 
   $t->info('  3.2 - Test getUnderscoredSlug()');
     $tmp = new sfSympalContent();
@@ -68,10 +56,6 @@ $t->info('3 - Test some basic functions.');
 
   $t->info('  3.3 - Test getContentTypeClassName()');
     $t->is($content->getContentTypeClassName(), 'Product', '->getContentTypeClassName() returns correct value.');
-
-  $t->info('  3.4 - Test getHeaderTitle()');
-    $content->Product->name = 'test name';
-    $t->is($content->getHeaderTitle(), 'test name', '->getHeaderTitle() grabs the name from the Product record.');
 
   $t->info('  3.5 - Test getTemplateToRenderWith()');
     $t->info('Exception thrown when default_view is not set');
