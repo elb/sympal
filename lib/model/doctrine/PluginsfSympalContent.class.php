@@ -254,14 +254,6 @@ abstract class PluginsfSympalContent extends BasesfSympalContent
   }
 
   /**
-   * @return bool
-   */
-  public function hasCustomPath()
-  {
-    return $this->custom_path ? true : false;
-  }
-
-  /**
    * Returns the route object related to this content record
    *
    * @return sfSympalContentRouteObject
@@ -327,6 +319,9 @@ abstract class PluginsfSympalContent extends BasesfSympalContent
     return $templates[$templateName]['template'];
   }
 
+  /**
+   * @param Doctrine_Connection $conn
+   */
   public function save(Doctrine_Connection $conn = null)
   {
     if (!$this->relatedExists('Site'))
@@ -340,6 +335,10 @@ abstract class PluginsfSympalContent extends BasesfSympalContent
     return $result;
   }
 
+  /**
+   * @param Doctrine_Connection $conn
+   * @return bool
+   */
   public function delete(Doctrine_Connection $conn = null)
   {
     // delete content from accociated content type table
