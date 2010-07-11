@@ -16,11 +16,11 @@ class sfSympalContentTypeTemplate extends sfSympalRecordTemplate
   protected $_options = array(
     // options that will be passed to the internal sluggable behavior
     'sluggable' => array(
-      'name'          => 'slug',
-      'unique'        => false,
+      'name'          =>  'slug',
+      'unique'        =>  false,
       'uniqueBy'      =>  array(),
       'uniqueIndex'   =>  true,
-      'canUpdate'     => false,
+      'canUpdate'     =>  false,
       'fields'        =>  array(),
       'builder'       =>  array('Doctrine_Inflector', 'urlize'),
       'provider'      =>  null,
