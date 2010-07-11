@@ -91,10 +91,9 @@ class sfSympalContentTypeTemplate extends sfSympalRecordTemplate
       ->innerJoin('c.Type t')
       // Don't use param to work around Doctrine pgsql bug
       // with limit subquery and number of params
-      ->innerJoin(sprintf($alias.".Site si WITH si.slug = '%s'", sfSympalConfig::getCurrentSiteName()));
-      
+      ->innerJoin(sprintf("c.Site si WITH si.slug = '%s'", sfSympalConfig::getCurrentSiteName()));
 
-    if (sfSympalConfig::isI18nEnabled($typeModelName))
+    if (sfSympalConfig::isI18nEnabled($tbl->getOption('name')))
     {
       $q->leftJoin($alias.'.Translation crt');
     }
@@ -115,9 +114,9 @@ class sfSympalContentTypeTemplate extends sfSympalRecordTemplate
     }
 
     // allow for a hook on the invoker table to add to the query
-    if (method_exists($tbl, 'getBaseContentQuery'))
+    if (method_exists($tbl, 'appendBaseContentQuery'))
     {
-      $q = $tbl->getBaseContentQuery($q);
+      $q = $tbl->appendBaseContentQuery($q);
     }
 
     return $q;
