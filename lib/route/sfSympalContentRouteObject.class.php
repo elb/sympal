@@ -146,6 +146,9 @@ class sfSympalContentRouteObject
   /**
    * Build the array of all culture values for the given content record
    *
+   * This attempts to retrieve each variable first off of each Translation
+   * (if 18n enabled) record, with a fallback to the normal record.
+   *
    * @param sfSympalContent $content 
    * @return array $routeValues
    */
@@ -204,15 +207,11 @@ class sfSympalContentRouteObject
       }
 
       // if custom_path OR module OR action, we have a sympal_content_% route
-      return 'sympal_content_' . $content->getUnderscoredSlug();
+      return 'sympal_content_' . $content->id;
     }
-    else if ($content->Type->getTypeObject()->get('default_path'))
+    else
     {
       return $content->Type->getTypeObject()->getRouteName();
-    }
-    else if ($content->getSlug())
-    {
-      return '@sympal_content_view';
     }
   }
 
@@ -278,14 +277,9 @@ class sfSympalContentRouteObject
       return $cloned->getContentRouteObject()->getEvaluatedRoutePath();
     }
     // Otherwise fallback and get route path from the content type
-    else if ($path = $content->Type->getTypeObject()->getRoutePath())
+    else
     {
-      return $path;
-    }
-    // Default if nothing else can be found
-    else if ($content->getSlug())
-    {
-      return '/content/:slug';
+      return $content->Type->getTypeObject()->getRoutePath();
     }
   }
 }
