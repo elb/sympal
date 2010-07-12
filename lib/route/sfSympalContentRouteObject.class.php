@@ -168,25 +168,24 @@ class sfSympalContentRouteObject
     {
       foreach (array_keys($variables) as $name)
       {
-        if ($isI18nEnabled && $name == 'slug' && $i18nSlug = $content->Translation[$code]->i18n_slug)
-        {
-          $values[$code][$name] = $i18nSlug;
-        }
-        else if ($content->hasField($name))
+        if ($content->hasField($name))
         {
           if ($isI18nEnabled && isset($content->Translation[$code]->$name))
           {
             $values[$code][$name] = $content->Translation[$code]->$name;
-          } else {
+          }
+          else
+          {
             $values[$code][$name] = $content->$name;
           }
         }
         else if (method_exists($content, $method = 'get'.sfInflector::camelize($name)))
         {
-          $values[$code][$name] = $contentRecord->$method();
+          $values[$code][$name] = $content->$method();
         }
       }
     }
+
     return $values;
   }
 
