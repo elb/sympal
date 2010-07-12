@@ -14,3 +14,10 @@ all:
             action:   customAction
           custom_module:
             module:   product
+
+      page:
+        model:    Page
+        rendering_methods:
+          default:
+            label:    Default page view
+            template: page/view
