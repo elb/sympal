@@ -214,7 +214,7 @@ class sfSympalContentTypeObject implements ArrayAccess
     if(!$this->_contentTypeRecord)
     {
       $tbl = Doctrine_Core::getTable('sfSympalContentType');
-      $this->_contentTypeRecord = $tbl->findOneByKey($this->getKey());
+      $this->_contentTypeRecord = $tbl->findOneByTypeKey($this->getKey());
       if (!$this->_contentTypeRecord)
       {
         $this->_contentTypeRecord = $tbl->createType($this->getKey());

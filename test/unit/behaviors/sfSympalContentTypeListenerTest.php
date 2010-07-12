@@ -4,7 +4,7 @@ $app = 'sympal';
 require_once(dirname(__FILE__).'/../../bootstrap/functional.php');
 require_once $configuration->getSymfonyLibDir().'/vendor/lime/lime.php';
 
-$t = new lime_test(4);
+$t = new lime_test(6);
 $tbl = Doctrine_Core::getTable('Product');
 
 $t->info('...create a Product record.');

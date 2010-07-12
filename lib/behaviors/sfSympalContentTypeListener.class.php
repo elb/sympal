@@ -32,7 +32,7 @@ class sfSympalContentTypeListener extends Doctrine_Record_Listener
     $record = $event->getInvoker();
 
     // if the content type appears to already be setup, leave it.
-    if ($record['Content']['Type']['key'])
+    if ($record['Content']['Type']['type_key'])
     {
       return;
     }

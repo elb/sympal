@@ -67,7 +67,7 @@ sfSympalContentType:
     sfSympalRecordTemplate:
   columns:
     # The the key corresponding to the app.yml entry
-    key:
+    type_key:
       type:    string(255)
       notnull: true
     default_path:
@@ -75,4 +75,4 @@ sfSympalContentType:
       notnull: true
   indexes:
     content_type_key:
-      fields: [key]
+      fields: [type_key]

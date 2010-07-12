@@ -16,18 +16,18 @@ class PluginsfSympalContentTypeTable extends Doctrine_Table
   {
     $class = $this->getOption('name');
     $type = new $class();
-    $type['key'] = $key;
+    $type['type_key'] = $key;
 
     // guess at a default_path. This will be overwritten immediately if
     // a default_path key were passed in the $data argument
     $typeModel = sfSympalConfig::getContentTypeModelFromKey($key);
     if (Doctrine_Core::getTable($typeModel)->hasField('slug'))
     {
-      $type['default_path'] = '/'.$type['key'].'/:slug';
+      $type['default_path'] = '/'.$type['type_key'].'/:slug';
     }
     else
     {
-      $type['default_path'] = '/'.$type['key'].'/:id';
+      $type['default_path'] = '/'.$type['type_key'].'/:id';
     }
 
     $type->fromArray($data);
@@ -45,7 +45,7 @@ class PluginsfSympalContentTypeTable extends Doctrine_Table
   public function getOrCreateType($key, $data = array())
   {
     $type = $this->createQuery('ct')
-      ->where('ct.key = ?', $key)
+      ->where('ct.type_key = ?', $key)
       ->limit(1)
       ->fetchOne();
 
