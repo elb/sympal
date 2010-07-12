@@ -4,26 +4,21 @@ require_once(dirname(__FILE__).'/../../bootstrap/functional.php');
 require_once $configuration->getSymfonyLibDir().'/vendor/lime/lime.php';
 require_once sfConfig::get('sf_lib_dir').'/test/unitHelper.php';
 
-$t = new lime_test(12);
+$t = new lime_test();
 
 $product = new Product();
 $tbl = Doctrine_Core::getTable('Product');
 
-$t->info('1 - Test that the template initializes the filter to Content.');
-
-  $product->Content->page_title = 'unit test';
-  $t->is($product->page_title, 'unit test', 'The sfSympalContentTypeFilter is applied');
-
-$t->info('2 - Check for the correct listeners');
+$t->info('1 - Check for the correct listeners');
 
   has_listener($t, $product, 'sfSympalContentTypeListener');
 
-$t->info('3 - Test getBaseContentQueryTableProxy()');
+$t->info('2 - Test getBaseContentQueryTableProxy()');
 
   $product->save();
   $product = $tbl->getBaseContentQuery()->fetchOne();
 
-  $t->info('  1.1 - $product->Content should require no extra queries');
+  $t->info('  2.1 - $product->Content should require no extra queries');
   $profiler = create_doctrine_profiler();
   $content = $product->Content;
   $t->is(count_queries($profiler), 0, 'Make sure no extra query is made to get the Product');
@@ -45,7 +40,7 @@ $t->info('3 - Test getBaseContentQueryTableProxy()');
   $product->Photos;
   $t->is(count_queries($profiler), 0, '$product->Photos causes no extra queries due to the appendBaseContentQuery() hook.');
 
-  $t->info('  3.1 - Test the sympal.content.get_base_content_query event');
+  $t->info('  2.2 - Test the sympal.content.get_base_content_query event');
 
     // makes the appendBaseContentQuery() get skipped
     sfConfig::set('skip_base_content_query_join', true);
