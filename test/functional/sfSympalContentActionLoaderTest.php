@@ -59,7 +59,7 @@ $siteManager = $browser->getContext()
 $browser->test()->is(get_class($siteManager->getSite()), 'sfSympalSite', 'The site record is set');
 $browser->test()->is($siteManager->getCurrentContent()->id, $product->Content->id, 'The current content record is set');
 
-$browser->info('  2.2 - Load a real, published piece of content');
+$browser->info('  2.3 - Load a real, published piece of content');
 $product->Content->publish();
 $browser->get('/content-action-loader/content/'.$product->Content->id)
 

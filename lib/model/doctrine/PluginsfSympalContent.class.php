@@ -37,7 +37,7 @@ abstract class PluginsfSympalContent extends BasesfSympalContent
    */
   public function getRecord()
   {
-    if ($this['Type']['key'])
+    if ($this['Type']['type_key'])
     {
       $model = $this['Type']->getTypeObject()->getModel();
 
@@ -380,7 +380,7 @@ abstract class PluginsfSympalContent extends BasesfSympalContent
 
     $replace = array(
       $this->getSite()->getTitle(),
-      (string) $this,
+      (string) $this->Record,
       $this->getId(),
     );
     $title = str_replace($find, $replace, $format);
