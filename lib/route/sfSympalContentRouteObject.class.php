@@ -168,7 +168,7 @@ class sfSympalContentRouteObject
     {
       foreach (array_keys($variables) as $name)
       {
-        if ($content->hasField($name))
+        if ($content->getTable()->hasField($name))
         {
           if ($isI18nEnabled && isset($content->Translation[$code]->$name))
           {
@@ -177,6 +177,17 @@ class sfSympalContentRouteObject
           else
           {
             $values[$code][$name] = $content->$name;
+          }
+        }
+        elseif ($content->Record->getTable()->hasField($name))
+        {
+          if ($isI18nEnabled && isset($content->Record->Translation[$code]->$name))
+          {
+            $values[$code][$name] = $content->Record->Translation[$code]->$name;
+          }
+          else
+          {
+            $values[$code][$name] = $content->Record->$name;
           }
         }
         else if (method_exists($content, $method = 'get'.sfInflector::camelize($name)))
@@ -253,6 +264,7 @@ class sfSympalContentRouteObject
       {
         $path .= '.:sf_format';
       }
+
       return $path;
     }
     /*
@@ -270,10 +282,13 @@ class sfSympalContentRouteObject
      */
     else if ($content->get('rendering_method', false))
     {
-      $cloned = $content->copy(false);
-      $cloned->rendering_method = null;
+      $renderingMethod = $content->rendering_method;
+      $content->rendering_method = null;
       
-      return $cloned->getContentRouteObject()->getEvaluatedRoutePath();
+      $routePath = $content->getContentRouteObject()->getEvaluatedRoutePath();
+      $content->rendering_method = $renderingMethod;
+
+      return $routePath;
     }
     // Otherwise fallback and get route path from the content type
     else

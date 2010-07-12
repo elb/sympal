@@ -49,11 +49,6 @@ $t->info('3 - Test some basic functions.');
     $content->action = 'unit_test_action';
     $t->is($content->getActionToRenderWith(), 'unit_test_action', '->getActionToRenderWith() returns the action set on the content record if set.');*/
 
-  $t->info('  3.2 - Test getUnderscoredSlug()');
-    $tmp = new sfSympalContent();
-    $tmp->slug = 'test-content';
-    $t->is($tmp->getUnderscoredSlug(), 'test_content', '->getUnderscoredSlug() works correctly.');
-
   $t->info('  3.3 - Test getContentTypeClassName()');
     $t->is($content->getContentTypeClassName(), 'Product', '->getContentTypeClassName() returns correct value.');
 

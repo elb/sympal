@@ -70,13 +70,8 @@ class sfSympalToolkit
         ->execute();
       foreach ($contents as $content)
       {
-        $typeObject = $content->Type->getTypeObject();
-        // determine the rendering method - use the type's default if the method is invalid
-        $renderingMethod = $typeObject->hasRenderingMethod($content->rendering_method) ? $typeObject->getRenderingMethod($content->rendering_method) : $typeObject->getDefaultRenderingMethod();
-
-        // figure out the module/action from the rendering method, use default if blank
-        $module = isset($renderingMethod['module']) ? $renderingMethod['module'] : $defaultModule;
-        $action = isset($renderingMethod['action']) ? $renderingMethod['action'] : $defaultAction;
+        $module = $content->getModuleToRenderWith();
+        $action = $content->getActionToRenderWith();
 
         if ($module == $defaultModule && $action == $defaultAction && !$content->custom_path)
         {

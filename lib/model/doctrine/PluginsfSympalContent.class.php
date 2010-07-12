@@ -52,50 +52,6 @@ abstract class PluginsfSympalContent extends BasesfSympalContent
   }
 
   /**
-   * Returns whether or not the field name exists on this record, the
-   * content type record, or either Translation records.
-   *
-   * @param  string $name The field name
-   * @return bool
-   */
-  public function hasField($name)
-  {
-    // check this model
-    if ($this->_table->hasField($name))
-    {
-      return true;
-    }
-
-    // check sfSympalContentTranslation
-    $className = get_class($this);
-    if (Doctrine_Core::isValidModelClass($className.'Translation'))
-    {
-      if (Doctrine_Core::getTable($className.'Translation')->hasField($name))
-      {
-        return true;
-      }
-    }
-
-    // check the content type record
-    $className = $this->getType()->getTypeObject()->get('model');
-    if (Doctrine_Core::getTable($className)->hasField($name))
-    {
-      return true;
-    }
-
-    // check the Translation class of the content type record
-    if (Doctrine_Core::isValidModelClass($className.'Translation'))
-    {
-      if (Doctrine_Core::getTable($className.'Translation')->hasField($name))
-      {
-        return true;
-      }
-    }
-
-    return false;
-  }
-
-  /**
    * Publishes this content with a published date of right now.
    *
    * @return void
@@ -268,43 +224,60 @@ abstract class PluginsfSympalContent extends BasesfSympalContent
   }
 
   /**
-   * This gets the correct template to render with
+   * Retrieves the correct template that this record will be rendered with.
+   * This is based off of the "rendering_method" value and the template
+   * that corresponds with it on the type configuration.
    *
-   * The process is this:
-   *   1) Look first on the content record itself for a template "name"
-   *   2) Look next on the type record for a template "name"
-   *
-   * We then retrieve the actual template (module/template) by looking
-   * under the "content_templates" key of the current content template's
-   * configuration for the template "name".
-   *
-   * If all else fails, the "default_view" template name of the current
-   * content type config will be used
+   * @return string|null
    */
   public function getTemplateToRenderWith()
   {
-    if (!$templateName = $this->getTemplate())
-    {
-      $templateName = $this->getType()->getTemplate();
-    }
+    $renderingMethod = $this->getValidRenderingMethod();
 
-    $templates = sfSympalConfig::getContentTemplates($this['Type']['name']);
+    return isset($renderingMethod['template']) ? $renderingMethod['template'] : null;
+  }
 
-    if (!isset($templates[$templateName]))
-    {
-      $templateName = 'default_view';
-      if (!isset($templates[$templateName]))
-      {
-        throw new sfException(sprintf('No "default_view" template specified for "%s" content type', $this->getType()->getName()));
-      }
-    }
+  /**
+   * Retrieves the correct module that this record will be rendered with.
+   * This is based off of the "rendering_method" value and the module
+   * that corresponds with it on the type configuration.
+   *
+   * @return string
+   */
+  public function getModuleToRenderWith()
+  {
+    $renderingMethod = $this->getValidRenderingMethod();
 
-    if (!is_array($templates[$templateName]) || !isset($templates[$templateName]['template']))
-    {
-      throw new sfException(sprintf('Key "template" must be set under content_template "%s" in app.yml', $templateName));
-    }
+    return isset($renderingMethod['module']) ? $renderingMethod['module'] : sfSympalConfig::get('default_rendering_module', null, 'sympal_content_renderer');
+  }
 
-    return $templates[$templateName]['template'];
+  /**
+   * Retrieves the correct action that this record will be rendered with.
+   * This is based off of the "rendering_method" value and the action
+   * that corresponds with it on the type configuration.
+   *
+   * @return string
+   */
+  public function getActionToRenderWith()
+  {
+    $renderingMethod = $this->getValidRenderingMethod();
+
+    return isset($renderingMethod['action']) ? $renderingMethod['action'] : sfSympalConfig::get('default_rendering_action', null, 'sympal_content_renderer');
+  }
+
+  /**
+   * Returns the valid rendering_method to be used for this record.
+   *
+   * If this record has a rendering_method value and it is valid, it will
+   * be used. Otherwise, the default method from the related Type will be used.
+   *
+   * @return string
+   */
+  public function getValidRenderingMethod()
+  {
+    $typeObject = $this->Type->getTypeObject();
+
+    return $typeObject->hasRenderingMethod($this->rendering_method) ? $typeObject->getRenderingMethod($this->rendering_method) : $typeObject->getDefaultRenderingMethod();
   }
 
   /**
@@ -312,6 +285,7 @@ abstract class PluginsfSympalContent extends BasesfSympalContent
    */
   public function save(Doctrine_Connection $conn = null)
   {
+    // save the Site relation automatically if not set
     if (!$this->relatedExists('Site'))
     {
       $site = Doctrine_Core::getTable('sfSympalSite')->fetchCurrent(true);
