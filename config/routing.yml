@@ -8,16 +8,6 @@ homepage:
 
 <?php echo sfSympalToolkit::getContentRoutesYaml() ?>
 
-# The absolute default route for a content record if everything else falls through
-sympal_content_view:
-  url: /content/:slug
-  param: { module: <?php echo sfSympalConfig::get('default_rendering_module', null, 'sympal_content_renderer') ?>, action: <?php echo sfSympalConfig::get('default_rendering_action', null, 'index') ?>, result_type: object }
-  class: sfDoctrineRoute
-  options:
-    model:  sfSympalContent
-    type:   object
-    method: getContent
-
 sympal_change_language_form:
   url:   /change_language
   param: { module: sympal_default, action: change_language }

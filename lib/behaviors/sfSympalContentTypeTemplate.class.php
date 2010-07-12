@@ -14,24 +14,6 @@
 class sfSympalContentTypeTemplate extends sfSympalRecordTemplate
 {
   protected $_options = array(
-    // options that will be passed to the internal sluggable behavior
-    'sluggable' => array(
-      'name'          =>  'slug',
-      'unique'        =>  false,
-      'uniqueBy'      =>  array(),
-      'uniqueIndex'   =>  true,
-      'canUpdate'     =>  false,
-      'fields'        =>  array(),
-      'builder'       =>  array('Doctrine_Inflector', 'urlize'),
-      'provider'      =>  null,
-      'indexName'     =>  null,
-    ),
-
-    // Any fields listed here exist on the related sfSympalContent record
-    // but can be get/set as if they were on this record.
-    'filter_fields' => array(
-      'slug'
-    ),
   );
 
   /**
@@ -47,9 +29,6 @@ class sfSympalContentTypeTemplate extends sfSympalRecordTemplate
     $this->hasColumn('content_id', 'integer');
 
     $this->addListener(new sfSympalContentTypeListener($this->_options));
-    $this->addListener(new Doctrine_Template_Listener_Sluggable($this->_options['sluggable']));
-
-    $this->_table->unshiftFilter(new sfSympalContentTypeFilter($this->_options['filter_fields']));
   }
 
   /**
@@ -132,8 +111,8 @@ class sfSympalContentTypeTemplate extends sfSympalRecordTemplate
   {
     $tbl = $this->getInvoker()->getTable();
     $contentTbl = $tbl->getRelation('Content')->getTable();
-    
-    $contentSlug = $params['slug'];
+
+    // special parameter used for exact routes
     $contentId = $params['content_id'];
 
     $q = $this->getInvoker()->getTable()->getBaseContentQuery();
@@ -142,21 +121,6 @@ class sfSympalContentTypeTemplate extends sfSympalRecordTemplate
     if ($contentId)
     {
       $q->andWhere('c.id = ?', $contentId);
-
-    // If we have an explicit content slug
-    }
-    else if ($contentSlug)
-    {
-      if ($contentTbl->hasRelation('Translation') && $contentTbl->getRelation('Translation')->getTable()->hasField('slug'))
-      {
-        $q->andWhere('c.slug = ? OR ct.i18n_slug = ?', array($contentSlug, $contentSlug));
-      }
-      else
-      {
-        $q->andWhere('c.slug = ?', $contentSlug);
-      }
-
-    // Try and find the content record based on the params in the route
     }
     else
     {
@@ -190,6 +154,12 @@ class sfSympalContentTypeTemplate extends sfSympalRecordTemplate
           $q->andWhere('crt.'.$key, $value);
         }
       }
+
+      // prevents any record being matched if no good params were found.
+      if (!$paramFound)
+      {
+        return null;
+      }
     }
 
     /*
@@ -203,7 +173,11 @@ class sfSympalContentTypeTemplate extends sfSympalRecordTemplate
     }
     catch (Doctrine_Hydrator_Exception $e)
     {
-      throw new sfException(sprintf('Hydration Error. Check that there is only one %s record related to this sfSympalContent record. Raw error: "%s"', $contentType, $e->getMessage()));
+      throw new sfException(sprintf(
+        'Hydration Error. Check that there is only one %s record related to this sfSympalContent record. Raw error: "%s"',
+        get_class($this->getInvoker()),
+        $e->getMessage())
+      );
     }
   }
 }

@@ -29,16 +29,12 @@ sfSympalContent:
     content_type_id:
       type:    integer
       notnull: true
-    slug:
-      type:    string(255)
-      notnull: true
     date_published:     timestamp
     custom_path:        string(255)
     rendering_method:   string(255)
     page_title:         string(255)
     meta_keywords:      string(500)
     meta_description:   string(500)
-    i18n_slug:          string(255)
     last_updated_by_id: integer
     created_by_id:      integer
   indexes:
@@ -72,9 +68,11 @@ sfSympalContentType:
   columns:
     # The the key corresponding to the app.yml entry
     key:
-      type: string(255)
+      type:    string(255)
       notnull: true
-    default_path: string(255)
+    default_path:
+      type:    string(255)
+      notnull: true
   indexes:
     content_type_key:
       fields: [key]

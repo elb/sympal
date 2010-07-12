@@ -9,18 +9,6 @@ abstract class PluginsfSympalContent extends BasesfSympalContent
     $_contentRouteObject;
 
   /**
-   * Returns the slug with underscores instead of dashes
-   *
-   * Used when creating routes for content records with a custom_path
-   *
-   * @return string
-   */
-  public function getUnderscoredSlug()
-  {
-    return str_replace('-', '_', $this['slug']);
-  }
-
-  /**
    * @return string
    */
   public function getContentTypeClassName()

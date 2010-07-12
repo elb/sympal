@@ -280,9 +280,35 @@ class sfSympalConfig extends sfConfig
   {
     foreach (self::get('content_types', null, array()) as $key => $typeArr)
     {
-      if (isset($typeArr) && $typeArr['model'] == $model)
+      if (is_array($typeArr) && $typeArr['model'] == $model)
       {
         return $key;
+      }
+    }
+
+    throw new sfException(sprintf('Could not find content type for model "%s"', $model));
+  }
+
+  /**
+   * Returns the model that corresponds with the given content type key
+   *
+   * @static
+   * @throws sfException
+   * @param  string $key The content type key
+   * @return string
+   */
+  public static function getContentTypeModelFromKey($key)
+  {
+    foreach (self::get('content_types', null, array()) as $arrKey => $typeArr)
+    {
+      if ($key == $arrKey)
+      {
+        if (!isset($typeArr['model']))
+        {
+          throw new sfException(sprintf('Configuration for "%s" found, but with no "model" key', $key));
+        }
+
+        return $typeArr['model'];
       }
     }
 

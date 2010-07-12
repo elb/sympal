@@ -29,7 +29,7 @@ all:
     # if i18n is set to true in settings.yml, the following models+fields will actAs I18n
     internationalized_models:
       sfSympalSite:    [page_title, meta_keywords, meta_description]
-      sfSympalContent: [i18n_slug, page_title, meta_keywords, meta_description]
+      sfSympalContent: [page_title, meta_keywords, meta_description]
 
     # The class used for i18n models.
     #  * sfDoctrineRecordI18nFilter is the default for symfony

@@ -14,11 +14,9 @@ $t->info('1 - Test that the template initializes the filter to Content.');
   $product->Content->page_title = 'unit test';
   $t->is($product->page_title, 'unit test', 'The sfSympalContentTypeFilter is applied');
 
-$t->info('2 - Check for the correct templates and filters');
+$t->info('2 - Check for the correct listeners');
 
-  has_filter($t, $product, 'sfSympalContentTypeFilter');
   has_listener($t, $product, 'sfSympalContentTypeListener');
-  has_listener($t, $product, 'Doctrine_Template_Listener_Sluggable');
 
 $t->info('3 - Test getBaseContentQueryTableProxy()');
 

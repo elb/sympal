@@ -5,7 +5,7 @@ Product:
     price:  double
   actAs:
     sfSympalContentTypeTemplate:
-      filter_fields:   [slug, page_title]
+    Sluggable:
 
 ProductPhoto:
   columns:
@@ -18,3 +18,10 @@ ProductPhoto:
       foreignType:  many
       onDelete:     cascade
       foreignAlias: Photos
+
+Page:
+  columns:
+    title:   string(255)
+    body:    clob
+  actAs:
+    sfSympalContentTypeTemplate:

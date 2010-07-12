@@ -17,7 +17,19 @@ class PluginsfSympalContentTypeTable extends Doctrine_Table
     $class = $this->getOption('name');
     $type = new $class();
     $type['key'] = $key;
-    $type['default_path'] = '/'.$type['key'].'/:slug';
+
+    // guess at a default_path. This will be overwritten immediately if
+    // a default_path key were passed in the $data argument
+    $typeModel = sfSympalConfig::getContentTypeModelFromKey($key);
+    if (Doctrine_Core::getTable($typeModel)->hasField('slug'))
+    {
+      $type['default_path'] = '/'.$type['key'].'/:slug';
+    }
+    else
+    {
+      $type['default_path'] = '/'.$type['key'].'/:id';
+    }
+
     $type->fromArray($data);
 
     return $type;

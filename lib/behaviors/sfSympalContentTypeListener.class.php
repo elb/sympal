@@ -21,6 +21,9 @@ class sfSympalContentTypeListener extends Doctrine_Record_Listener
   /**
    * Sets the $record->Content->ContentType relation correctly if not set.
    *
+   * This seems more appropriate as preInsert(), but it was causing the
+   * ->Content record to never persist. 
+   *
    * @param Doctrine_Event $event
    * @return void
    */
