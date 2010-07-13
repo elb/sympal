@@ -101,8 +101,8 @@ class sfSympalToolkit
         $renderingMethod = $contentType->getDefaultRenderingMethod();
         
         // figure out the module/action from the rendering method, use default if blank
-        $module = isset($renderingMethod['module']) ? $renderingMethod['module'] : $defaultModule;
-        $action = isset($renderingMethod['action']) ? $renderingMethod['action'] : $defaultAction;
+        $module = $contentType->getModuleToRenderWith();
+        $action = $contentType->getActionToRenderWith();
 
         $routes['content_type_'.$contentType->getKey()] = sprintf($routeTemplate,
           $contentType->getRouteName(),

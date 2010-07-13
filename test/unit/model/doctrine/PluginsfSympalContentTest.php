@@ -2,12 +2,13 @@
 
 require_once(dirname(__FILE__).'/../../../bootstrap/functional.php');
 
-$t = new lime_test(29);
+$t = new lime_test(20);
 $tbl = Doctrine_Core::getTable('sfSympalContent');
 
 $product = new Product();
 $product->save();
 $content = $product->Content;
+$type = $content->Type;
 
 $t->info('2 - Test some published functions.');
 
@@ -40,39 +41,22 @@ $t->info('2 - Test some published functions.');
 
 $t->info('3 - Test some basic functions.');
 
-/*  $t->info('  3.1 - Test getModuleToRenderWith() & getModuleToRenderWith()');
-    $t->is($content->getModuleToRenderWith(), $type->getModuleToRenderWith(), '->getModuleToRenderWith() returns the type\'s module if no module is explicitly set.');
-    $content->module = 'unit_test';
-    $t->is($content->getModuleToRenderWith(), 'unit_test', '->getModuleToRenderWith() returns the module set on the content record if set.');
+  $t->info('  3.1 - Test getModuleToRenderWith() & getModuleToRenderWith()');
+    $t->is($content->getModuleToRenderWith(), $type->getTypeObject()->getModuleToRenderWith(), '->getModuleToRenderWith() returns the type\'s module if no module is explicitly set.');
+    $content->rendering_method = 'custom_module';
+    $t->is($content->getModuleToRenderWith(), 'product', '->getModuleToRenderWith() returns the module set on the content record if set.');
 
-    $t->is($content->getActionToRenderWith(), $type->getActionToRenderWith(), '->getActionToRenderWith() returns the type\'s action if no action is explicitly set.');
-    $content->action = 'unit_test_action';
-    $t->is($content->getActionToRenderWith(), 'unit_test_action', '->getActionToRenderWith() returns the action set on the content record if set.');*/
+    $t->is($content->getActionToRenderWith(), $type->getTypeObject()->getActionToRenderWith(), '->getActionToRenderWith() returns the type\'s action if no action is explicitly set.');
+    $content->rendering_method = 'custom_action';
+    $t->is($content->getActionToRenderWith(), 'customAction', '->getActionToRenderWith() returns the action set on the content record if set.');
 
   $t->info('  3.3 - Test getContentTypeClassName()');
     $t->is($content->getContentTypeClassName(), 'Product', '->getContentTypeClassName() returns correct value.');
 
   $t->info('  3.5 - Test getTemplateToRenderWith()');
-    $t->info('Exception thrown when default_view is not set');
-    try
-    {
-      $content->getTemplateToRenderWith();
-      $t->fail('Exception not thrown.');
-    }
-    catch (sfException $e)
-    {
-      $t->pass('Exception thrown: '.$e->getMessage());
-    }
-    sfSympalConfig::set('content_types', 'Product', array(
-      'content_templates' => array(
-        'default_view' => array('template' => 'some/template'),
-        'other_view'   => array('template' => 'other/template'),
-      )
-    ));
-
-    $t->is($content->getTemplateToRenderWith(), 'some/template', '->getTemplateToRenderWith() returns default_view template if no template is set.');
-    $content->template = 'other_view';
-    $t->is($content->getTemplateToRenderWith(), 'other/template', '->getTemplateToRenderWith() returns the template that is set on sfSympalContent.');
+    $t->is($content->getTemplateToRenderWith(), 'product/view', '->getTemplateToRenderWith() returns default_view template if no template is set.');
+    $content->rendering_method = 'other_view';
+    $t->is($content->getTemplateToRenderWith(), 'product/other_view', '->getTemplateToRenderWith() returns the template that is set on sfSympalContent.');
 
 $t->info('4 - Test the save() and delete() methods.');
   Doctrine_Query::create()->from('sfSympalContent')->delete()->execute();

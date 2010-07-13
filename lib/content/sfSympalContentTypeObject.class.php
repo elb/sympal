@@ -153,6 +153,42 @@ class sfSympalContentTypeObject implements ArrayAccess
   }
 
   /**
+   * Returns the module that this content type should use for rendering
+   *
+   * @return string
+   */
+  public function getModuleToRenderWith()
+  {
+    $renderingMethod = $this->getDefaultRenderingMethod();
+
+    return isset($renderingMethod['module']) ? $renderingMethod['module'] : sfSympalConfig::get('default_rendering_module', null, 'sympal_content_renderer');
+  }
+
+  /**
+   * Returns the action that this content type should use for rendering
+   *
+   * @return string
+   */
+  public function getActionToRenderWith()
+  {
+    $renderingMethod = $this->getDefaultRenderingMethod();
+
+    return isset($renderingMethod['action']) ? $renderingMethod['action'] : sfSympalConfig::get('default_rendering_action', null, 'index');
+  }
+
+  /**
+   * Returns the template that this content type should be rendered with
+   *
+   * @return string
+   */
+  public function getTemplateToRenderWith()
+  {
+    $renderingMethod = $this->getDefaultRenderingMethod();
+
+    return isset($renderingMethod['template']) ? $renderingMethod['template'] : null;
+  }
+
+  /**
    * @return string
    */
   public function getModel()

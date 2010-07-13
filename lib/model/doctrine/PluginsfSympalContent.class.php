@@ -234,7 +234,7 @@ abstract class PluginsfSympalContent extends BasesfSympalContent
   {
     $renderingMethod = $this->getValidRenderingMethod();
 
-    return isset($renderingMethod['template']) ? $renderingMethod['template'] : null;
+    return isset($renderingMethod['template']) ? $renderingMethod['template'] : $this->Type->getTypeObject()->getTemplateToRenderWith();
   }
 
   /**
