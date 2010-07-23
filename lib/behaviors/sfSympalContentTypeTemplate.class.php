@@ -113,7 +113,10 @@ class sfSympalContentTypeTemplate extends sfSympalRecordTemplate
     $contentTbl = $tbl->getRelation('Content')->getTable();
 
     // special parameter used for exact routes
-    $contentId = $params['content_id'];
+    // we have to get the request because of how symfony filters out params not part of url variables (e.g. :slug)
+    $request = sfContext::getInstance()->getRequest();
+    $contentId = $request->getParameter('content_id');
+
 
     $q = $this->getInvoker()->getTable()->getBaseContentQuery();
 
