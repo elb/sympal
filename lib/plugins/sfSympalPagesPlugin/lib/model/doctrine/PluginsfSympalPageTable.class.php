@@ -4,26 +4,4 @@
  */
 class PluginsfSympalPageTable extends Doctrine_Table
 {
-  public function getDefaultPagesDataGrid()
-  {
-    $dataGrid = sfSympalDataGrid::create(
-      Doctrine_Core::getTable('sfSympalContent')->getFullTypeQuery('sfSympalPage')
-    );
-
-    if (sfSympalConfig::isI18nEnabled())
-    {
-      return $dataGrid
-        ->addColumn('crt.title', 'renderer=sympal_page/data_grid_title')
-        ->addColumn('c.date_published')
-        ->addColumn('u.username', 'label=Created By')
-        ->setDefaultSort('crt.title');
-      
-    } else {
-      return $dataGrid
-        ->addColumn('cr.title', 'renderer=sympal_page/data_grid_title')
-        ->addColumn('c.date_published')
-        ->addColumn('u.username', 'label=Created By')
-        ->setDefaultSort('cr.title');
-    }
-  }
 }

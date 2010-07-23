@@ -1,6 +1,10 @@
 sfSympalPage: 
-  actAs: [sfSympalContentTypeTemplate]
+  actAs:
+    sfSympalContentTypeTemplate:
+    Timestampable:
+    Sluggable:
   columns: 
     title:
       type: string(255)
       notnull: true
+    body:   clob

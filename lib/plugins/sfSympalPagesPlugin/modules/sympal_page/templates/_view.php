@@ -1,5 +1,3 @@
-<?php echo get_sympal_breadcrumbs($menuItem, $content) ?>
+<h1><?php echo $sf_sympal_page->title ?></h1>
 
-<h1><?php echo get_sympal_content_slot('title') ?></h1>
-
-<?php echo get_sympal_content_slot('body') ?>
+<?php echo $sf_sympal_page->body ?>

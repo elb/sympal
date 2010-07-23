@@ -68,8 +68,8 @@ class sfSympalContentRenderer
     {
       $this->_renderVariables = array(
         'sf_format'   => $this->_format,
-        'content'  => $this->_content,
-        'sf_sympal_content' => $this->_content,  // duplicated because I can't decide on one
+        'sf_sympal_content' => $this->_content,
+        sfInflector::tableize(get_class($this->_content->Record)) => $this->_content->Record, 
       );
 
       $this->_renderVariables = $this->_dispatcher->filter(new sfEvent($this, 'sympal.content_renderer.filter_variables'), $this->_renderVariables)->getReturnValue();
