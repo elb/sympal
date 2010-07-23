@@ -1,0 +1,8 @@
+sympal_page:
+  class: sfDoctrineRouteCollection
+  options:
+    model:                sfSympalPage
+    module:               sympal_page
+    prefix_path:          <?php echo sfConfig::get('app_sympal_page_route_prefix')."\n" ?>
+    column:               id
+    with_wildcard_routes: true
