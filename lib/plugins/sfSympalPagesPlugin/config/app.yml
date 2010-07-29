@@ -1,21 +1,14 @@
 all:
   sympal_config:
     content_types:
-      sfSympalPage:
-        default_inline_editing_column_form: sfSympalPageForm
-        default_theme: ~
-        content_templates:
-          default_view:
+      page:
+        model:    sfSympalPage
+        rendering_methods:
+          default:
             template: sympal_page/view
-          register:
-            template: sympal_register/page_template
-        content_slots:
-          title:
-            type:     Text
-            edit_mode: inline
-          body:
-            type:     Markdown
-            edit_mode: inline
 
     internationalized_models:
-      sfSympalPage: [title]
+      sfSympalPage: [title, body]
+
+  sympal_page:
+    route_prefix:  /admin/pages

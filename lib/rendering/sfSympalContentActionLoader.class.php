@@ -56,7 +56,13 @@ class sfSympalContentActionLoader
     {
       try
       {
-        $this->_content = $this->_actions->getRoute()->getObject();
+        $contentObject = $this->_actions->getRoute()->getObject();
+        if (!$contentObject)
+        {
+          throw new sfError404Exception('No object route found');
+        }
+        
+        $this->_content = $contentObject->Content;
       }
       catch (sfError404Exception $e)
       {
@@ -68,11 +74,6 @@ class sfSympalContentActionLoader
 
       if ($this->_content)
       {
-        if (!$this->_content instanceof sfSympalContent)
-        {
-          throw new sfException('The action loader can only be used on sfSympalContent object routes.');
-        }
-
         $siteManager = $this->_getSympalConfiguration()->getSiteManager();
         $siteManager->setSite($this->_content->getSite());
         $siteManager->setCurrentContent($this->_content);

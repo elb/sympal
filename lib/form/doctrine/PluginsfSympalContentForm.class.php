@@ -26,95 +26,10 @@ abstract class PluginsfSympalContentForm extends BasesfSympalContentForm
       $this['comments_list']  // this should actually not be here - think of something better later
     );
 
-/*  @TODO replace with something not invasive
-    $field = sfApplicationConfiguration::getActive()
-      ->getPluginConfiguration('sfThemePlugin')
-      ->getThemeToolkit()
-      ->getThemeWidgetAndValidator();
-    $this->widgetSchema['theme'] = $field['widget'];
-    $this->validatorSchema['theme'] = $field['validator'];*/
-
-    // Sets up the template widget
-    sfSympalToolkit::changeTemplateWidget($this);
-
-    // @todo replace this with something non-invasive
-    //$this->configureMenuSection();
-
-    $this->_embedTypeForm();
-  }
-
-  protected function _embedTypeForm()
-  {
-    $typeModelClass = $this->object->Type->name ? $this->object->Type->name:'sfSympalPage';
-    $typeFormClass = $typeModelClass . 'Form';
-
-    $record = $this->object->getRecord();
-    if ($record)
+    // if the sfDoctrineSlotPlugin is present, add any slot fields
+    if (class_exists('sfDoctrineSlotExtendedForm'))
     {
-      $record->mapValue('contentForm', $this);
-      $typeForm = new $typeFormClass($record);
-
-      unset($typeForm['id'], $typeForm['content_id']);
-
-      if (count($typeForm))
-      {
-        $this->embedForm('TypeForm', $typeForm);
-        $this->widgetSchema['TypeForm']->setLabel($this->object->Type->label);
-      }
+      $this->addSlotFields();
     }
   }
-
-  protected function configureMenuSection()
-  {
-    if (!$this->isNew()) return false;
-
-    $this->setWidget('menu_create', new sfWidgetFormInputCheckbox());
-    $this->setValidator('menu_create', new sfValidatorPass());
-
-    $this->setWidget('menu_publish', new sfWidgetFormInputCheckbox());
-    $this->setValidator('menu_publish', new sfValidatorPass());
-
-    $this->setWidget('menu_parent_id', new sfWidgetFormDoctrineChoice(array(
-      'model' => 'sfSympalMenuItem',
-      'add_empty' => false
-    )));
-    $this->setValidator('menu_parent_id', new sfValidatorPass(array('required' => false)));
-
-    $this->mergePostValidator(new sfValidatorSchemaIf('menu_create', array(
-      'menu_parent_id' => new sfValidatorDoctrineChoice(array('model' => 'sfSympalMenuItem', 'required' => true))
-    )));
-
-    return $this;
-  }
-
-  public function save($con = null)
-  {
-    $content = parent::save($con);
-
-/*  @TODO replace with something non-invasive
-    // then menu creation has been requested
-    if ($this->getValue('menu_create'))
-    {
-      $menuItem = $content->getMenuItem();
-      $menuItem->bindSympalContent($content);
-
-      if ($this->getValue('menu_publish')) {
-        $menuItem->setDatePublished(date('Y-m-d H:i:s'));
-      }
-
-      if (strlen($this->getValue('menu_parent_id')) > 0)
-      {
-        $menuItem->getNode()->insertAsLastChildOf(
-          Doctrine_Core::getTable('sfSympalMenuItem')->find($this->getValue('menu_parent_id'))
-        );
-      }
-      else
-      {
-        $menuItem->save();
-      }
-    }*/
-
-    return $content;
-  }
-
 }

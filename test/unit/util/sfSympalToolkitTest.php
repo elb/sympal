@@ -3,7 +3,7 @@
 $app = 'sympal';
 require_once(dirname(__FILE__).'/../../bootstrap/functional.php');
 
-$t = new lime_test(17);
+$t = new lime_test(22);
 
 $t->info('1 - Make a call to the product/test partial. It prints out the value of $var');
   $resource = sfSympalToolkit::getSymfonyResource('product', 'test', array('var' => 'Unit Testing'));
@@ -32,7 +32,7 @@ $t->info('2 - Test the getContentRoutesYaml() method');
   $content->getContentRouteObject()->compile($content);
   $routes = sfYaml::load(sfSympalToolkit::getContentRoutesYaml());
   $t->is(count($routes), 3, 'Three routes are created for the two content types and one custom content');
-  test_content_route($t, $routes[$routeName], $type, '/product/testing-product', array('module' => 'product', 'sympal_content_id' => $content->id));
+  test_content_route($t, $routes[$routeName], $type, '/product/testing-product', array('module' => 'product', 'content_id' => $content->id));
 
   $t->info('  1.2 - Pass a custom action');
   $content->rendering_method = 'custom_action';
@@ -40,7 +40,7 @@ $t->info('2 - Test the getContentRoutesYaml() method');
   $content->getContentRouteObject()->compile($content);
   $routes = sfYaml::load(sfSympalToolkit::getContentRoutesYaml());
   $t->is(count($routes), 3, 'Three routes are created for the two content types and one custom content');
-  test_content_route($t, $routes[$routeName], $type, '/product/testing-product', array('action' => 'customAction', 'sympal_content_id' => $content->id));
+  test_content_route($t, $routes[$routeName], $type, '/product/testing-product', array('action' => 'customAction', 'content_id' => $content->id));
 
   $t->info('  1.3 - Pass a custom_path');
   $content->rendering_method = null;
@@ -49,7 +49,7 @@ $t->info('2 - Test the getContentRoutesYaml() method');
   $content->getContentRouteObject()->compile($content);
   $routes = sfYaml::load(sfSympalToolkit::getContentRoutesYaml());
   $t->is(count($routes), 3, 'Three routes are created for the two content types and one custom content');
-  test_content_route($t, $routes[$routeName], $type, '/my/path.:sf_format', array('sympal_content_id' => $content->id));
+  test_content_route($t, $routes[$routeName], $type, '/my/path.:sf_format', array('content_id' => $content->id));
 
   $t->info('  1.4 - Pass a custom_path that is the homepage');
   $content->custom_path = '/';
@@ -57,7 +57,7 @@ $t->info('2 - Test the getContentRoutesYaml() method');
   $content->getContentRouteObject()->compile($content);
   $routes = sfYaml::load(sfSympalToolkit::getContentRoutesYaml());
   $t->is(count($routes), 3, 'Three routes are created for the two content types and one custom content');
-  test_content_route($t, $routes['homepage'], $type, '/', array('sympal_content_id' => $content->id));
+  test_content_route($t, $routes['homepage'], $type, '/', array('content_id' => $content->id));
 
 function test_content_route(lime_test $t, $route, sfSympalContentType $type, $url = '/product/:slug.:sf_format', $params = array())
 { 
@@ -65,9 +65,10 @@ function test_content_route(lime_test $t, $route, sfSympalContentType $type, $ur
     'module'                  => 'sympal_content_renderer',
     'action'                  => 'index',
     'sf_format'               => 'html',
-    'sympal_content_id'       => null,
+    'content_id'              => null,
   ), $params);
 
   $t->is($route['url'], $url, 'The route url is correct.');
   $t->is($route['param'], $params, 'The routes param are correct');
+  $t->is($route['options']['model'], 'Product', 'The model is set correctly');
 }

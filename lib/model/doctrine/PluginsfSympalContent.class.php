@@ -220,7 +220,7 @@ abstract class PluginsfSympalContent extends BasesfSympalContent
    */
   public function getUrl($options = array())
   {
-    return sfContext::getInstance()->getController()->genUrl($this->getRoute(), $options);
+    return sfContext::getInstance()->getController()->genUrl('@'.$this->getContentRouteObject()->getRoute(), $options);
   }
 
   /**

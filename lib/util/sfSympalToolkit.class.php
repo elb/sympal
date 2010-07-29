@@ -30,7 +30,7 @@ class sfSympalToolkit
     module: %s
     action: %s
     sf_format: html
-    sympal_content_id: %s
+    content_id: %s
   class: sfDoctrineRoute
   options:
     model: %s
@@ -110,7 +110,7 @@ class sfSympalToolkit
           $module,
           $action,
           null,
-          $contentType->getContentTypeRecord()->getTable()->getOption('name'),
+          $contentType->getModel(),
           implode('|', sfSympalConfig::getLanguageCodes()),
           implode('|', sfSympalConfig::get('content_formats'))
         );

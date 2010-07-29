@@ -12,6 +12,10 @@ abstract class PluginsfSympalPageForm extends BasesfSympalPageForm
   public function setup()
   {
     parent::setup();
-    unset($this['updated_at'], $this['created_at'], $this['content_id'], $this['comments_list']);
+
+    unset(
+      $this['updated_at'],
+      $this['created_at']
+    );
   }
 }
