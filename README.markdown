@@ -11,110 +11,171 @@ The goal of this plugin is two-fold:
 
  1. To accomplish this while minimizing the effect on the developer's workflow.
 
-Quick off to a quick start
---------------------------
+Off to a quick start
+--------------------
 
 The heart of sympal exists in the `sfSympalContent` and `sfSympalContentType`
 records. Each `sfSympalContent` record has one `sfSympalContentType` record
 which defines the url pattern (e.g. `/products/:slug`), rendering information
 (e.g. the module/action) and the model that will be used to store all of
-the content.
+the content. While these models are critically important for creating the
+dynamic routes behind each piece of content, you should, for the most part,
+not need to interact with these models directly during normal workflow.
 
-### Setting up a content model
+Setting up a content model
+--------------------------
 
-Let's begin by creating a basic `Product` model:
+Let's begin by creating a basic `sfSympalPage` model:
 
-    Product:
-      columns:
-        name:    string(255)
-        price:   double
+    sfSympalPage:
       actAs:
-        sfSympalContentModelTemplate:
+        sfSympalContentTypeTemplate:
+        Sluggable:
+      columns:
+        title:
+          type: string(255)
+          notnull: true
+        body:   clob
 
 The addition of the behavior above does a few things:
 
  * Add a `content_id` foreign key.
- * Relates `sfSympalContent` and `Product` with a one-to-one relationship.
- * Adds sharing of properties/methods between the related records.
- * Handles automatic creation of the relationship when creating new records.
+ * Relates `sfSympalContent` and `sfSympalPage` with a one-to-one relationship.
+ * Automatically handles the content relations to `sfSympalContent`,
+   `sfSympalContentType` and `sfSympalSite`. In other words, you can work
+   with your model has normal and the details important to url creation
+   and rendering are handled for you.
 
-### Creating a content type record
+Creating a content type
+-----------------------
 
-Next, let's create a new `sfSympalContentType` record:
+As mentioned above, the sympal system is based around the idea of having
+different types of content, or `content types`. Similar object routes,
+each content type specifies the url (e.g. `/blog/:slug`) to the content
+and the default rendering method (e.g. `myModule/myAction`). Each content
+type is a mixture of a record on the `sfSympalContentType` model and data
+stored in `app.yml`. This allows for most aspects of a content type to
+be stored and modified by the developer, while allowing some aspects to
+be modified by the end cms user.
 
-    $type = new sfSympalContentType();
-    $type->name          = 'Product';
-    $type->label         = 'Books';
-    $type->slug          = 'books';
-    $type->default_path  = '/books/:slug';
-    $type->module        = 'books';
-    $type->action        = 'show';
-    $type->save();
+When setting up a new content type, you only have to worry about the
+`app.yml` configuration. The necessary record in `sfSympalContentType`
+will be handled automatically. For example, the content type defined in
+the `sfSympalPagesPlugin` looks like this:
 
->**INFO**
->For each `sfSympalContentType` record in the database, a route is dynamically
->created with the url pattern specified by `default_path` and the given
->module & action. The route has a class of `sfDoctrineRoute` and links to
->the `sfSympalContent` model.
+    all:
+      sympal_config:
+        content_types:
+          page:
+            model:    sfSympalPage
+            rendering_methods:
+              default:
+                template: sympal_page/view
 
-### Creating your first page (`sfSympalContent` record)
+The new content type, whose key is `page`, uses the `sfSympalPage` as its
+content storage engine. It also specifies a default rendering method which
+in this case, thanks to a helper action shipped with sympal, specifies that
+the `sympal_page/view` partial should be rendered when a content record
+of this type is matched. More information on the rendering of the content
+is below.
 
-We're now ready to create our first dynamic page:
+Creating content
+----------------
 
-    $content = sfSympalContent::createNew('books');
-    $content->name = 'More with symfony';
-    $content->price = '$39.90';
-    $content->save();
+Apart from the content type configuration setup, creating content in sympal
+is very straightforward:
 
-The `slug` field of `$content` is generated to be `more-with-symfony`,
-meaning that our new page is now accessible via the url
-`/books/more-with-symfony` and rendered via the `books/show` action.
+    $page = new sfSympalPage();
+    $page->title = 'My new page';
+    $page->save();
 
-In the background, the following occurred:
+And that's it! In the background, a one-to-one relationship has been created
+from `sfSympalPage` to `sfSympalContent`. The `sfSympalContent` has also
+been related to the `page` content type specified above. This happens automatically
+because you've only configured one content type (`page`) for the model
+`sfSympalPage`.
 
- * `$content` is automatically related to the `sfSympalContentType` record
-   whose `slug` equals `books`.
+### The url to the content
 
- * A new `Product` record is created and linked to `$content` via their
-   one-to-one relationship.
+The new `$page` object is now accessible via `/sf_sympal_page/my-new-page`.
+This is because there is a `default_path` field in `sfSympalContentType`,
+which defaults to, in this case, `/sf_sympal_page/:slug`. Recall that
+`sfSympalPage` uses the `Sluggable` template, and so the slug is automatically
+created for us. Now, let's change this to make the url more friendly:
 
-Notice that `sfSympalContent` does __not__ contain a `name` nor a `price`
-field. Part of the power of sympal is that the `sfSympalContent` and
-`Product` records act as one object. If a field or method is referenced
-on `sfSympalContent` and does not exist, it will be passed to the
-`Product` record. In this case, the `name` and `price` fields of `Product`
-are set with the given data.
+    $page->Content->Type->default_path = '/pages/:slug';
+    $page->Content->Type->save();
 
-This is a key point in sympal: though you'll always be handling `sfSympalContent`
-records directly, each can be used as if it were an instance of whatever
-data model it refers to.
+The `$page` object is now accessible via `/pages/my-new-page`.
 
->**NOTE**
->You can reference the related content model directly from `sfSympalContent`
->by calling `$content->getRecord()`.
+### Custom url for the content
 
-### Rendering the content
+While the content type specifies a default path to your content, you can
+also create a totally custom url on a content-by-content basis. This is
+done via a `custom_path` field on `sfSympalContent`. Let's suppose that
+we want our homepage to be dynamically built through the sympal system:
 
-When the url `/books/more-with-symfony` is matched, it will be routed to
-the `books` module and `show` action. Place the following code in the action:
+    $page->Content->custom_path = '/';
+    $page->Content->save();
+
+Your content is now available at `/` (the homepage).
+
+
+Rendering the content
+---------------------
+
+Each content type can specify one or more `rendering methods` in the `app.yml`
+configuration. Here are two rendering methods:
+
+all:
+  sympal_config:
+    content_types:
+      page:
+        model:    sfSympalPage
+        rendering_methods:
+          default:
+            template: sympal_page/view
+          custom_action:
+            module:   sympal_page
+            action:   show
+
+This highlights the two different ways to render content. The first is
+by specifying either a component or a partial via the `template` key. Internally,
+this routes to a special sympal module/action that ultimately renders
+the content via the above component/partial.
+
+When rendering via a partial, you automatically have access to a variable
+representing your content. The variables is the "tableized" version of
+your model. In the above example using `sfSympalPage`, the partial might
+look like this:
+
+    <h1><?php echo $sf_sympal_page->title ?></h1>
+
+    <?php echo $sf_sympal_page->body ?>
+
+The second type of rendering method is the more traditional module/action
+pair. In this case, the route sends the request directly to the specified
+module and action:
 
     public function executeShow(sfWebRequest $request)
     {
-      $this->content = $this->getRoute()->getObject();
+      $this->sf_sympal_page = $this->getRoute()->getObject();
+      $this->sf_sympal_page->getSympalContentActionLoader();
     }
 
-The template now has access to the `sfSympalContent` record and can be
-used to output the content:
+Like any normal symfony application, the first line retrieves your object
+from the object route. The second line, while not strictly necessary,
+allows sympal to perform several different actions:
 
-    <h1><?php echo $content->name ?></h1>
+ * Check to see that the content is published
+ * Setup meta information on the response object (e.g. page title)
 
-    <p>
-      Buy now for only $<?php echo $content->price ?>
-    </p>
+The template (`showSuccess.php`) now has access to the `sf_sympal_page`
+variable as normal. From here, the template is identical to the above partial:
 
-Recall that the `$content` variable is an instance of `sfSympalContent`
-and that the `name` and `price` fields are passed to and returned from
-the related `Product` record.
+    <h1><?php echo $sf_sympal_page->title ?></h1>
+
+    <?php echo $sf_sympal_page->body ?>
 
 
 TODO
