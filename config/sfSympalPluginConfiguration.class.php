@@ -231,6 +231,34 @@ class sfSympalPluginConfiguration extends sfPluginConfiguration
   }
 
   /**
+   * Returns whether or not the current user is in edit mode
+   *
+   * @return boolean
+   */
+  public function isEditMode()
+  {
+    // if not bound to some content, return false
+    if (!$this->getSiteManager()->getCurrentContent())
+    {
+      return false;
+    }
+
+    return $this->userCanEditPages();
+  }
+
+  /**
+   * Whether or not the current user has access to edit content
+   *
+   * @return boolean
+   */
+  protected function userCanEditPages()
+  {
+    $credentials = sfSympalConfig::get('credentials', 'edit_content', 'EditContent');
+
+    return sfContext::getInstance()->getUser()->hasCredential($credentials);
+  }
+
+  /**
    * Mark necessary sympal classes as safe
    * 
    * These classes won't be wrapped with the output escaper

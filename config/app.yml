@@ -14,6 +14,9 @@ all:
     content_type_object_class: sfSympalContentTypeObject
     content_object_class:      sfSympalContentObject
 
+    credentials:
+      edit_content:    [EditContent]
+
     # whether to automatically enable the standard modules or not
     enable_modules:  true
 
