@@ -8,9 +8,9 @@ actions_get_sympal_configuration:
 
 #sfSympalContentActionLoader
 content_action_loader_content:
-  url:   /content-action-loader/content/:id.:sf_format
+  url:   /content-action-loader/product/:id.:sf_format
   class: sfDoctrineRoute
   param: { module: content_action_loader, action: content, sf_format: html }
   options:
-    model:  sfSympalContent
+    model:  Product
     type:   object

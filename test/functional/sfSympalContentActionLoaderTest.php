@@ -43,7 +43,12 @@ $browser->info('  1.2 - Surf back to the no content route, with a content record
 
 $browser->info('2 - Load a real piece of content')
   ->info('  2.1 - Load an unpublished piece of content')
-  ->get('/content-action-loader/content/'.$product->Content->id)
+  ->get('/content-action-loader/product/'.$product->id)
+
+  ->with('request')->begin()
+    ->isParameter('module', 'content_action_loader')
+    ->isParameter('action', 'content')
+  ->end()
 
   ->isForwardedTo('sympal_default', 'unpublished_content')
 
@@ -57,11 +62,11 @@ $siteManager = $browser->getContext()
   ->getSiteManager();
 
 $browser->test()->is(get_class($siteManager->getSite()), 'sfSympalSite', 'The site record is set');
-$browser->test()->is($siteManager->getCurrentContent()->id, $product->Content->id, 'The current content record is set');
+$browser->test()->is($siteManager->getCurrentContent()->id, $product->id, 'The current content record is set');
 
 $browser->info('  2.3 - Load a real, published piece of content');
 $product->Content->publish();
-$browser->get('/content-action-loader/content/'.$product->Content->id)
+$browser->get('/content-action-loader/product/'.$product->id)
 
   ->with('response')->begin()
     ->isStatusCode(200)
@@ -74,7 +79,7 @@ $browser->test()->ok(strpos($response, '<meta name="keywords" content="keyword t
 $browser->test()->ok(strpos($response, '<meta name="description" content="foo bar" />') !== false, 'The meta description is set.');
 
 $browser->info('3 - Goto the url with an alternative sf_format, see that the request is faked out.')
-  ->get('/content-action-loader/content/'.$product->Content->id.'.xml')
+  ->get('/content-action-loader/product/'.$product->id.'.xml')
 
   ->with('request')->begin()
     ->info('  3.1 - The sf_format is xml')
