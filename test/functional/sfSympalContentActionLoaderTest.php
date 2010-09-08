@@ -4,28 +4,6 @@ require_once(dirname(__FILE__).'/../bootstrap/functional.php');
 
 $browser = new sfSympalTestFunctional(new sfBrowser());
 
-$browser->info('1 - Test 404 handler with no site object - will create the record and refresh.')
-  ->get('/content-action-loader/content/fake')
-
-  ->with('doctrine')->begin()
-    ->check('sfSympalSite', array('name' => 'sympal'), 1)
-  ->end()
-
-  ->with('response')->isRedirected()->followRedirect()
-
-  ->info('  1.1 - After redirect, we\'ll be forwarded to the new site action because our site has no content')
-  ->with('request')->begin()
-    ->isParameter('module', 'content_action_loader')
-    ->isParameter('action', 'content')
-  ->end()
-
-  ->isForwardedTo('sympal_default', 'new_site')
-
-  ->with('response')->begin()
-    ->isStatusCode(200)
-  ->end()
-;
-
 $product = new Product();
 $product->name = 'Some product';
 $product->Content->meta_keywords = 'keyword test';
