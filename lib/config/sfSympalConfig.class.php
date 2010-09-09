@@ -149,16 +149,6 @@ class sfSympalConfig extends sfConfig
   }
 
   /**
-   * Get the current installed version of sympal
-   *
-   * @return string $version
-   */
-  public static function getCurrentVersion()
-  {
-    return sfSympalPluginConfiguration::VERSION;
-  }
-
-  /**
    * Get array of configured content templates for a given model name
    *
    * @param string $model
@@ -207,59 +197,6 @@ class sfSympalConfig extends sfConfig
 
     sfSympalConfig::set($group, $name, $value);
     file_put_contents($path, sfYaml::dump($array, 4));
-  }
-
-  /**
-   * Get a overridden asset path or return the original asset path
-   *
-   * @param string $path
-   * @return string $path
-   */
-  public static function getAssetPath($path)
-  {
-    return isset(self::$config['app_sympal_config_asset_paths'][$path]) ? self::$config['app_sympal_config_asset_paths'][$path] : $path;
-  }
-
-  /**
-   * Get name of the admin generator theme to use
-   *
-   * @return string $theme
-   */
-  public static function getAdminGeneratorTheme()
-  {
-    return sfSympalConfig::get('default_admin_generator_theme', null, 'default');
-  }
-
-  /**
-   * Get the name of the admin generator class to use
-   *
-   * @return string $class
-   */
-  public static function getAdminGeneratorClass()
-  {
-    return sfSympalConfig::get('default_admin_generator_class', null, 'sfDoctrineGenerator');
-  }
-
-  /**
-   * Check whether a Doctrine query result cache key should use result cache or not
-   *
-   * @param string $key
-   * @return boolean
-   */
-  public static function shouldUseResultCache($key)
-  {
-    if (isset(self::$config['app_sympal_config_orm_cache']['queries'][$key]['enabled'])
-      && self::$config['app_sympal_config_orm_cache']['queries'][$key]['enabled']
-      && isset(self::$config['app_sympal_config_orm_cache']['result'])
-      && self::$config['app_sympal_config_orm_cache']['result']
-    )
-    {
-      return isset(self::$config['app_sympal_config_orm_cache']['queries'][$key]['lifetime']) ? self::$config['app_sympal_config_orm_cache']['queries'][$key]['lifetime'] : self::$config['app_sympal_config_orm_cache']['lifetime'];
-    }
-    else
-    {
-      return false;
-    }
   }
 
   /**
