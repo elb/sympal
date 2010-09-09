@@ -1,4 +1,1 @@
 
-[submodule "test/fixtures/project/plugins/sfDoctrineGuardPlugin"]
-	path = test/fixtures/project/plugins/sfDoctrineGuardPlugin
-	url = git://github.com/annismckenzie/sfDoctrineGuardPlugin.git
