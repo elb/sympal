@@ -28,6 +28,7 @@ $t->info('1 - Test the ->Content and ->Content->ContentType relations on the new
   $t->is($type->type_key, 'product', '$type->type_key was saved correctly.');
 
 $t->info('2 - Run a similar test on the Page model');
+  $t->info('  2.1 - This tests that even a very simple content type object gets the ->Content and ->Content->ContentType objects');
 
   $page = new Page();
   $page->save();
@@ -38,4 +39,3 @@ $t->info('2 - Run a similar test on the Page model');
   $t->isnt($page->Content->Type->id, null, 'The $content->Type relationship was saved correctly.');
   $t->is($page->Content->Type->default_path, '/page/:id', '$type->default_path was saved as /page/:id because no slug field');
   $t->is($page->Content->Type->type_key, 'page', '$type->type_key was saved correctly.');
-  

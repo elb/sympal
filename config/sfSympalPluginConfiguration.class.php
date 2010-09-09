@@ -173,6 +173,8 @@ class sfSympalPluginConfiguration extends sfPluginConfiguration
   }
 
   /**
+   * Returns the content type object related to the given key
+   *
    * @param  string $key The app.yml key to the content type 
    * @return sfSympalContentTypeObject
    */

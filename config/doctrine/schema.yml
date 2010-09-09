@@ -70,6 +70,7 @@ sfSympalContentType:
     type_key:
       type:    string(255)
       notnull: true
+    # The default url pattern for these content types
     default_path:
       type:    string(255)
       notnull: true

@@ -1,5 +1,9 @@
 <?php
-
+/**
+ * The listener for ContentType, which makes sure that every content
+ * type record has a related ->Content->ContentType record before saving.
+ * This implicitly ensures that each record has a ->Content relation. 
+ */
 class sfSympalContentTypeListener extends Doctrine_Record_Listener
 {
   /**
